@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed May  3 13:21:40 2023
-
-@author: 15854
+Created on Wed May 3 2023
+Last Edited on Mon May 22 2023
+@author: Abra Geiger abrageiger7
 """
 
 data = np.load("J1903_data.npy")
