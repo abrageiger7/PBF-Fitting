@@ -1,5 +1,12 @@
-# time and frequency varying beta calculations
+"""
+Created April 2023
+Last Edited on Mon May 22 2023
+@author: Abra Geiger abrageiger7
 
+Time and Frequency Varying Calculations of Fit Parameters
+"""
+
+#imports
 import numpy as np
 import matplotlib.pyplot as plt
 import fit_functions as fittin
@@ -7,12 +14,14 @@ import convolved_pbfs as conv
 import intrinsic_pbfs as intrins
 import math
 
+#import the parameter bank for reference, comparing, and plotting
 convolved_profiles = conv.convolved_profiles
 widths = conv.widths
 gauss_widths = conv.widths_gaussian
 betaselect = conv.betaselect
 time = conv.time
 
+#import data
 data = np.load("J1903_data.npy")
 freq = np.load("J1903_freqs.npy")
 mjds = np.load("J1903_mjds.npy")
@@ -23,6 +32,8 @@ chan = np.load("J1903_numchan.npy")
 
 #TO DO: Since fixed gaussian width units and chisquared, replot; fix in 
 #previous code difference between beta power law index and beta for pbfs
+
+#Below are various calculations of fit parameters using functions from fit_functions.py
 
 #num_chan0 = int(chan[0])
 #data0 = data[0][:num_chan0]
@@ -206,31 +217,30 @@ print(gauss_widths)
 #=============================================================================
 # Comparing Beta over Frequency and MJD
 # =============================================================================
-mjd_list = []
-beta_list = []
-freq_list = []
-gauss_width_list = []
-pbf_width_list = []
-low_chi_list = []
-tau_list = []
+# mjd_list = []
+# beta_list = []
+# freq_list = []
+# gauss_width_list = []
+# pbf_width_list = []
+# low_chi_list = []
+# tau_list = []
 
-for i in range(5):
-    for ii in range(12):
-        num_chan0 = int(chan[i*10])
-        data0 = data[i*10][:num_chan0]
-        freq0 = freq[i*10][:num_chan0]
-        dataer = fittin.fit_all_profile(mjds[i*10], data0, freq0, ii)
-        mjd_list.append(mjds[i*10])
-        beta_list.append(dataer[4])
-        freq_list.append(dataer[5])
-        gauss_width_list.append(dataer[2])
-        pbf_width_list.append(dataer[3])
-        low_chi_list.append(dataer[0])
-        tau_list.append(dataer[1])
+# for i in range(5):
+#     for ii in range(12):
+#         num_chan0 = int(chan[i*10])
+#         data0 = data[i*10][:num_chan0]
+#         freq0 = freq[i*10][:num_chan0]
+#         dataer = fittin.fit_all_profile(mjds[i*10], data0, freq0, ii)
+#         mjd_list.append(mjds[i*10])
+#         beta_list.append(dataer[4])
+#         freq_list.append(dataer[5])
+#         gauss_width_list.append(dataer[2])
+#         pbf_width_list.append(dataer[3])
+#         low_chi_list.append(dataer[0])
+#         tau_list.append(dataer[1])
         
-arrayyay = np.array([mjd_list, beta_list, freq_list, gauss_width_list, pbf_width_list, low_chi_list, tau_list])
+# arrayyay = np.array([mjd_list, beta_list, freq_list, gauss_width_list, pbf_width_list, low_chi_list, tau_list])
 
-np.save('betadatayay', arrayyay)
+# np.save('betadatayay', arrayyay)
 
 #=============================================================================
-
