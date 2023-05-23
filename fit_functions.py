@@ -1,9 +1,21 @@
+"""
+Created April 2023
+Last Edited on Mon May 22 2023
+@author: Abra Geiger abrageiger7
+
+File of Functions for Fitting Broadening Functions
+"""
+
 #Functions contained: find_nearest(tau helper function), ecdf and pdf_to_cdf 
 #(likelihood helper functions), likelihood_evaluator, chi2_distance
 #(helper function), subaverages4, fit_sing(fitting helper function),
+#fit_all_profile (for fitting for best beta), fit_all_profile_set_gwidth
+#(for fitting for best best for constant gauss width), fit_cons_beta_ipfd
+#(for fitting with constant beta with no gaussian convolution, but estimated 
+#intrinsic pulse convolution), fit_cons_beta_profile (for fitting with constant beta),
+#fit_dec_exp (for fitting decaying exponential)
 
-
-
+#imports
 from pypulse.archive import Archive
 from pypulse.singlepulse import SinglePulse
 import matplotlib.pyplot as plt
@@ -17,6 +29,7 @@ import intrinsic_pbfs as intrins
 import tau
 import convolved_exp as cexp
 
+#import
 convolved_profiles = conv.convolved_profiles
 widths = conv.widths
 gauss_widths = conv.widths_gaussian
