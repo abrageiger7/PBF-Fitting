@@ -1,3 +1,11 @@
+"""
+Created April 2023
+Last Edited on Sun May 28 2023
+@author: Abra Geiger abrageiger7
+
+Calculating Tau Values for Varing Tau and PBF Width Values
+"""
+
 import fit_functions as fittin
 import convolved_pbfs as conv
 import numpy as np
