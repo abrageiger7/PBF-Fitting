@@ -1,3 +1,5 @@
+#Cordes Code
+
 # Reads in npz files outputted by gammaD_from_pde_sw.py 
 # for different values of beta. 
 #
