@@ -8,9 +8,9 @@ betaselect = conv.betaselect
 time = conv.time
 pbf_data_unitarea = conv.pbf_data_unitarea
 
-plt.xlabel('Pulse Period')
-plt.ylabel('Integrated Intensity')
-plt.plot(time, intrinsic)
+# plt.xlabel('Pulse Period')
+# plt.ylabel('Integrated Intensity')
+# plt.plot(time, intrinsic)
 
 t = np.linspace(0, 2048, 2048)
 convolved_w_dataintrins = np.zeros((np.size(betaselect), np.size(widths), 2048))
