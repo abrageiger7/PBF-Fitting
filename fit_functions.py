@@ -1330,7 +1330,6 @@ def fit_cons_beta_gauss_profile(mjdi, data, freqsm, freq_subint_index, beta_inde
     title = 'ONEBSETG_fit_overall_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_GAUSSW=' + str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] + '_PBFW=' + str(pbf_width_fin) + '_BETA=' + str(betaselect[beta_index]) + '.png'
     print(title)
     plt.plot()
-    plt.show()
     plt.savefig(title)
     plt.close(2)
 
@@ -1351,7 +1350,7 @@ def fit_cons_beta_gauss_profile(mjdi, data, freqsm, freq_subint_index, beta_inde
           + '\n'+'Best Gauss Width = ' + str(gwidth_index) + '\n'+'Best PBF Width = ' \
               + str(pbf_width_fin) + '\n'+'Beta set = ' + str(betaselect[beta_index]) + '\n'+'Frequency = '\
                   + str(freqs_care))
-    return(low_chi, tau_fin, gwidth_index, pbf_width_fin, freqs_care)
+    return(low_chi, tau_fin, gwidth_index, pbf_width_fin, freqs_care, np.size(s[1]))
 
 
 def fit_cons_beta_ipfd(mjdi, data, freqsm, freq_subint_index, beta_index): #intrinsic pulse from data
