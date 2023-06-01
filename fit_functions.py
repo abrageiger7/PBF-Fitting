@@ -243,18 +243,22 @@ def fit_sing(i, xind, data_care, freqsy, num_fitted):
     if freqsy >= 1600:
         start_index = 700
         stop_index = 1548
+        num_masked = phase_bins - (stop_index-start_index)
     elif freqsy >= 1400 and freqsy < 1600:
         start_index = 700
         stop_index = 1648
+        num_masked = phase_bins - (stop_index-start_index)
     elif freqsy >= 1200 and freqsy < 1400:
         start_index = 650
         stop_index = 1798
+        num_masked = phase_bins - (stop_index-start_index)
     elif freqsy >= 1000 and freqsy < 1200:
         start_index = 600
         stop_index = 1948
+        num_masked = phase_bins - (stop_index-start_index)
     mask[start_index:stop_index] = 1.0
 
-    chi_sq_measure = chi2_distance(data_care, (fitted_template*mask), num_fitted)
+    chi_sq_measure = chi2_distance(data_care, (fitted_template*mask), num_fitted+num_masked)
     return(chi_sq_measure)
 
 
@@ -799,7 +803,7 @@ def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_ind
     #Plot Data-model\n",
     frame1=fig1.add_axes((.1,.3,.8,.6))
     #xstart, ystart, xend, yend [units are fraction of the image frame, from bottom left corner]
-    plt.title('SETGwidth='+str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] +'Best Fit Template over Data w/ Beta = ' + str(betaselect[beta_index]) + '; chisq = ' + str(low_chi))[:5]
+    plt.title('SETGwidth='+str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] +'Best Fit Template over Data w/ Beta = ' + str(betaselect[beta_index]) + '; chisq = ' + str(low_chi)[:5])
     plt.ylabel('Pulse Intensity')
     plt.plot(time, data_care, '.', ms = '2.4')
     plt.plot(time, fitted_template)
@@ -1175,6 +1179,156 @@ def fit_cons_beta_profile(mjdi, data, freqsm, freq_subint_index, beta_index, plo
     plt.xlabel('Pulse Period (milliseconds)')
     plt.ylabel('Residuals')
     title = 'ONEB_fit_overall_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_GAUSSW=' + str(gaussian_width_fin)[:4] + '_PBFW=' + str(pbf_width_fin) + '_BETA=' + str(betaselect[beta_index]) + '.png'
+    print(title)
+    plt.plot()
+    plt.show()
+    plt.savefig(title)
+    plt.close(2)
+
+    #     plt.title('Likelihood: Best Fit Template over Data')
+    #     plt.ylabel('Pulse Intensity')
+    #     plt.xlabel('Pulse Period (milliseconds)')
+    #     plt.plot(time, data_care, '.')
+    #     plt.plot(time, fitted_templates[b_pbfwidth_index][b_gausswidth_index])
+    #     plt.show()
+
+    #     plt.title('Least Squares: Best Fit Template over Data')
+    #     plt.ylabel('Pulse Intensity')
+    #     plt.xlabel('Pulse Period (milliseconds)')
+    #     plt.plot(time, data_care, '.')
+    #     plt.plot(time, fitted_templates[lsqs_pbf_index][lsqs_gauss_index])
+    #     plt.show()
+    print('Min Chi-sq = ' + str(low_chi) + '\n'+'Best tau = ' + str(tau_fin) \
+          + '\n'+'Best Gauss Width = ' + str(gaussian_width_fin) + '\n'+'Best PBF Width = ' \
+              + str(pbf_width_fin) + '\n'+'Beta set = ' + str(betaselect[beta_index]) + '\n'+'Frequency = '\
+                  + str(freqs_care))
+    return(low_chi, tau_fin, gaussian_width_fin, pbf_width_fin, freqs_care)
+
+def fit_cons_beta_gauss_profile(mjdi, data, freqsm, freq_subint_index, beta_index, gwidth_index, plot_conv=False):
+
+    print("Fitting for Beta = " + str(betaselect[beta_index]))
+
+    s = subaverages4(mjdi, data, freqsm)
+
+    data_care = s[0][freq_subint_index]
+
+    #calculate the root mean square noise of the off pulse in order to
+    #normalize chi-squared
+    rms_collect = 0
+    for i in range(600):
+        rms_collect += data_care[i]*data_care[i]
+    rms = math.sqrt(rms_collect/600)
+
+    freqs_care = s[1][freq_subint_index]
+
+    x = np.max(data_care)
+    xind = np.where(data_care == x)[0][0]
+
+    #set the offpulse regions to zero because essentially oscillating there
+    #vary the offpulse region depending on frequency
+    mask = np.zeros(2048)
+    if freqs_care >= 1600:
+        start_index = 700
+        stop_index = 1548
+    elif freqs_care >= 1400 and freqs_care < 1600:
+        start_index = 700
+        stop_index = 1648
+    elif freqs_care >= 1200 and freqs_care < 1400:
+        start_index = 650
+        stop_index = 1798
+    elif freqs_care >= 1000 and freqs_care < 1200:
+        start_index = 600
+        stop_index = 1948
+    mask[start_index:stop_index] = 1.0
+
+    data_care = data_care*mask
+
+    chi_sqs_array = np.zeros(np.size(widths))
+
+    data_index1 = 0
+    #for the varying pbf_widths
+    for ii in convolved_profiles[beta_index]:
+        #for the set gaussian width
+        i = ii[gwidth_index]
+        chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care, 5)
+        data_index1 = data_index1+1
+
+
+    plt.figure(1)
+    plt.title('Fit Chi-sqs')
+    plt.xlabel('Rounded Gaussian FWHM (microseconds)')
+    plt.ylabel('PBF Width')
+    chi_sqs_array = np.divide(chi_sqs_array,(rms*rms))
+    plt.plot(chi_sqs_array)
+    pbf_ticks = np.zeros(10)
+    for i in range(10):
+        pbf_ticks[i] = str(widths[i*5])[:3]
+    plt.xticks(ticks = np.linspace(0,50,num=10), labels = pbf_ticks)
+    title = 'ONEBSETG_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_BETA=' + str(betaselect[beta_index]) + '_GWIDTH=' + str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] + '.png'
+    plt.rcParams['savefig.dpi'] = 300
+    plt.savefig(title)
+    plt.close(1)
+    low_chi = find_nearest(chi_sqs_array, 0.0)[0]
+    #print("Minimum chi-squared: " + str(low_chi))
+
+    lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+    lsqs_pbf_val = widths[lsqs_pbf_index]
+
+    tau_fin = tau_values[beta_index][lsqs_pbf_index]
+    pbf_width_fin = lsqs_pbf_val
+
+
+    p = parameters[gwidth_index]
+    gaussian = (p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2])))) / trapz(p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2]))))
+    gaussian = gaussian/(np.max(gaussian))
+    #gaussian to unit height and lining up to the data
+    indg_diff = xind-int(p[1])
+
+    #discrete pbf to unit height and lining up to the data
+    discrete_pbf = conv.pbf_data_unitarea[beta_index][lsqs_pbf_index] / np.max(conv.pbf_data_unitarea[beta_index][lsqs_pbf_index])
+    discrete_center = np.where((discrete_pbf == np.max(discrete_pbf)))[0][0]
+    indp_diff = xind - discrete_center
+
+    profile = convolved_profiles[beta_index][lsqs_pbf_index][gwidth_index] / np.max(convolved_profiles_exp[beta_index][lsqs_pbf_index][gwidth_index])
+    #fitPulse requires template height of one
+    z = np.max(profile)
+    zind = np.where(profile == z)[0][0]
+    ind_diff = xind-zind
+    #this lines the profiles up approximately so that Single Pulse finds the true minimum, not just a local min\n",
+    profile = np.roll(profile, ind_diff)
+    sp = SinglePulse(data_care, opw = np.arange(0, 800))
+    fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template matching, scale factor, TOA error, \n",
+    #scale factor error, signal to noise ratio, cross-correlation coefficient\n",
+    #based on the fitPulse fitting, scale and shift the profile to best fit the inputted data\n",
+    #fitPulse figures out the best amplitude itself\n",
+    #fitted_shift[data_index1][data_index2] = fitting[1]\n"
+    #fitted_scale_factor[data_index1][data_index2] = fitting[2]
+    spt = SinglePulse(profile*fitting[2])
+    fitted_template = spt.shiftit(fitting[1])
+    #fitted_templates[data_index1][data_index2] = fitted_template
+    fitted_template = fitted_template*mask
+
+    plt.figure(2)
+    fig1 = plt.figure(2)
+    #Plot Data-model\n",
+    frame1=fig1.add_axes((.1,.3,.8,.6))
+    #xstart, ystart, xend, yend [units are fraction of the image frame, from bottom left corner]\n",
+    plt.title('Best Fit Template over Data; chisq = ' + str(low_chi)[:5])
+    plt.ylabel('Pulse Intensity')
+    if plot_conv == True:
+        plt.plot(time, np.roll((gaussian*np.max(fitted_template)),indg_diff), color = 'purple')
+        plt.plot(time, np.roll((discrete_pbf*np.max(fitted_template)), indp_diff), color = 'green')
+    plt.plot(time, data_care, '.', ms = '2.4')
+    plt.plot(time, fitted_template)
+    frame1.set_xticklabels([]) #Remove x-tic labels for the first frame
+
+    #Residual plot
+    difference = np.subtract(data_care, fitted_template)
+    frame2=fig1.add_axes((.1,.1,.8,.2))
+    plt.plot(time, difference, '.', ms = '2.4')
+    plt.xlabel('Pulse Period (milliseconds)')
+    plt.ylabel('Residuals')
+    title = 'ONEBSETG_fit_overall_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_GAUSSW=' + str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] + '_PBFW=' + str(pbf_width_fin) + '_BETA=' + str(betaselect[beta_index]) + '.png'
     print(title)
     plt.plot()
     plt.show()
