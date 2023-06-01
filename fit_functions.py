@@ -6,12 +6,12 @@ Last Edited on Mon May 22 2023
 File of Functions for Fitting Broadening Functions
 """
 
-#Functions contained: find_nearest(tau helper function), ecdf and pdf_to_cdf 
+#Functions contained: find_nearest(tau helper function), ecdf and pdf_to_cdf
 #(likelihood helper functions), likelihood_evaluator, chi2_distance
 #(helper function), subaverages4, fit_sing(fitting helper function),
 #fit_all_profile (for fitting for best beta), fit_all_profile_set_gwidth
 #(for fitting for best best for constant gauss width), fit_cons_beta_ipfd
-#(for fitting with constant beta with no gaussian convolution, but estimated 
+#(for fitting with constant beta with no gaussian convolution, but estimated
 #intrinsic pulse convolution), fit_cons_beta_profile (for fitting with constant beta),
 #fit_dec_exp (for fitting decaying exponential)
 
@@ -29,7 +29,7 @@ import intrinsic_pbfs as intrins
 import tau
 import convolved_exp as cexp
 
-#import
+#imports
 convolved_profiles = conv.convolved_profiles
 widths = conv.widths
 gauss_widths = conv.widths_gaussian
@@ -115,7 +115,7 @@ def likelihood_evaluator(x, y, cdf=False, median=False, pm=True, values=None):
             retval[i] = x[indv]
         return retval
 
-def chi2_distance(A, B):
+def chi2_distance(A, B, num_fitted):
 
     '''Takes two vectors and calculates their comparative chi-squared value
 
@@ -128,7 +128,8 @@ def chi2_distance(A, B):
         sq_res = (a-b)**2
         squared_residuals.append(sq_res)
 
-    chi_squared = sum(squared_residuals) / len(squared_residuals)
+    chi_squared = sum(squared_residuals) / \
+    (len(squared_residuals) - num_fitted - 1)
     return(chi_squared)
 
 def subaverages4(mjdi, data, freqsm, plot = False):
@@ -167,7 +168,7 @@ def subaverages4(mjdi, data, freqsm, plot = False):
             dataf = freqsm[4*i:(4*i)+4]
             subs[i] = np.average(datad, axis = 0)
             center_freqs[i] = np.average(dataf)
-            
+
         if len(freqsm)%4 != 0:
             #print('All subintegrations have 4 frequency channels except final\
             #    subintegration has ' + str(len(freqsm)%4) + ' frequencie(s)')
@@ -209,12 +210,12 @@ def subaverages4(mjdi, data, freqsm, plot = False):
                 plt.title('Subintegration at ' + str(center_freqs[i]) + 'MHz')
                 plt.plot(subs[i])
                 plt.show()
-                
+
         print('Number of subintegrations is ' + str(len(center_freqs)))
 
         return(subs, center_freqs, mjdi)
 
-def fit_sing(i, xind, data_care, freqsy):
+def fit_sing(i, xind, data_care, freqsy, num_fitted):
     '''Fits a data profile to a template
     Helper function for all fitting functions below'''
 
@@ -222,14 +223,14 @@ def fit_sing(i, xind, data_care, freqsy):
     z = np.max(profile)
     zind = np.where(profile == z)[0][0]
     ind_diff = xind-zind
-    #this lines the profiles up approximately so that Single Pulse finds the 
+    #this lines the profiles up approximately so that Single Pulse finds the
     #true minimum, not just a local min
     profile = np.roll(profile, ind_diff)
     sp = SinglePulse(data_care, opw = np.arange(0, 800))
-    fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template 
+    fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template
     #matching, scale factor, TOA error, scale factor error, signal to noise
     #ratio, cross-correlation coefficient
-    #based on the fitPulse fitting, scale and shift the profile to best fit 
+    #based on the fitPulse fitting, scale and shift the profile to best fit
     #the inputted data
     #fitPulse figures out the best amplitude itself
     spt = SinglePulse(profile*fitting[2])
@@ -253,22 +254,22 @@ def fit_sing(i, xind, data_care, freqsy):
         stop_index = 1948
     mask[start_index:stop_index] = 1.0
 
-    chi_sq_measure = chi2_distance(data_care, (fitted_template*mask))
+    chi_sq_measure = chi2_distance(data_care, (fitted_template*mask), num_fitted)
     return(chi_sq_measure)
 
 
 def fit_all_profile(mjdi, data, freqsm, freq_subint_index):
 
     s = subaverages4(mjdi, data, freqsm)
-    
+
     data_care = s[0][freq_subint_index]
 
-    #calculate the root mean square noise of the off pulse in order to 
+    #calculate the root mean square noise of the off pulse in order to
     #normalize chi-squared
     rms_collect = 0
-    for i in range(700):
+    for i in range(600):
         rms_collect += data_care[i]*data_care[i]
-    rms = math.sqrt(rms_collect/699.0) #reduced chi-squared divide by n-1
+    rms = math.sqrt(rms_collect/600)
 
     freqs_care = s[1][freq_subint_index]
 
@@ -310,7 +311,7 @@ def fit_all_profile(mjdi, data, freqsm, freq_subint_index):
             data_index2 = 0
             #for the varying gaussian widths
             for i in ii:
-                chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care)
+                chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care, 5)
                 data_index2 = data_index2+1
             data_index1 = data_index1+1
 
@@ -326,14 +327,16 @@ def fit_all_profile(mjdi, data, freqsm, freq_subint_index):
         plt.imshow(chi_sqs_array, cmap=plt.cm.viridis_r, origin = 'lower')
         gauss_ticks = np.zeros(10)
         for i in range(10):
-            gauss_ticks[i] = str(int(gauss_widths[i*5] * (0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))) #convert to FWHM microseconds
+            gauss_ticks[i] = str(int(gauss_widths[i*5] * (0.0021499/2048) * 1e6 \
+            * (2.0*math.sqrt(2*math.log(2))))) #convert to FWHM microseconds
         pbf_ticks = np.zeros(10)
         for i in range(10):
             pbf_ticks[i] = str(widths[i*5])[:3]
         plt.xticks(ticks = np.linspace(0,50,num=10), labels = gauss_ticks)
         plt.yticks(ticks = np.linspace(0,50,num=10), labels = pbf_ticks)
         plt.colorbar()
-        title = 'PBF_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_BETA=' + str(betaselect[beta_index]) + '.png'
+        title = 'PBF_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + \
+        str(freqs_care)[:4] + '_BETA=' + str(betaselect[beta_index]) + '.png'
         plt.savefig(title)
         plt.close(1*beta_index)
         low_chi = find_nearest(chi_sqs_array, 0.0)[0]
@@ -344,7 +347,8 @@ def fit_all_profile(mjdi, data, freqsm, freq_subint_index):
         lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
         lsqs_pbf_val = widths[lsqs_pbf_index]
         lsqs_gauss_index = find_nearest(chi_sqs_array, 0.0)[1][1][0]
-        lsqs_gauss_val = widths_gaussian[lsqs_gauss_index] * (2.0*math.sqrt(2*math.log(2))) * (0.0021499/2048) * 1e6 #microseconds FWHM
+        lsqs_gauss_val = widths_gaussian[lsqs_gauss_index] * \
+        (2.0*math.sqrt(2*math.log(2))) * (0.0021499/2048) * 1e6 #microseconds FWHM
         gaussian_width_collect[beta_index] = lsqs_gauss_val
         pbf_width_collect[beta_index] = lsqs_pbf_val
 
@@ -520,7 +524,7 @@ def fit_all_profile(mjdi, data, freqsm, freq_subint_index):
     fitted_template = spt.shiftit(fitting[1])
     #fitted_templates[data_index1][data_index2] = fitted_template
     fitted_template = fitted_template*mask
-    
+
     plt.figure(29)
     fig1 = plt.figure(29)
     #Plot Data-model\n",
@@ -555,15 +559,15 @@ def fit_all_profile(mjdi, data, freqsm, freq_subint_index):
 def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_index):
 
     s = subaverages4(mjdi, data, freqsm)
-    
+
     data_care = s[0][freq_subint_index]
 
-    #calculate the root mean square noise of the off pulse in order to 
+    #calculate the root mean square noise of the off pulse in order to
     #normalize chi-squared
     rms_collect = 0
-    for i in range(700):
+    for i in range(600):
         rms_collect += data_care[i]*data_care[i]
-    rms = math.sqrt(rms_collect/699.0) #reduced chi-squared divide by n-1
+    rms = math.sqrt(rms_collect/600)
 
     freqs_care = s[1][freq_subint_index]
 
@@ -603,7 +607,7 @@ def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_ind
         for ii in convolved_profiles[beta_index]:
             #for the gaussian width
             i = ii[gwidth_index]
-            chi_sqs_array[data_index1] = fit_sing(i, xind, data_care, freqs_care)
+            chi_sqs_array[data_index1] = fit_sing(i, xind, data_care, freqs_care, 5)
             data_index1 = data_index1+1
 
         #print(betaselect[beta_index])
@@ -789,7 +793,7 @@ def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_ind
     fitted_template = spt.shiftit(fitting[1])
     #fitted_templates[data_index1][data_index2] = fitted_template
     fitted_template = fitted_template*mask
-    
+
     plt.figure(29)
     fig1 = plt.figure(29)
     #Plot Data-model\n",
@@ -801,7 +805,7 @@ def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_ind
     plt.plot(time, fitted_template)
     frame1.set_xticklabels([]) #Remove x-tic labels for the first frame
     plt.plot()
-    
+
     #Residual plot
     difference = np.subtract(data_care, fitted_template)
     frame2=fig1.add_axes((.1,.1,.8,.2))
@@ -814,7 +818,7 @@ def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_ind
     plt.savefig(title)
     plt.close(29)
     print(title)
-    
+
     gauss_width_set = gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2)))
 
     print('SETGwidth='+str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] +'\n'+'Min Chi-sq = ' + str(low_chi) + '\n'+'Best tau = ' + str(tau_fin) \
@@ -824,21 +828,20 @@ def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_ind
     return(low_chi, tau_fin, gauss_width_set, pbf_width_fin, beta_fin, freqs_care)
 
 def fit_dec_exp(mjdi, data, freqsm, freq_subint_index):
-    
+
     print('Fitting decaying exponential')
- 
+
     s = subaverages4(mjdi, data, freqsm)
 
-    #calculate the root mean square noise of the off pulse in order to 
-    #normalize chi-squared
-
     data_care = s[0][freq_subint_index]
-    
+
+    #calculate the root mean square noise of the off pulse in order to
+    #normalize chi-squared
     rms_collect = 0
-    for i in range(700):
+    for i in range(600):
         rms_collect += data_care[i]*data_care[i]
-    rms = math.sqrt(rms_collect/699.0) #reduced chi-squared divide by n-1
-    
+    rms = math.sqrt(rms_collect/600)
+
     freqs_care = s[1][freq_subint_index]
 
     x = np.max(data_care)
@@ -892,7 +895,7 @@ def fit_dec_exp(mjdi, data, freqsm, freq_subint_index):
             # fitted_template[:700] = 0.0
             # fitted_template[1548:] = 0.0
             # chi_sq_measure = chi2_distance(data_care, fitted_template)
-            chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care)
+            chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care, 5)
             data_index2 = data_index2+1
         data_index1 = data_index1+1
 
@@ -923,7 +926,7 @@ def fit_dec_exp(mjdi, data, freqsm, freq_subint_index):
     lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
     lsqs_pbf_val = widths[lsqs_pbf_index]
     lsqs_gauss_index = find_nearest(chi_sqs_array, 0.0)[1][1][0]
-    lsqs_gauss_val = widths_gaussian[lsqs_gauss_index] 
+    lsqs_gauss_val = widths_gaussian[lsqs_gauss_index]
 
     #probabilitiesx = np.sum(chisqs, axis=1)
     #p_pbfwidth = np.where(probabilitiesx == np.max(probabilitiesx))[0]
@@ -945,7 +948,7 @@ def fit_dec_exp(mjdi, data, freqsm, freq_subint_index):
     zind = np.where(profile == z)[0][0]
     ind_diff = xind-zind
     #this lines the profiles up approximately so that Single Pulse finds the true minimum, not just a local min\n",
-    profile = np.roll(profile, ind_diff)          
+    profile = np.roll(profile, ind_diff)
     sp = SinglePulse(data_care, opw = np.arange(0, 800))
     fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template matching, scale factor, TOA error, \n",
     #scale factor error, signal to noise ratio, cross-correlation coefficient\n",
@@ -958,7 +961,7 @@ def fit_dec_exp(mjdi, data, freqsm, freq_subint_index):
     #fitted_templates[data_index1][data_index2] = fitted_template
     fitted_template[:700] = 0.0
     fitted_template[1548:] = 0.0
-    
+
     plt.figure(29)
     fig1 = plt.figure(29)
     #Plot Data-model\n",
@@ -1005,18 +1008,17 @@ def fit_dec_exp(mjdi, data, freqsm, freq_subint_index):
 def fit_cons_beta_profile(mjdi, data, freqsm, freq_subint_index, beta_index, plot_conv=False):
 
     print("Fitting for Beta = " + str(betaselect[beta_index]))
-    
+
     s = subaverages4(mjdi, data, freqsm)
 
-    #calculate the root mean square noise of the off pulse in order to 
-    #normalize chi-squared
-
     data_care = s[0][freq_subint_index]
-    
+
+    #calculate the root mean square noise of the off pulse in order to
+    #normalize chi-squared
     rms_collect = 0
-    for i in range(700):
+    for i in range(600):
         rms_collect += data_care[i]*data_care[i]
-    rms = math.sqrt(rms_collect/699.0) #reduced chi-squared divide by n-1
+    rms = math.sqrt(rms_collect/600)
 
     freqs_care = s[1][freq_subint_index]
 
@@ -1071,7 +1073,7 @@ def fit_cons_beta_profile(mjdi, data, freqsm, freq_subint_index, beta_index, plo
             # fitted_template[:700] = 0.0
             # fitted_template[1548:] = 0.0
             # chi_sq_measure = chi2_distance(data_care, fitted_template)
-            chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care)
+            chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care, 5)
             data_index2 = data_index2+1
         data_index1 = data_index1+1
 
@@ -1127,12 +1129,12 @@ def fit_cons_beta_profile(mjdi, data, freqsm, freq_subint_index, beta_index, plo
     gaussian = gaussian/(np.max(gaussian))
     #gaussian to unit height and lining up to the data
     indg_diff = xind-int(p[1])
-    
+
     #discrete pbf to unit height and lining up to the data
     discrete_pbf = conv.pbf_data_unitarea[beta_index][lsqs_pbf_index] / np.max(conv.pbf_data_unitarea[beta_index][lsqs_pbf_index])
     discrete_center = np.where((discrete_pbf == np.max(discrete_pbf)))[0][0]
     indp_diff = xind - discrete_center
-    
+
     profile = convolved_profiles[beta_index][lsqs_pbf_index][lsqs_gauss_index] / np.max(convolved_profiles_exp[beta_index][lsqs_pbf_index][lsqs_gauss_index])
     #fitPulse requires template height of one
     z = np.max(profile)
@@ -1151,7 +1153,7 @@ def fit_cons_beta_profile(mjdi, data, freqsm, freq_subint_index, beta_index, plo
     fitted_template = spt.shiftit(fitting[1])
     #fitted_templates[data_index1][data_index2] = fitted_template
     fitted_template = fitted_template*mask
-    
+
     plt.figure(2)
     fig1 = plt.figure(2)
     #Plot Data-model\n",
@@ -1202,15 +1204,15 @@ def fit_cons_beta_profile(mjdi, data, freqsm, freq_subint_index, beta_index, plo
 def fit_cons_beta_ipfd(mjdi, data, freqsm, freq_subint_index, beta_index): #intrinsic pulse from data
 
     s = subaverages4(mjdi, data, freqsm)
-    
+
     data_care = s[0][freq_subint_index]
 
-    #calculate the root mean square noise of the off pulse in order to normalize
-    #chi-squared
+    #calculate the root mean square noise of the off pulse in order to
+    #normalize chi-squared
     rms_collect = 0
-    for i in range(700):
+    for i in range(600):
         rms_collect += data_care[i]*data_care[i]
-    rms = math.sqrt(rms_collect/699.0) #reduced chi-squared divide by n-1
+    rms = math.sqrt(rms_collect/600)
 
     freqs_care = s[1][freq_subint_index]
 
@@ -1239,9 +1241,9 @@ def fit_cons_beta_ipfd(mjdi, data, freqsm, freq_subint_index, beta_index): #intr
     chi_sqs_array = np.zeros((np.size(widths)))
 
     data_index1 = 0
-    #for the varying pbf_widths\n",
+    #for the varying pbf_widths
     for i in convolved_w_dataintrins[beta_index]:
-        chi_sqs_array[data_index1] = fit_sing(i, xind, data_care, freqs_care)
+        chi_sqs_array[data_index1] = fit_sing(i, xind, data_care, freqs_care, 5)
         data_index1 = data_index1+1
 
     plt.figure(1)
@@ -1266,8 +1268,8 @@ def fit_cons_beta_ipfd(mjdi, data, freqsm, freq_subint_index, beta_index): #intr
     print('Lowest Chi-sqs:')
     print("Best fit PBF width: "+ str(lsqs_pbf_val))
     print('Best fit tau value: ' + str(tau_values[beta_index][lsqs_pbf_index]) + ' microseconds')
-    
-    
+
+
     profile = convolved_w_dataintrins[beta_index][lsqs_pbf_index] / np.max(convolved_w_dataintrins[beta_index][lsqs_pbf_index])
     #fitPulse requires template height of one
     z = np.max(profile)
@@ -1276,7 +1278,7 @@ def fit_cons_beta_ipfd(mjdi, data, freqsm, freq_subint_index, beta_index): #intr
     #this lines the profiles up approximately so that Single Pulse finds the true minimum, not just a local min
     profile = np.roll(profile, ind_diff)
     sp = SinglePulse(data_care, opw = np.arange(0, 800))
-    fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template matching, scale factor, TOA error, 
+    fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template matching, scale factor, TOA error,
     #scale factor error, signal to noise ratio, cross-correlation coefficient
     #based on the fitPulse fitting, scale and shift the profile to best fit the inputted data
     #fitPulse figures out the best amplitude itself
@@ -1303,9 +1305,9 @@ def fit_cons_beta_ipfd(mjdi, data, freqsm, freq_subint_index, beta_index): #intr
     plt.xlabel('Pulse Period (milliseconds)')
     plt.ylabel('Residuals')
     plt.plot()
-    
+
     title = 'ONEBINTR_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_BETA=' + str(betaselect[beta_index]) + '_PBFW=' + str(lsqs_pbf_val) + '.png'
     plt.savefig(title)
     plt.close(50*beta_index)
-    
+
 #must add return! <3

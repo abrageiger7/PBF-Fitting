@@ -30,14 +30,18 @@ chan = np.load("J1903_numchan.npy")
 #TO DO: find number of subintegrations, find best gauss width, find best beta
 #eventually compare to decaying exponential, and intrinsic pulse shape convolution
 
-#TO DO: Since fixed gaussian width units and chisquared, replot; fix in 
+#TO DO: Since fixed gaussian width units and chisquared, replot; fix in
 #previous code difference between beta power law index and beta for pbfs
 
 #Below are various calculations of fit parameters using functions from fit_functions.py
 
-#num_chan0 = int(chan[0])
-#data0 = data[0][:num_chan0]
-#freq0 = freq[0][:num_chan0]
+num_chan0 = int(chan[0])
+data0 = data[0][:num_chan0]
+freq0 = freq[0][:num_chan0]
+
+gwidth_index = 4
+dataer = fittin.fit_all_profile_set_gwidth(mjds[0], data0, freq0, ii, gwidth_index)
+
 
 #=============================================================================
 # Fitting Instrinsic Pulse
@@ -50,9 +54,9 @@ chan = np.load("J1903_numchan.npy")
 #   Setting all to gwidths index 4
 # =============================================================================
 # it seems that 50 was the best across most frequencies (FWHM in terms of phase bins)
-print(50/(2.0*math.sqrt(2*math.log(2))))
-print(gauss_widths * (2.0*math.sqrt(2*math.log(2))))
-print(gauss_widths)
+#print(50/(2.0*math.sqrt(2*math.log(2))))
+#print(gauss_widths * (2.0*math.sqrt(2*math.log(2))))
+#rint(gauss_widths)
 
 # =============================================================================
 # mjd_listg = []
@@ -62,9 +66,9 @@ print(gauss_widths)
 # low_chi_listg = []
 # tau_listg = []
 # gauss_width_listg = []
-# 
+#
 # gwidth_index = 4
-# 
+#
 # for i in range(5):
 #     for ii in range(12):
 #         num_chan0 = int(chan[i*10])
@@ -78,10 +82,10 @@ print(gauss_widths)
 #         pbf_width_listg.append(dataer[3])
 #         low_chi_listg.append(dataer[0])
 #         tau_listg.append(dataer[1])
-# 
-# 
+#
+#
 # setg_arrayyay = np.array([mjd_listg, beta_listg, freq_listg, gauss_width_listg, pbf_width_listg, low_chi_listg, tau_listg])
-# 
+#
 # np.save('setg_betadatayay', setg_arrayyay)
 # =============================================================================
 
@@ -109,19 +113,19 @@ print(gauss_widths)
 #     fittin.fit_all_profile(mjds[0], data0, freq0, 0)
 # np.save('Varying_Beta'+str(mjds[0])[:5]+'highfreq', \
 #         np.array([low_chi, tau_fin, gauss_width_fin, pbf_width_fin, \
-#                   beta_fin, freqs_care]))    
+#                   beta_fin, freqs_care]))
 
 # =============================================================================
 
 # num_chan0 = int(chan[25])
 # data0 = data[25][:num_chan0]
 # freq0 = freq[25][:num_chan0]
-# 
+#
 # low_chi, tau_fin, gauss_width_fin, pbf_width_fin, beta_fin, freqs_care = \
 #     fittin.fit_all_profile(mjds[25], data0, freq0, 0)
 # np.save('Varying_Beta'+str(mjds[25])[:5]+'highfreq', \
 #         np.array([low_chi, tau_fin, gauss_width_fin, pbf_width_fin, \
-#                   beta_fin, freqs_care]))    
+#                   beta_fin, freqs_care]))
 
 # =============================================================================
 
@@ -238,7 +242,7 @@ print(gauss_widths)
 #         pbf_width_list.append(dataer[3])
 #         low_chi_list.append(dataer[0])
 #         tau_list.append(dataer[1])
-        
+
 # arrayyay = np.array([mjd_list, beta_list, freq_list, gauss_width_list, pbf_width_list, low_chi_list, tau_list])
 
 # np.save('betadatayay', arrayyay)
