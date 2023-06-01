@@ -42,8 +42,8 @@ convolved_profiles_exp = cexp.convolved_profiles_exp
 tau_values_exp = tau.tau_values_exp
 tau_values = tau.tau_values
 
-t = np.linspace(0, 2048, 2048)
-
+phase_bins = 2048
+t = np.linspace(0, phase_bins, phase_bins)
 
 def find_nearest(a, a0):
     '''Element in nd array `a` closest to the scalar value `a0`
@@ -129,7 +129,7 @@ def chi2_distance(A, B, num_fitted):
         squared_residuals.append(sq_res)
 
     chi_squared = sum(squared_residuals) / \
-    (len(squared_residuals) - num_fitted - 1)
+    (len(squared_residuals) - num_fitted)
     return(chi_squared)
 
 def subaverages4(mjdi, data, freqsm, plot = False):
@@ -611,7 +611,7 @@ def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_ind
         for ii in convolved_profiles[beta_index]:
             #for the gaussian width
             i = ii[gwidth_index]
-            chi_sqs_array[data_index1] = fit_sing(i, xind, data_care, freqs_care, 5)
+            chi_sqs_array[data_index1] = fit_sing(i, xind, data_care, freqs_care, 4)
             data_index1 = data_index1+1
 
         #print(betaselect[beta_index])
@@ -899,7 +899,7 @@ def fit_dec_exp(mjdi, data, freqsm, freq_subint_index):
             # fitted_template[:700] = 0.0
             # fitted_template[1548:] = 0.0
             # chi_sq_measure = chi2_distance(data_care, fitted_template)
-            chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care, 5)
+            chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care, 4)
             data_index2 = data_index2+1
         data_index1 = data_index1+1
 
@@ -1077,7 +1077,7 @@ def fit_cons_beta_profile(mjdi, data, freqsm, freq_subint_index, beta_index, plo
             # fitted_template[:700] = 0.0
             # fitted_template[1548:] = 0.0
             # chi_sq_measure = chi2_distance(data_care, fitted_template)
-            chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care, 5)
+            chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care, 4)
             data_index2 = data_index2+1
         data_index1 = data_index1+1
 
@@ -1250,7 +1250,7 @@ def fit_cons_beta_gauss_profile(mjdi, data, freqsm, freq_subint_index, beta_inde
     for ii in convolved_profiles[beta_index]:
         #for the set gaussian width
         i = ii[gwidth_index]
-        chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care, 5)
+        chi_sqs_array[data_index1] = fit_sing(i, xind, data_care, freqs_care, 3)
         data_index1 = data_index1+1
 
 
@@ -1276,7 +1276,6 @@ def fit_cons_beta_gauss_profile(mjdi, data, freqsm, freq_subint_index, beta_inde
 
     tau_fin = tau_values[beta_index][lsqs_pbf_index]
     pbf_width_fin = lsqs_pbf_val
-
 
     p = parameters[gwidth_index]
     gaussian = (p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2])))) / trapz(p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2]))))
@@ -1349,10 +1348,10 @@ def fit_cons_beta_gauss_profile(mjdi, data, freqsm, freq_subint_index, beta_inde
     #     plt.plot(time, fitted_templates[lsqs_pbf_index][lsqs_gauss_index])
     #     plt.show()
     print('Min Chi-sq = ' + str(low_chi) + '\n'+'Best tau = ' + str(tau_fin) \
-          + '\n'+'Best Gauss Width = ' + str(gaussian_width_fin) + '\n'+'Best PBF Width = ' \
+          + '\n'+'Best Gauss Width = ' + str(gwidth_index) + '\n'+'Best PBF Width = ' \
               + str(pbf_width_fin) + '\n'+'Beta set = ' + str(betaselect[beta_index]) + '\n'+'Frequency = '\
                   + str(freqs_care))
-    return(low_chi, tau_fin, gaussian_width_fin, pbf_width_fin, freqs_care)
+    return(low_chi, tau_fin, gwidth_index, pbf_width_fin, freqs_care)
 
 
 def fit_cons_beta_ipfd(mjdi, data, freqsm, freq_subint_index, beta_index): #intrinsic pulse from data
@@ -1397,7 +1396,7 @@ def fit_cons_beta_ipfd(mjdi, data, freqsm, freq_subint_index, beta_index): #intr
     data_index1 = 0
     #for the varying pbf_widths
     for i in convolved_w_dataintrins[beta_index]:
-        chi_sqs_array[data_index1] = fit_sing(i, xind, data_care, freqs_care, 5)
+        chi_sqs_array[data_index1] = fit_sing(i, xind, data_care, freqs_care, 3)
         data_index1 = data_index1+1
 
     plt.figure(1)

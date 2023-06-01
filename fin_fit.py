@@ -35,12 +35,34 @@ chan = np.load("J1903_numchan.npy")
 
 #Below are various calculations of fit parameters using functions from fit_functions.py
 
-num_chan0 = int(chan[0])
-data0 = data[0][:num_chan0]
-freq0 = freq[0][:num_chan0]
+mjd_listgb = []
+beta_listgb = []
+freq_listgb = []
+pbf_width_listgb = []
+low_chi_listgb = []
+tau_listgb = []
+gauss_width_listgb = []
 
 gwidth_index = 4
-dataer = fittin.fit_all_profile_set_gwidth(mjds[0], data0, freq0, 0, gwidth_index)
+beta_index = 11
+
+for i in range(5):
+    for ii in range(12):
+        num_chan0 = int(chan[i*10])
+        data0 = data[i*10][:num_chan0]
+        freq0 = freq[i*10][:num_chan0]
+        dataer = fittin.fit_cons_beta_gauss_profile(mjds[i*10], data0, freq0, ii, beta_index, gwidth_index)
+        mjd_listgb.append(mjds[i*10])
+        freq_listgb.append(dataer[4])
+        beta_listgb.append(betaselect[beta_index])
+        gauss_width_listgb.append(dataer[2])
+        pbf_width_listgb.append(dataer[3])
+        low_chi_listgb.append(dataer[0])
+        tau_listgb.append(dataer[1])
+
+setgsetb_arrayyay = np.array([mjd_listgb, beta_listgb, freq_listgb, gauss_width_listgb, pbf_width_listgb, low_chi_listgb, tau_listgb])
+
+np.save('setgsetb_arrayyay', setgsetb_arrayyay)
 
 
 #=============================================================================
