@@ -1,6 +1,6 @@
 """
 Created April 2023
-Last Edited on Sun May 28 2023
+Last Edited on Wed May 31st 2023
 @author: Abra Geiger abrageiger7
 
 Calculating Tau Values for Varing Tau and PBF Width Values
@@ -65,20 +65,22 @@ for i in pbf_data_freqscale:
 #plt.show()
 np.save('tau_values', tau_values)
 
-plt.figure(2)
-im = plt.imshow(tau_values, origin = 'lower', aspect = '3.0')
-plt.ylabel("Beta Values")
-plt.xlabel("PBF Widths Rounded")
-plt.title("Tau Values")
-plt.yticks(ticks = np.arange(12), labels = betaselect)
-pbf_ticks = np.zeros(10)
-for i in range(10):
-    pbf_ticks[i] = str(widths[i*5])[:4]
-plt.xticks(ticks = np.linspace(0,50,num=10), labels = pbf_ticks)
-cbar = plt.colorbar(im)
-cbar.set_label('Tau in microseconds')
-plt.savefig('tau_values_plot')
-plt.show()
+
+# plt.figure(2)
+# im = plt.imshow(tau_values, origin = 'lower', aspect = '3.0')
+# plt.ylabel("Beta Values")
+# plt.xlabel("PBF Widths Rounded")
+# plt.title("Tau Values")
+# plt.yticks(ticks = np.arange(12), labels = betaselect)
+# pbf_ticks = np.zeros(10)
+# for i in range(10):
+#     pbf_ticks[i] = str(widths[i*5])[:4]
+# plt.xticks(ticks = np.linspace(0,50,num=10), labels = pbf_ticks)
+# cbar = plt.colorbar(im)
+# cbar.set_label('Tau in microseconds')
+# plt.savefig('tau_values_plot')
+# plt.show()
+
 
 import convolved_exp as cexp
 widths_exp_array = cexp.widths_exp_array
