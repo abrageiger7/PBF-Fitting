@@ -26,7 +26,7 @@ for i in pbf_data_unitarea:
         data_index1 = data_index1+1
     data_index0 = data_index0+1
 
-for i in range(10):
-     plt.figure(i)
-     plt.plot(convolved_w_dataintrins[i][i*5])
-     plt.show()
+# for i in range(10):
+#      plt.figure(i)
+#      plt.plot(convolved_w_dataintrins[i][i*5])
+#      plt.show()

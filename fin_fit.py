@@ -40,7 +40,7 @@ data0 = data[0][:num_chan0]
 freq0 = freq[0][:num_chan0]
 
 gwidth_index = 4
-dataer = fittin.fit_all_profile_set_gwidth(mjds[0], data0, freq0, ii, gwidth_index)
+dataer = fittin.fit_all_profile_set_gwidth(mjds[0], data0, freq0, 0, gwidth_index)
 
 
 #=============================================================================

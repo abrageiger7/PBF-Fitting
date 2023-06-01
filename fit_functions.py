@@ -447,7 +447,7 @@ def fit_all_profile(mjdi, data, freqsm, freq_subint_index):
         #Plot Data-model
         frame1=fig1.add_axes((.1,.3,.8,.6))
         #xstart, ystart, xend, yend [units are fraction of the image frame, from bottom left corner]
-        plt.title('Least Squares: Best Fit Template over Data with Beta = ' + str(betaselect[beta_index]))
+        plt.title('Best Fit Template over Data with Beta = ' + str(betaselect[beta_index]))
         plt.ylabel('Pulse Intensity')
         plt.plot(time, data_care, '.', ms = '2.4')
         plt.plot(time, fitted_template)
@@ -530,7 +530,7 @@ def fit_all_profile(mjdi, data, freqsm, freq_subint_index):
     #Plot Data-model\n",
     frame1=fig1.add_axes((.1,.3,.8,.6))
     #xstart, ystart, xend, yend [units are fraction of the image frame, from bottom left corner]
-    plt.title('Least Squares: Best Fit Template over Data with Beta = ' + str(betaselect[beta_index]) + '; chisq = ' + str(low_chi))
+    plt.title('Best Fit Template over Data with Beta = ' + str(betaselect[beta_index]) + '; chisq = ' + str(low_chi))[:5]
     plt.ylabel('Pulse Intensity')
     plt.plot(time, data_care, '.', ms = '2.4')
     plt.plot(time, fitted_template)
@@ -614,7 +614,7 @@ def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_ind
         plt.figure(1*beta_index)
         chisqs = chi_sqs_array - np.amin(chi_sqs_array)
         chisqs = np.exp((-0.5)*chisqs)
-        plt.title('Fit Chi-sqs for Constant Gaussian FWHM = ' + str(gauss_widths[gwidth_index] * (0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2)))))
+        plt.title('Fit Chi-sqs for Constant Gaussian FWHM = ' + str(gauss_widths[gwidth_index] * (0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:5])
         plt.ylabel('Chisq')
         plt.xlabel('PBF Width')
         #scale the chi-squared array by the rms value of the profile
@@ -726,7 +726,7 @@ def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_ind
         #Plot Data-model
         frame1=fig1.add_axes((.1,.3,.8,.6))
         #xstart, ystart, xend, yend [units are fraction of the image frame, from bottom left corner]
-        plt.title('Least Squares: SETGwidth='+str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] + 'Best Fit Template over Data with Beta = ' + str(betaselect[beta_index]))
+        plt.title('SETGwidth='+str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] + 'Best Fit Template over Data w/ Beta = ' + str(betaselect[beta_index]))
         plt.ylabel('Pulse Intensity')
         plt.plot(time, data_care, '.', ms = '2.4')
         plt.plot(time, fitted_template)
@@ -799,7 +799,7 @@ def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_ind
     #Plot Data-model\n",
     frame1=fig1.add_axes((.1,.3,.8,.6))
     #xstart, ystart, xend, yend [units are fraction of the image frame, from bottom left corner]
-    plt.title('SETGwidth='+str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] +'Least Squares: Best Fit Template over Data with Beta = ' + str(betaselect[beta_index]) + '; chisq = ' + str(low_chi))
+    plt.title('SETGwidth='+str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] +'Best Fit Template over Data w/ Beta = ' + str(betaselect[beta_index]) + '; chisq = ' + str(low_chi))[:5]
     plt.ylabel('Pulse Intensity')
     plt.plot(time, data_care, '.', ms = '2.4')
     plt.plot(time, fitted_template)
@@ -814,7 +814,7 @@ def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_ind
     plt.ylabel('Residuals')
     plt.plot()
 
-    title = 'SETGwidth='+str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] +'PBF_fit_overall_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_PBFW=' + str(pbf_width_fin) + '.png'
+    title = 'SETGwidth='+str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] +'PBF_fit_overall_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_PBFW=' + str(pbf_width_fin)[:5] + '.png'
     plt.savefig(title)
     plt.close(29)
     print(title)
@@ -967,7 +967,7 @@ def fit_dec_exp(mjdi, data, freqsm, freq_subint_index):
     #Plot Data-model\n",
     frame1=fig1.add_axes((.1,.3,.8,.6))
     #xstart, ystart, xend, yend [units are fraction of the image frame, from bottom left corner]
-    plt.title('Least Squares: Best Fit Template over Data; chisq = ' + str(low_chi))
+    plt.title('Best Fit Template over Data; chisq = ' + str(low_chi)[:5])
     plt.ylabel('Pulse Intensity')
     plt.plot(time, data_care, '.', ms = '2.4')
     plt.plot(time, fitted_template)
@@ -980,7 +980,7 @@ def fit_dec_exp(mjdi, data, freqsm, freq_subint_index):
     plt.xlabel('Pulse Period (milliseconds)')
     plt.ylabel('Residuals')
 
-    title = 'EXP_fit_overall_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_GAUSSW=' + str(gaussian_width_fin)[:4] + '_PBFW=' + str(pbf_width_fin) + '.png'
+    title = 'EXP_fit_overall_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_GAUSSW=' + str(gaussian_width_fin)[:4] + '_PBFW=' + str(pbf_width_fin)[:5] + '.png'
     plt.savefig(title)
     plt.close(29)
 
@@ -1159,7 +1159,7 @@ def fit_cons_beta_profile(mjdi, data, freqsm, freq_subint_index, beta_index, plo
     #Plot Data-model\n",
     frame1=fig1.add_axes((.1,.3,.8,.6))
     #xstart, ystart, xend, yend [units are fraction of the image frame, from bottom left corner]\n",
-    plt.title('Least Squares: Best Fit Template over Data; chisq = ' + str(low_chi))
+    plt.title('Best Fit Template over Data; chisq = ' + str(low_chi)[:5])
     plt.ylabel('Pulse Intensity')
     if plot_conv == True:
         plt.plot(time, np.roll((gaussian*np.max(fitted_template)),indg_diff), color = 'purple')
@@ -1291,7 +1291,7 @@ def fit_cons_beta_ipfd(mjdi, data, freqsm, freq_subint_index, beta_index): #intr
     #Plot Data-model
     frame1=fig1.add_axes((.1,.3,.8,.6))
     #xstart, ystart, xend, yend [units are fraction of the image frame, from bottom left corner]
-    plt.title('Least Squares: Best Fit Template over Data; chisq = ' + str(low_chi))
+    plt.title('Best Fit Template over Data; chisq = ' + str(low_chi)[:5])
     plt.ylabel('Pulse Intensity')
     plt.plot(time, data_care, '.', ms = '2.4')
     plt.plot(time, fitted_template)
@@ -1306,7 +1306,7 @@ def fit_cons_beta_ipfd(mjdi, data, freqsm, freq_subint_index, beta_index): #intr
     plt.ylabel('Residuals')
     plt.plot()
 
-    title = 'ONEBINTR_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_BETA=' + str(betaselect[beta_index]) + '_PBFW=' + str(lsqs_pbf_val) + '.png'
+    title = 'ONEBINTR_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_BETA=' + str(betaselect[beta_index]) + '_PBFW=' + str(lsqs_pbf_val)[:5] + '.png'
     plt.savefig(title)
     plt.close(50*beta_index)
 
