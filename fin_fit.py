@@ -41,7 +41,7 @@ num_chan0 = int(chan[40])
 data0 = data[40][:num_chan0]
 freq0 = freq[40][:num_chan0]
 
-fittin.fit_dec_setgwidth_exp(mjds[40], data0, freq0, ii, 4)
+fittin.fit_dec_setgwidth_exp(mjds[40], data0, freq0, 11, 4)
 
 #=============================================================================
 # Fitting with Decaying Exponential and Gaussian Width

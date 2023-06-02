@@ -1110,28 +1110,6 @@ def fit_dec_setgwidth_exp(mjdi, data, freqsm, freq_subint_index, gwidth_index):
     low_chi = find_nearest(chi_sqs_array, 0.0)[0]
     low_chi_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
 
-
-    #ERROR TEST - one reduced chi-squared unit above and below
-    below = np.where((chi_sqs_array == low_chi+1))
-    above = np.where((chi_sqs_array[low_chi_index:]))[0][0] + low_chi_index
-
-    minus_error = low_chi_index - below
-    plus_error = above - low_chi_index
-
-    tau_comparison = tau[beta_index]
-
-    print(tau_comparison[60] - tau_comparison[59])
-    print(widths[60] - widths[59])
-
-    print(tau_comparison[61] - tau_comparison[60])
-    print(widths[61] - widths[60])
-
-    print(minus_error)
-    print(plus_error)
-
-    tau_minus_error = 0
-
-
     lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
     lsqs_pbf_val = widths[lsqs_pbf_index]
 
@@ -1157,6 +1135,24 @@ def fit_dec_setgwidth_exp(mjdi, data, freqsm, freq_subint_index, gwidth_index):
     #fitted_templates[data_index1][data_index2] = fitted_template
     fitted_template[:700] = 0.0
     fitted_template[1548:] = 0.0
+
+
+    #ERROR TEST - one reduced chi-squared unit above and below
+    below = np.where((chi_sqs_array == low_chi+1))
+    above = np.where((chi_sqs_array[low_chi_index:]))[0][0] + low_chi_index
+
+    minus_error = low_chi_index - below
+    plus_error = above - low_chi_index
+
+    print(tau_values_exp[60] - tau_values_exp[59])
+    print(widths[60] - widths[59])
+
+    print(tau_values_exp[61] - tau_values_exp[60])
+    print(widths[61] - widths[60])
+
+    print(minus_error)
+    print(plus_error)
+
 
     plt.figure(29)
     fig1 = plt.figure(29)
