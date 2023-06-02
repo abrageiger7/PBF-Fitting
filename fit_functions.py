@@ -1150,6 +1150,9 @@ def fit_dec_setgwidth_exp(mjdi, data, freqsm, freq_subint_index, gwidth_index):
     print(tau_values_exp[61] - tau_values_exp[60])
     print(widths[61] - widths[60])
 
+    #above lines printed 12.597070312499966, 0.2572327044025151, 12.597070312500023, 0.2572327044025151
+    #for decaying exp just have to scale
+
     print(minus_error)
     print(plus_error)
 
