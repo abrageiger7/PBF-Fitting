@@ -52,7 +52,7 @@ for i in range(56):
         num_chan0 = int(chan[i])
         data0 = data[i][:num_chan0]
         freq0 = freq[i][:num_chan0]
-        dataer = fittin.fit_cons_beta_gauss_profile(mjds[i], data0, freq0, ii, gwidth_index)
+        dataer = fittin.fit_dec_setgwidth_exp(mjds[i], data0, freq0, ii, gwidth_index)
         mjd_listeg.append(mjds[i])
         freq_listeg.append(dataer[4])
         beta_listeg.append(betaselect[beta_index])
