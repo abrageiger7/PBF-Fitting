@@ -71,7 +71,8 @@ for i in pbf_data_freqscale:
     data_index1 = data_index1+1
 
 #now convolve the pbfs with varying gaussians for the final bank of profiles to fit
-convolved_profiles = np.zeros((np.size(betaselect), np.size(widths), np.size(parameters[:,0]), phase_bins))
+convolved_profiles = np.zeros((np.size(betaselect), np.size(widths), \
+np.size(parameters[:,0]), phase_bins))
 #indicies of beta, template width, gaussian width, profile data
 
 data_index0 = 0
@@ -81,7 +82,8 @@ for i in pbf_data_unitarea:
         data_index2 = 0
         for iii in parameters:
             p = iii
-            ua_intrinsic_gauss = (p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2])))) / trapz(p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2]))))
+            ua_intrinsic_gauss = (p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2]))))\
+            / trapz(p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2]))))
             new_profile = (np.fft.ifft(np.fft.fft(ua_intrinsic_gauss)*np.fft.fft(ii)))
             new_profile = new_profile.real #take real component of convolution
             convolved_profiles[data_index0][data_index1][data_index2] = new_profile

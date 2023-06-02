@@ -39,6 +39,8 @@ chan = np.load("J1903_numchan.npy")
 
 #=============================================================================
 # Fitting with Constant Beta and Gaussian Width
+    # Setting gwidth to index 4
+    # Setting beta to index 11
 # =============================================================================
 
 mjd_listgb = []
@@ -48,6 +50,7 @@ pbf_width_listgb = []
 low_chi_listgb = []
 tau_listgb = []
 gauss_width_listgb = []
+subavg_chan_listgb = []
 
 gwidth_index = 4
 beta_index = 11
@@ -67,11 +70,12 @@ for i in range(56):
         pbf_width_listgb.append(dataer[3])
         low_chi_listgb.append(dataer[0])
         tau_listgb.append(dataer[1])
+        subavg_chan_listgb.append(dataer[5])
         ii += 1
         if ii > dataer[5] - 1:
             sub_int = False
 
-setgsetb_arrayyay = np.array([mjd_listgb, beta_listgb, freq_listgb, gauss_width_listgb, pbf_width_listgb, low_chi_listgb, tau_listgb])
+setgsetb_arrayyay = np.array([mjd_listgb, beta_listgb, freq_listgb, gauss_width_listgb, pbf_width_listgb, low_chi_listgb, tau_listgb, subavg_chan_listgb])
 
 np.save('setgsetb_arrayyay', setgsetb_arrayyay)
 
