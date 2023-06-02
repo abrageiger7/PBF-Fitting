@@ -35,38 +35,49 @@ chan = np.load("J1903_numchan.npy")
 
 #Below are various calculations of fit parameters using functions from fit_functions.py
 
-mjd_listeg = []
-beta_listeg = []
-freq_listeg = []
-pbf_width_listeg = []
-low_chi_listeg = []
-tau_listeg = []
-gauss_width_listeg = []
 
-gwidth_index = 4
+#testing of errors for tau
+num_chan0 = int(chan[40])
+data0 = data[40][:num_chan0]
+freq0 = freq[40][:num_chan0]
 
-for i in range(56):
-    sub_int = True
-    ii = 0
-    while sub_int == True:
-        num_chan0 = int(chan[i])
-        data0 = data[i][:num_chan0]
-        freq0 = freq[i][:num_chan0]
-        dataer = fittin.fit_dec_setgwidth_exp(mjds[i], data0, freq0, ii, gwidth_index)
-        mjd_listeg.append(mjds[i])
-        freq_listeg.append(dataer[4])
-        beta_listeg.append(betaselect[beta_index])
-        gauss_width_listeg.append(dataer[2])
-        pbf_width_listeg.append(dataer[3])
-        low_chi_listeg.append(dataer[0])
-        tau_listeg.append(dataer[1])
-        ii += 1
-        if ii > dataer[5] - 1:
-            sub_int = False
+fittin.fit_dec_setgwidth_exp(mjds[40], data0, freq0, ii, 4)
 
-setgdece_arrayyay = np.array([mjd_listeg, beta_listeg, freq_listeg, gauss_width_listeg, pbf_width_listeg, low_chi_listeg, tau_listeg])
+#=============================================================================
+# Fitting with Decaying Exponential and Gaussian Width
+    # Setting gwidth to index 4
+# =============================================================================
 
-np.save('setgdece_arrayyay', setgdece_arrayyay)
+# mjd_listeg = []
+# freq_listeg = []
+# pbf_width_listeg = []
+# low_chi_listeg = []
+# tau_listeg = []
+# gauss_width_listeg = []
+#
+# gwidth_index = 4
+#
+# for i in range(56):
+#     sub_int = True
+#     ii = 0
+#     while sub_int == True:
+#         num_chan0 = int(chan[i])
+#         data0 = data[i][:num_chan0]
+#         freq0 = freq[i][:num_chan0]
+#         dataer = fittin.fit_dec_setgwidth_exp(mjds[i], data0, freq0, ii, gwidth_index)
+#         mjd_listeg.append(mjds[i])
+#         freq_listeg.append(dataer[4])
+#         gauss_width_listeg.append(dataer[2])
+#         pbf_width_listeg.append(dataer[3])
+#         low_chi_listeg.append(dataer[0])
+#         tau_listeg.append(dataer[1])
+#         ii += 1
+#         if ii > dataer[5] - 1:
+#             sub_int = False
+#
+# setgdece_arrayyay = np.array([mjd_listeg, freq_listeg, gauss_width_listeg, pbf_width_listeg, low_chi_listeg, tau_listeg])
+#
+# np.save('setgdece_arrayyay', setgdece_arrayyay)
 
 
 #=============================================================================

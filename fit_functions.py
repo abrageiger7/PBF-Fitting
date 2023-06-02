@@ -656,7 +656,7 @@ def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_ind
         #scale the chi-squared array by the rms value of the profile
         chi_sqs_array = np.divide(chi_sqs_array,(rms*rms))
         plt.plot(widths, chi_sqs_array)
-        title = 'SETGwidth='+str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4]+'_PBF_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_BETA=' + str(betaselect[beta_index]) + '.png'
+        title = 'SETGwidth='+str(gauss_widths[gwidth_index] * (0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4]+'_PBF_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_BETA=' + str(betaselect[beta_index]) + '.png'
         plt.savefig(title)
         plt.close(1*beta_index)
         low_chi = find_nearest(chi_sqs_array, 0.0)[0]
@@ -1087,7 +1087,7 @@ def fit_dec_setgwidth_exp(mjdi, data, freqsm, freq_subint_index, gwidth_index):
     for ii in convolved_profiles_exp:
         #for the set gaussian width
         i = ii[gwidth_index]
-        chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care, 3)
+        chi_sqs_array[data_index1] = fit_sing(i, xind, data_care, freqs_care, 3)
         data_index1 = data_index1+1
 
     plt.figure(1)
@@ -1105,8 +1105,32 @@ def fit_dec_setgwidth_exp(mjdi, data, freqsm, freq_subint_index, gwidth_index):
     plt.xticks(ticks = np.linspace(0,50,num=10), labels = pbf_ticks)
     title = 'SETGEXP_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_GWIDTH=' + str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] + '.png'
     plt.savefig(title)
+    plt.show()
     plt.close(1)
     low_chi = find_nearest(chi_sqs_array, 0.0)[0]
+    low_chi_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+
+
+    #ERROR TEST - one reduced chi-squared unit above and below
+    below = np.where((chi_sqs_array == low_chi+1))
+    above = np.where((chi_sqs_array[low_chi_index:]))[0][0] + low_chi_index
+
+    minus_error = low_chi_index - below
+    plus_error = above - low_chi_index
+
+    tau_comparison = tau[beta_index]
+
+    print(tau_comparison[60] - tau_comparison[59])
+    print(widths[60] - widths[59])
+
+    print(tau_comparison[61] - tau_comparison[60])
+    print(widths[61] - widths[60])
+
+    print(minus_error)
+    print(plus_error)
+
+    tau_minus_error = 0
+
 
     lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
     lsqs_pbf_val = widths[lsqs_pbf_index]
@@ -1179,7 +1203,7 @@ def fit_dec_setgwidth_exp(mjdi, data, freqsm, freq_subint_index, gwidth_index):
     gwidth = str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * \
     (2.0*math.sqrt(2*math.log(2))))[:4]
 
-    return(low_chi, tau_fin, gwidth, pbf_width_fin, freqs_care)
+    return(low_chi, tau_fin, gwidth, pbf_width_fin, freqs_care, len(s[1]), minus_error, plus_error)
 
 
 def fit_cons_beta_profile(mjdi, data, freqsm, freq_subint_index, beta_index, plot_conv=False):
