@@ -148,92 +148,92 @@ def subaverages4(mjdi, data, freqsm, plot = False):
     Returns the subaveraged data (numpy array), the average frequencies for
     this subaveraged data (list), and mjdi (float)'''
 
-        if plot == True:
-            #plots the pulse over time and frequency
-            plt.imshow(data, aspect='26.0', origin='lower')
-            plt.ylabel('Frequency (MHz)')
-            plt.xlabel('Pulse Period (ms)')
-            plt.title('J1903+0327 Observation on MJD ' + str(mjdi)[:5])
-            xlabels_start = np.linspace(0, 2.15, 10)
-            xlabels = np.zeros(10)
-            for i in range(10):
-                xlabels[i] = str(xlabels_start[i])[:4]
-            ylabels_start = np.linspace(max(freqsm), min(freqsm), 10)
-            ylabels = np.zeros(10)
-            for i in range(10):
-                ylabels[i] = str(ylabels_start[i])[:4]
-            plt.xticks(ticks = np.linspace(0,2048,10), labels = xlabels)
-            plt.yticks(ticks = np.linspace(0,len(freqsm),10), labels = ylabels)
-            plt.colorbar().set_label('Pulse Intensity')
+    if plot == True:
+        #plots the pulse over time and frequency
+        plt.imshow(data, aspect='26.0', origin='lower')
+        plt.ylabel('Frequency (MHz)')
+        plt.xlabel('Pulse Period (ms)')
+        plt.title('J1903+0327 Observation on MJD ' + str(mjdi)[:5])
+        xlabels_start = np.linspace(0, 2.15, 10)
+        xlabels = np.zeros(10)
+        for i in range(10):
+            xlabels[i] = str(xlabels_start[i])[:4]
+        ylabels_start = np.linspace(max(freqsm), min(freqsm), 10)
+        ylabels = np.zeros(10)
+        for i in range(10):
+            ylabels[i] = str(ylabels_start[i])[:4]
+        plt.xticks(ticks = np.linspace(0,2048,10), labels = xlabels)
+        plt.yticks(ticks = np.linspace(0,len(freqsm),10), labels = ylabels)
+        plt.colorbar().set_label('Pulse Intensity')
+        plt.show()
+        #print("The number of subintegrations for this data file initially \
+        #      is" + str(ar.getNsubint()))
+
+    #see if the number of frequency channels is evenly divisible by 4
+    if len(freqsm)%4 == 0:
+        subs = np.zeros((len(freqsm)//4,2048))
+        center_freqs = np.zeros(len(freqsm)//4)
+    else:
+        subs = np.zeros((len(freqsm)//4+1,2048))
+        center_freqs = np.zeros((len(freqsm)//4)+1)
+
+    #floor division for subintegrations all of 4 frequency channels
+    #also compute the average frequencies for each subintegration
+    for i in range(len(freqsm)//4):
+        datad = data[4*i:(4*i)+4]
+        dataf = freqsm[4*i:(4*i)+4]
+        subs[i] = np.average(datad, axis = 0)
+        center_freqs[i] = np.average(dataf)
+
+    #if number of frequency channels not divisible by 4
+    if len(freqsm)%4 != 0:
+        #print('All subintegrations have 4 frequency channels except final\
+        #    subintegration has ' + str(len(freqsm)%4) + ' frequencie(s)')
+        data_d = data[len(freqsm)-(len(freqsm)%4):]
+        subs[-1] = np.average(data_d, axis = 0)
+        dataf = freqsm[len(freqsm)-(len(freqsm)%4):]
+        center_freqs[-1] = np.average(dataf)
+    #else:
+        #print('All subintegrations have 4 frequency channels')
+
+    #plots the 4 highest frequency channels of the epoch, which are
+    #subaveraged for the highest frequency pulse
+    if plot == True:
+        fig, ax = plt.subplots(2,2)
+        fig.suptitle('MJD 57537 High Frequency Pulses')
+        fig.size = (16,24)
+        title = 'Pulse at Frequency ' + str(np.round(freqsm[0])) + 'MHz'
+        ax[0,0].plot(time, data[0])
+        ax[0,0].set_title(title)
+
+        title = 'Pulse at Frequency ' + str(np.round(freqsm[1])) + 'MHz'
+        ax[0,1].plot(time, data[1])
+        ax[0,1].set_title(title)
+
+        title = 'Pulse at Frequency ' + str(np.round(freqsm[2])) + 'MHz'
+        ax[1,0].plot(time, data[2])
+        ax[1,0].set_title(title)
+
+        title = 'Pulse at Frequency ' + str(np.round(freqsm[3])) + 'MHz'
+        ax[1,1].plot(time, data[3])
+        ax[1,1].set_title(title)
+
+        for ax1 in ax.flat:
+            ax1.set(xlabel='Pulse Phase (ms)', ylabel='Pulse Phase (ms)')
+
+        plt.show()
+
+        for i in range(np.size(center_freqs)):
+            plt.xlabel('Pulse Phase')
+            plt.ylabel('Pulse Intensity')
+            plt.title('Subintegration at ' + str(center_freqs[i]) + 'MHz')
+            plt.plot(subs[i])
             plt.show()
-            #print("The number of subintegrations for this data file initially \
-            #      is" + str(ar.getNsubint()))
 
-        #see if the number of frequency channels is evenly divisible by 4
-        if len(freqsm)%4 == 0:
-            subs = np.zeros((len(freqsm)//4,2048))
-            center_freqs = np.zeros(len(freqsm)//4)
-        else:
-            subs = np.zeros((len(freqsm)//4+1,2048))
-            center_freqs = np.zeros((len(freqsm)//4)+1)
+    #print the total number of subaverages
+    print('Number of subaverages is ' + str(len(center_freqs)))
 
-        #floor division for subintegrations all of 4 frequency channels
-        #also compute the average frequencies for each subintegration
-        for i in range(len(freqsm)//4):
-            datad = data[4*i:(4*i)+4]
-            dataf = freqsm[4*i:(4*i)+4]
-            subs[i] = np.average(datad, axis = 0)
-            center_freqs[i] = np.average(dataf)
-
-        #if number of frequency channels not divisible by 4
-        if len(freqsm)%4 != 0:
-            #print('All subintegrations have 4 frequency channels except final\
-            #    subintegration has ' + str(len(freqsm)%4) + ' frequencie(s)')
-            data_d = data[len(freqsm)-(len(freqsm)%4):]
-            subs[-1] = np.average(data_d, axis = 0)
-            dataf = freqsm[len(freqsm)-(len(freqsm)%4):]
-            center_freqs[-1] = np.average(dataf)
-        #else:
-            #print('All subintegrations have 4 frequency channels')
-
-        #plots the 4 highest frequency channels of the epoch, which are
-        #subaveraged for the highest frequency pulse
-        if plot == True:
-            fig, ax = plt.subplots(2,2)
-            fig.suptitle('MJD 57537 High Frequency Pulses')
-            fig.size = (16,24)
-            title = 'Pulse at Frequency ' + str(np.round(freqsm[0])) + 'MHz'
-            ax[0,0].plot(time, data[0])
-            ax[0,0].set_title(title)
-
-            title = 'Pulse at Frequency ' + str(np.round(freqsm[1])) + 'MHz'
-            ax[0,1].plot(time, data[1])
-            ax[0,1].set_title(title)
-
-            title = 'Pulse at Frequency ' + str(np.round(freqsm[2])) + 'MHz'
-            ax[1,0].plot(time, data[2])
-            ax[1,0].set_title(title)
-
-            title = 'Pulse at Frequency ' + str(np.round(freqsm[3])) + 'MHz'
-            ax[1,1].plot(time, data[3])
-            ax[1,1].set_title(title)
-
-            for ax1 in ax.flat:
-                ax1.set(xlabel='Pulse Phase (ms)', ylabel='Pulse Phase (ms)')
-
-            plt.show()
-
-            for i in range(np.size(center_freqs)):
-                plt.xlabel('Pulse Phase')
-                plt.ylabel('Pulse Intensity')
-                plt.title('Subintegration at ' + str(center_freqs[i]) + 'MHz')
-                plt.plot(subs[i])
-                plt.show()
-
-        #print the total number of subaverages
-        print('Number of subaverages is ' + str(len(center_freqs)))
-
-        return(subs, center_freqs, mjdi)
+    return(subs, center_freqs, mjdi)
 
 def fit_sing(i, xind, data_care, freqsy, num_fitted):
     '''Fits a data profile to a template
