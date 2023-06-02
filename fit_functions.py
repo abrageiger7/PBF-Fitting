@@ -1087,53 +1087,34 @@ def fit_dec_setgwidth_exp(mjdi, data, freqsm, freq_subint_index, gwidth_index):
     for ii in convolved_profiles_exp:
         #for the set gaussian width
         i = ii[gwidth_index]
-        chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care, 4)
+        chi_sqs_array[data_index1][data_index2] = fit_sing(i, xind, data_care, freqs_care, 3)
         data_index1 = data_index1+1
 
     plt.figure(1)
     chisqs = chi_sqs_array - np.amin(chi_sqs_array)
     chisqs = np.exp((-0.5)*chisqs)
     plt.title('Fit Chi-sqs')
-    plt.xlabel('Rounded Gaussian FWHM (microseconds)')
-    plt.ylabel('PBF Width')
+    plt.ylabel('Chi-sq')
+    plt.xlabel('PBF Width')
     #scale the chi-squared array by the rms value of the profile
     chi_sqs_array = np.divide(chi_sqs_array,(rms*rms))
-    plt.imshow(chi_sqs_array, cmap=plt.cm.viridis_r, origin = 'lower')
-    gauss_ticks = np.zeros(10)
-    for i in range(10):
-        gauss_ticks[i] = str(int(gauss_widths[i*5] * (0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))) #converted to microseconds FWHM
+    plt.plot(chi_sqs_array)
     pbf_ticks = np.zeros(10)
     for i in range(10):
         pbf_ticks[i] = str(widths[i*5])[:3]
-    plt.xticks(ticks = np.linspace(0,50,num=10), labels = gauss_ticks)
-    plt.yticks(ticks = np.linspace(0,50,num=10), labels = pbf_ticks)
-    plt.colorbar()
-    title = 'EXP_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '.png'
+    plt.xticks(ticks = np.linspace(0,50,num=10), labels = pbf_ticks)
+    title = 'SETGEXP_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_GWIDTH=' str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] '.png'
     plt.savefig(title)
     plt.close(1)
     low_chi = find_nearest(chi_sqs_array, 0.0)[0]
-    #print("Minimum chi-squared: " + str(low_chi))
 
     lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
     lsqs_pbf_val = widths[lsqs_pbf_index]
-    lsqs_gauss_index = find_nearest(chi_sqs_array, 0.0)[1][1][0]
-    lsqs_gauss_val = widths_gaussian[lsqs_gauss_index]
-
-    #probabilitiesx = np.sum(chisqs, axis=1)
-    #p_pbfwidth = np.where(probabilitiesx == np.max(probabilitiesx))[0]
-    #probabilitiesy = np.sum(chisqs, axis=0)
-    #p_gausswidth = np.where(probabilitiesy == np.max(probabilitiesy))[0]
-    #likelihoodx = likelihood_evaluator(widths, probabilitiesx)
-    #likelihoody = likelihood_evaluator(widths_gaussian, probabilitiesy)
-
-    #b_pbfwidth_index = find_nearest(widths, likelihoodx[0])[1][0][0]
-    #b_gausswidth_index = find_nearest(widths_gaussian, likelihoody[0])[1][0][0]
 
     tau_fin = tau_values_exp[lsqs_pbf_index]
-    gaussian_width_fin = lsqs_gauss_val * (0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))) #converted to microseconds FWHM
     pbf_width_fin = lsqs_pbf_val
 
-    profile = convolved_profiles_exp[lsqs_pbf_index][lsqs_gauss_index] / np.max(convolved_profiles_exp[lsqs_pbf_index][lsqs_gauss_index])
+    profile = convolved_profiles_exp[lsqs_pbf_index][gwidth_index] / np.max(convolved_profiles_exp[lsqs_pbf_index][gwidth_index])
     #fitPulse requires template height of one
     z = np.max(profile)
     zind = np.where(profile == z)[0][0]
@@ -1171,7 +1152,7 @@ def fit_dec_setgwidth_exp(mjdi, data, freqsm, freq_subint_index, gwidth_index):
     plt.xlabel('Pulse Period (milliseconds)')
     plt.ylabel('Residuals')
 
-    title = 'EXP_fit_overall_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_GAUSSW=' + str(gaussian_width_fin)[:4] + '_PBFW=' + str(pbf_width_fin)[:5] + '.png'
+    title = 'SETGEXP_fit_overall_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_GAUSSW=' + str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] + '_PBFW=' + str(pbf_width_fin)[:5] + '.png'
     plt.savefig(title)
     plt.close(29)
 
@@ -1190,10 +1171,15 @@ def fit_dec_setgwidth_exp(mjdi, data, freqsm, freq_subint_index, gwidth_index):
     #     plt.show()
 
     print('Min Chi-sq = ' + str(low_chi) + '\n'+'Best tau = ' + str(tau_fin) \
-          + '\n'+'Best Gauss Width = ' + str(gaussian_width_fin) + '\n'+'Best PBF Width = ' \
-              + str(pbf_width_fin) + '\n'+'Frequency = '\
-                  + str(freqs_care))
-    return(low_chi, tau_fin, gaussian_width_fin, pbf_width_fin, freqs_care)
+          + '\n'+'Set Gauss Width = ' + str(gauss_widths[gwidth_index]* \
+          (0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] + \
+          '\n'+'Best PBF Width = ' + str(pbf_width_fin) + '\n'+'Frequency = '\
+          + str(freqs_care))
+
+    gwidth = str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * \
+    (2.0*math.sqrt(2*math.log(2))))[:4]
+
+    return(low_chi, tau_fin, gwidth, pbf_width_fin, freqs_care)
 
 
 def fit_cons_beta_profile(mjdi, data, freqsm, freq_subint_index, beta_index, plot_conv=False):
@@ -1534,11 +1520,16 @@ def fit_cons_beta_gauss_profile(mjdi, data, freqsm, freq_subint_index, beta_inde
     #     plt.plot(time, fitted_templates[lsqs_pbf_index][lsqs_gauss_index])
     #     plt.show()
     print('Min Chi-sq = ' + str(low_chi) + '\n'+'Best tau = ' + str(tau_fin) \
-          + '\n'+'Best Gauss Width = ' + str(gwidth_index) + '\n'+'Best PBF Width = ' \
-              + str(pbf_width_fin) + '\n'+'Beta set = ' + str(betaselect[beta_index]) + '\n'+'Frequency = '\
-                  + str(freqs_care))
+          + '\n'+'Set gaussian width = ' + str(gauss_widths[gwidth_index]* \
+          (0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] + \
+          '\n'+'Best PBF Width = ' + str(pbf_width_fin) + '\n'+'Beta set = ' \
+          + str(betaselect[beta_index]) + '\n'+'Frequency = ' + str(freqs_care))
     # return the lowest chi-squared value, tau, gwidth, pbf_width, frequency and number of subaverages
-    return(low_chi, tau_fin, gwidth_index, pbf_width_fin, freqs_care, len(s[1]))
+
+    gwidth = str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * \
+    (2.0*math.sqrt(2*math.log(2))))[:4]
+
+    return(low_chi, tau_fin, gwidth, pbf_width_fin, freqs_care, len(s[1]))
 
 
 def fit_cons_beta_ipfd(mjdi, data, freqsm, freq_subint_index, beta_index): #intrinsic pulse from data

@@ -35,25 +35,15 @@ chan = np.load("J1903_numchan.npy")
 
 #Below are various calculations of fit parameters using functions from fit_functions.py
 
-
-
-#=============================================================================
-# Fitting with Constant Beta and Gaussian Width
-    # Setting gwidth to index 4
-    # Setting beta to index 11
-# =============================================================================
-
-mjd_listgb = []
-beta_listgb = []
-freq_listgb = []
-pbf_width_listgb = []
-low_chi_listgb = []
-tau_listgb = []
-gauss_width_listgb = []
-subavg_chan_listgb = []
+mjd_listeg = []
+beta_listeg = []
+freq_listeg = []
+pbf_width_listeg = []
+low_chi_listeg = []
+tau_listeg = []
+gauss_width_listeg = []
 
 gwidth_index = 4
-beta_index = 11
 
 for i in range(56):
     sub_int = True
@@ -62,22 +52,64 @@ for i in range(56):
         num_chan0 = int(chan[i])
         data0 = data[i][:num_chan0]
         freq0 = freq[i][:num_chan0]
-        dataer = fittin.fit_cons_beta_gauss_profile(mjds[i], data0, freq0, ii, beta_index, gwidth_index)
-        mjd_listgb.append(mjds[i])
-        freq_listgb.append(dataer[4])
-        beta_listgb.append(betaselect[beta_index])
-        gauss_width_listgb.append(dataer[2])
-        pbf_width_listgb.append(dataer[3])
-        low_chi_listgb.append(dataer[0])
-        tau_listgb.append(dataer[1])
-        subavg_chan_listgb.append(dataer[5])
+        dataer = fittin.fit_cons_beta_gauss_profile(mjds[i], data0, freq0, ii, gwidth_index)
+        mjd_listeg.append(mjds[i])
+        freq_listeg.append(dataer[4])
+        beta_listeg.append(betaselect[beta_index])
+        gauss_width_listeg.append(dataer[2])
+        pbf_width_listeg.append(dataer[3])
+        low_chi_listeg.append(dataer[0])
+        tau_listeg.append(dataer[1])
         ii += 1
         if ii > dataer[5] - 1:
             sub_int = False
 
-setgsetb_arrayyay = np.array([mjd_listgb, beta_listgb, freq_listgb, gauss_width_listgb, pbf_width_listgb, low_chi_listgb, tau_listgb, subavg_chan_listgb])
+setgdece_arrayyay = np.array([mjd_listeg, beta_listeg, freq_listeg, gauss_width_listeg, pbf_width_listeg, low_chi_listeg, tau_listeg])
 
-np.save('setgsetb_arrayyay', setgsetb_arrayyay)
+np.save('setgdece_arrayyay', setgdece_arrayyay)
+
+
+#=============================================================================
+# Fitting with Constant Beta and Gaussian Width
+    # Setting gwidth to index 4
+    # Setting beta to index 11
+# =============================================================================
+
+# mjd_listgb = []
+# beta_listgb = []
+# freq_listgb = []
+# pbf_width_listgb = []
+# low_chi_listgb = []
+# tau_listgb = []
+# gauss_width_listgb = []
+# subavg_chan_listgb = []
+#
+# gwidth_index = 4
+# beta_index = 11
+#
+# for i in range(56):
+#     sub_int = True
+#     ii = 0
+#     while sub_int == True:
+#         num_chan0 = int(chan[i])
+#         data0 = data[i][:num_chan0]
+#         freq0 = freq[i][:num_chan0]
+#         dataer = fittin.fit_cons_beta_gauss_profile(mjds[i], data0, freq0, ii, beta_index, gwidth_index)
+#         mjd_listgb.append(mjds[i])
+#         freq_listgb.append(dataer[4])
+#         beta_listgb.append(betaselect[beta_index])
+#         gauss_width_listgb.append(dataer[2])
+#         pbf_width_listgb.append(dataer[3])
+#         low_chi_listgb.append(dataer[0])
+#         tau_listgb.append(dataer[1])
+#         subavg_chan_listgb.append(dataer[5])
+#         ii += 1
+#         if ii > dataer[5] - 1:
+#             sub_int = False
+#
+# setgsetb_arrayyay = np.array([mjd_listgb, beta_listgb, freq_listgb, gauss_width_listgb, pbf_width_listgb, low_chi_listgb, tau_listgb, subavg_chan_listgb])
+#
+# np.save('setgsetb_arrayyay', setgsetb_arrayyay)
 
 #=============================================================================
 # Fitting Instrinsic Pulse
