@@ -68,7 +68,7 @@ for i in range(56):
         low_chi_listgb.append(dataer[0])
         tau_listgb.append(dataer[1])
         ii += 1
-        if ii > dataer[5]:
+        if ii > dataer[5] - 1:
             sub_int = False
 
 setgsetb_arrayyay = np.array([mjd_listgb, beta_listgb, freq_listgb, gauss_width_listgb, pbf_width_listgb, low_chi_listgb, tau_listgb])
