@@ -21,7 +21,7 @@ cordes_profs = np.load('widths_pbf_data.npy')
 betaselect = np.array([3.1, 3.5, 3.667, 3.8, 3.9, 3.95, 3.975, 3.99, 3.995, 3.9975, 3.999, 3.99999])
 
 #array of widths used (pbf stretch factors)
-widths = np.concatenate((np.linspace(0.1, 1.0, 10), np.linspace(1.1, 42.0, 40)))
+widths = np.concatenate((np.linspace(0.1, 1.0, 40), np.linspace(1.1, 42.0, 160)))
 
 #array of gaussian widths (phase bins)
 widths_gaussian = np.linspace(0.1, 250.0, 50)
