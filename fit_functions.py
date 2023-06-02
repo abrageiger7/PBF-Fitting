@@ -1103,7 +1103,7 @@ def fit_dec_setgwidth_exp(mjdi, data, freqsm, freq_subint_index, gwidth_index):
     for i in range(10):
         pbf_ticks[i] = str(widths[i*5])[:3]
     plt.xticks(ticks = np.linspace(0,50,num=10), labels = pbf_ticks)
-    title = 'SETGEXP_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_GWIDTH=' str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] + '.png'
+    title = 'SETGEXP_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_GWIDTH=' + str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] + '.png'
     plt.savefig(title)
     plt.close(1)
     low_chi = find_nearest(chi_sqs_array, 0.0)[0]
