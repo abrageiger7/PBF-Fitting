@@ -1350,7 +1350,8 @@ def fit_cons_beta_gauss_profile(mjdi, data, freqsm, freq_subint_index, beta_inde
           + '\n'+'Best Gauss Width = ' + str(gwidth_index) + '\n'+'Best PBF Width = ' \
               + str(pbf_width_fin) + '\n'+'Beta set = ' + str(betaselect[beta_index]) + '\n'+'Frequency = '\
                   + str(freqs_care))
-    return(low_chi, tau_fin, gwidth_index, pbf_width_fin, freqs_care, np.size(s[1]))
+    # return the lowest chi-squared value, tau, gwidth, pbf_width, frequency and number of subaverages
+    return(low_chi, tau_fin, gwidth_index, pbf_width_fin, freqs_care, len(s[1]))
 
 
 def fit_cons_beta_ipfd(mjdi, data, freqsm, freq_subint_index, beta_index): #intrinsic pulse from data
