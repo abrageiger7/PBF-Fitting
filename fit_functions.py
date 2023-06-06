@@ -633,7 +633,7 @@ class Profile:
                 chi_sq = fit_sing(template, self.xind, data_care, freq_care, num_par)
                 chi_sqs[i] = chi_sq
 
-            chi_sqs_array = np.divide(i,(self.rms_noise**2))
+            chi_sqs_array = np.divide(chi_sqs,(self.rms_noise**2))
             self.chi_plot(chi_sqs_array, beta = beta, gwidth = gwidth)
 
             low_chi = find_nearest(chi_sqs_array, 0.0)[0][0][0]
@@ -670,7 +670,7 @@ class Profile:
                 chi_sq = fit_sing(template, self.xind, data_care, freq_care, num_par)
                 chi_sqs[i] = chi_sq
 
-            chi_sqs_array = np.divide(i,(self.rms_noise**2))
+            chi_sqs_array = np.divide(chi_sqs,(self.rms_noise**2))
             self.chi_plot(chi_sqs_array, exp = True, gwidth = gwidth)
 
             low_chi = find_nearest(chi_sqs_array, 0.0)[0][0][0]
