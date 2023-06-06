@@ -548,6 +548,7 @@ class Profile:
                 #up_bound_chi_val = low_chi+1.01
 
                 #NEED TO DO FIND NEAREST INSTEAD AND CONSIDER 2D SURFACE
+                #ALSO CAREFUL NOT TO ASSUME SMOOTHNESS FOR CHI CURVE
 
                 #below = find_nearest(chi_sqs_array, low_chi+1)[]
                 #above = find_nearest(chi_sqs_array[:low_chi_index])
@@ -645,7 +646,7 @@ class Profile:
 
             #ERROR TEST - one reduced chi-squared unit above and below and these
             #chi-squared bins are for varying pbf width
-            below = find_nearest(chi_sqs_array, low_chi+1)[1][0][0]
+            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+1)[1][0][0]
             above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+1)[1][0][0]
 
             tau_arr = tau_values[beta_ind]
@@ -682,7 +683,7 @@ class Profile:
 
             #ERROR TEST - one reduced chi-squared unit above and below and these
             #chi-squared bins are for varying pbf width
-            below = find_nearest(chi_sqs_array, low_chi+1)[1][0][0]
+            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+1)[1][0][0]
             above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+1)[1][0][0]
 
             tau_low = tau_values_exp[below]
