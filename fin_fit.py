@@ -89,7 +89,7 @@ for i in range(56):
         tau_high_liste.append(datae[3])
 
         ii += 1
-        if ii > dataer[5] - 1:
+        if ii > p.num_sum - 1:
             sub_int = False
 
 setg4setb11_data = np.array([mjd_list, freq_list, pbf_width_listb, low_chi_listb, tau_listb, tau_low_listb, tau_high_listb, gauss_width_listb])

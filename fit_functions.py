@@ -316,6 +316,7 @@ class Profile:
         #subaverages the data for every four frequency channels
 
         s = subaverages4(mjd, data, frequencies)
+        self.num_sub = len(s[1])
         self.data_suba = s[0][freq_subint_index]
         self.freq_suba = s[1][freq_subint_index]
         self.freq_round = np.round(self.freq_suba)
