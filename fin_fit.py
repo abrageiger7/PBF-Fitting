@@ -35,27 +35,98 @@ chan = np.load("J1903_numchan.npy")
 
 #Below are various calculations of fit parameters using functions from fit_functions.py
 
+#=============================================================================
+# Fitting with Beta PBFs and Decaying Exponential with new Class
+    # Setting gwidth to index 4
+    # Setting beta to index 11
+# =============================================================================
 
-# Testing class and tau errors
+mjd_list = []
+freq_list = []
 
-num_chan0 = int(chan[40])
-data0 = data[40][:num_chan0]
-freq0 = freq[40][:num_chan0]
+pbf_width_listb = []
+low_chi_listb = []
+tau_listb = []
+tau_low_listb = []
+tau_high_listb = []
+gauss_width_listb = []
 
-p1 = fittin.Profile(mjds[40],data0,freq0,11)
+pbf_width_liste = []
+low_chi_liste = []
+tau_liste = []
+tau_low_liste = []
+tau_high_liste = []
+gauss_width_liste = []
 
-data_testb = p1.fit(beta_ind = 11, gwidth_ind = 4)
-data_teste = p1.fit(gwidth_ind = 4, dec_exp = True)
 
-np.save('data_testb', data_testb)
-np.save('data_teste', data_teste)
+for i in range(56):
+    sub_int = True
+    ii = 0
+    while sub_int == True:
+        num_chan0 = int(chan[i])
+        data0 = data[i][:num_chan0]
+        freq0 = freq[i][:num_chan0]
+        p = fittin.Profile(mjds[i], data0, freq0, ii)
 
-#testing of errors for tau
+        mjd_list.append(mjds[i])
+        freq_list.append(p.freq_suba)
+
+        datab = p.fit(beta_ind = 11, gwidth_ind = 4)
+        gauss_width_listb.append(datab[4])
+        pbf_width_listb.append(datab[5])
+        low_chi_listb.append(datab[0])
+        tau_listb.append(datab[1])
+        tau_low_listb.append(datab[2])
+        tau_high_listb.append(datab[3])
+
+
+        datae = p.fit(gwidth_ind = 4, dec_exp = True)
+        gauss_width_liste.append(datae[4])
+        pbf_width_liste.append(datae[5])
+        low_chi_liste.append(datae[0])
+        tau_liste.append(datae[1])
+        tau_low_liste.append(datae[2])
+        tau_high_liste.append(datae[3])
+
+        ii += 1
+        if ii > dataer[5] - 1:
+            sub_int = False
+
+setg4setb11_data = np.array([mjd_list, freq_list, pbf_width_listb, low_chi_listb, tau_listb, tau_low_listb, tau_high_listb, gauss_width_listb])
+
+np.save('setg4setb11_data', setg4setb11_data)
+
+setg4dece_data = np.array([mjd_list, freq_list, pbf_width_liste, low_chi_liste, tau_liste, tau_low_liste, tau_high_liste, gauss_width_liste])
+
+np.save('setg4dece_data', setg4dece_data)
+
+#=============================================================================
+# Test of new class and errors on tau
+# =============================================================================
+
 # num_chan0 = int(chan[40])
 # data0 = data[40][:num_chan0]
 # freq0 = freq[40][:num_chan0]
-
-# fittin.fit_dec_setgwidth_exp(mjds[40], data0, freq0, 11, 4)
+#
+# p1 = fittin.Profile(mjds[40],data0,freq0,0)
+#
+# data_testb = p1.fit(beta_ind = 11, gwidth_ind = 4)
+# data_teste = p1.fit(gwidth_ind = 4, dec_exp = True)
+#
+# np.save('data_testb_h', data_testb)
+# np.save('data_teste_h', data_teste)
+#
+# num_chan0 = int(chan[40])
+# data0 = data[40][:num_chan0]
+# freq0 = freq[40][:num_chan0]
+#
+# p1 = fittin.Profile(mjds[40],data0,freq0,0)
+#
+# data_testb = p1.fit(beta_ind = 11, gwidth_ind = 4)
+# data_teste = p1.fit(gwidth_ind = 4, dec_exp = True)
+#
+# np.save('data_testb_h', data_testb)
+# np.save('data_teste_h', data_teste)
 
 #=============================================================================
 # Fitting with Decaying Exponential and Gaussian Width

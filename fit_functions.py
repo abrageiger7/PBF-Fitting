@@ -390,17 +390,17 @@ class Profile:
             plt.colorbar()
 
             if beta != -1:
-                title = f"ONEB|PBF_fit_chisq|MJD={self.mjd_round}|\
-                FREQ={self.freq_round}|BETA={beta}.png"
+                title = f"ONEB|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}.png"
 
             elif exp:
-                title = f"EXP|PBF_fit_chisq|MJD={self.mjd_round}|\
-                FREQ={self.freq_round}.png"
+                title = f"EXP|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}.png"
 
             plt.savefig(title)
             plt.close(45)
 
         elif gwidth != -1:
+
+            gwidth_round = str(gwidth)[:3]
 
             plt.title('Fit Chi-sqs')
             plt.xlabel('PBF Width')
@@ -408,12 +408,10 @@ class Profile:
             plt.plot(widths, chi_sq_arr)
 
             if beta != -1:
-                title = f"ONEBSETG|PBF_fit_chisq|MJD={self.mjd_round}|\
-                FREQ={self.freq_round}|BETA={beta}|GWIDTH={gwidth}.png"
+                title = f"ONEBSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}|GWIDTH={gwidth_round}.png"
 
             elif exp:
-                title = f"EXPSETG|PBF_fit_chisq|MJD={self.mjd_round}|\
-                FREQ={self.freq_round}|GWIDTH={gwidth}.png"
+                title = f"EXPSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|GWIDTH={gwidth_round}.png"
 
             plt.savefig(title)
             plt.close(45)
@@ -468,13 +466,13 @@ class Profile:
         plt.ylabel('Residuals')
         plt.plot()
 
+        gwidth_round = str(gauss_fwhm[gwidth_ind])[:3]
+        pbfwidth_round = str(widths[pbfwidth_ind])[:3]
+
         if not exp:
-            title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}\
-            |BETA={betaselect[beta_ind]}|PBFW={widths[pbfwidth_ind]}\
-            |GW={gauss_fwhm[gwidth_ind]}.png'
+            title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[beta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
         elif exp:
-            title = f'FIT|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}\
-            |PBFW={widths[pbfwidth_ind]}|GW={gauss_fwhm[gwidth_ind]}.png'
+            title = f'FIT|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
         plt.savefig(title)
         plt.close(50)
 
@@ -559,12 +557,12 @@ class Profile:
                 #low_bound_chi_val & chi_sqs_array[:low_chi_index:] <=
                 #up_bound_chi_val))[0][0] + low_chi_index
 
-                tau_arr = tau_values[ind]
-                tau_low = tau_arr[below]
-                tau_up = tau_arr[above]
+                #tau_arr = tau_values[ind]
+                #tau_low = tau_arr[below]
+                #tau_up = tau_arr[above]
 
-                taus_err_collect[0][ind] = tau_low
-                taus_err_collect[1][ind] = tau_up
+                #taus_err_collect[0][ind] = tau_low
+                #taus_err_collect[1][ind] = tau_up
 
                 if below <= 40:
                     raise Exception('Different Tau Error Conversion May Be Needed')
@@ -647,11 +645,11 @@ class Profile:
             #ERROR TEST - one reduced chi-squared unit above and below and these
             #chi-squared bins are for varying pbf width
             below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+1)[1][0][0]
-            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+1)[1][0][0]
+            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+1)[1][0][0] + lsqs_pbf_index
 
             tau_arr = tau_values[beta_ind]
-            tau_low = tau_arr[below]
-            tau_up = tau_arr[above]
+            tau_low = tau_fin - tau_arr[below]
+            tau_up = tau_arr[above] - tau_fin
 
             self.fit_plot(beta_ind, lsqs_pbf_index, gwidth_ind)
 
@@ -684,10 +682,10 @@ class Profile:
             #ERROR TEST - one reduced chi-squared unit above and below and these
             #chi-squared bins are for varying pbf width
             below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+1)[1][0][0]
-            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+1)[1][0][0]
+            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+1)[1][0][0] + lsqs_pbf_index
 
-            tau_low = tau_values_exp[below]
-            tau_up = tau_values_exp[above]
+            tau_low = tau_fin - tau_values_exp[below]
+            tau_up = tau_values_exp[above] - tau_fin
 
             self.fit_plot(0, lsqs_pbf_index, gwidth_ind, exp = True)
 
