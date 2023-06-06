@@ -636,7 +636,7 @@ class Profile:
             chi_sqs_array = np.divide(chi_sqs,(self.rms_noise**2))
             self.chi_plot(chi_sqs_array, beta = beta, gwidth = gwidth)
 
-            low_chi = find_nearest(chi_sqs_array, 0.0)[0][0][0]
+            low_chi = find_nearest(chi_sqs_array, 0.0)[0]
             lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
             lsqs_pbf_val = widths[lsqs_pbf_index]
 
@@ -673,7 +673,7 @@ class Profile:
             chi_sqs_array = np.divide(chi_sqs,(self.rms_noise**2))
             self.chi_plot(chi_sqs_array, exp = True, gwidth = gwidth)
 
-            low_chi = find_nearest(chi_sqs_array, 0.0)[0][0][0]
+            low_chi = find_nearest(chi_sqs_array, 0.0)[0]
             lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
             lsqs_pbf_val = widths[lsqs_pbf_index]
 
