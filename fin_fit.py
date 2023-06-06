@@ -36,12 +36,24 @@ chan = np.load("J1903_numchan.npy")
 #Below are various calculations of fit parameters using functions from fit_functions.py
 
 
-#testing of errors for tau
+# Testing class and tau errors
+
 num_chan0 = int(chan[40])
 data0 = data[40][:num_chan0]
 freq0 = freq[40][:num_chan0]
 
-fittin.fit_dec_setgwidth_exp(mjds[40], data0, freq0, 11, 4)
+p1 = fittin.Profile(mjds[40],data0,freq0,11)
+
+data_test = p1.fit()
+
+np.save('data_test', data_test)
+
+#testing of errors for tau
+# num_chan0 = int(chan[40])
+# data0 = data[40][:num_chan0]
+# freq0 = freq[40][:num_chan0]
+
+# fittin.fit_dec_setgwidth_exp(mjds[40], data0, freq0, 11, 4)
 
 #=============================================================================
 # Fitting with Decaying Exponential and Gaussian Width

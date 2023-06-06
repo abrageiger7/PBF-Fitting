@@ -97,6 +97,6 @@ time = np.arange(0,phase_bins,1) * (sec_pulse_per/phase_bins) * s_to_ms_conv #mi
 
 np.save('convolved_profs', convolved_profiles)
 
-#for i in range(10):
-#    plt.plot(convolved_profiles[0][0][i*4])
-#    plt.show()
+for i in range(10):
+    plt.plot(convolved_profiles[0][i*13][0])
+    plt.show()
