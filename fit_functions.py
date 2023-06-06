@@ -370,7 +370,7 @@ class Profile:
 
         plt.figure(45)
 
-        if gwidth = -1 and pbfwidth = -1:
+        if gwidth == -1 and pbfwidth == -1:
 
             plt.title("Fit Chi-sqs")
             plt.xlabel("Gaussian FWHM (microseconds)")
@@ -500,7 +500,7 @@ class Profile:
         data_care = self.data_forfit
         freq_care = self.freq_suba
 
-        if beta_ind == -1 & gwidth_ind == -1 and dec_exp = False:
+        if beta_ind == -1 & gwidth_ind == -1 and dec_exp == False:
 
             num_par = 5 #number of fitted parameters
 
@@ -590,22 +590,22 @@ class Profile:
                 plt.figure(i*4)
                 plt.xlabel('Beta')
 
-                if i = 0:
+                if i == 0:
                     plt.ylabel('Chi-Squared')
                     plt.plot(betaselect, chi_sqs_collect)
                     param = 'chisqs'
 
-                if i = 1:
+                if i == 1:
                     plt.ylabel('Overall Best PBF Width')
                     plt.plot(betaselect, pbf_width_collect)
                     param = 'pbfw'
 
-                if i = 2:
+                if i == 2:
                     plt.ylabel('Overall Best Gaussian Width FWHM (milliseconds)')
                     plt.plot(betaselect, gaussian_width_collect) #already converted to micro fwhm
                     param = 'gwidth'
 
-                if i = 3:
+                if i == 3:
                     plt.ylabel('Overall Best Tau (microseconds)')
                     plt.plot(betaselect, taus_collect)
                     param = 'tau'
@@ -619,7 +619,7 @@ class Profile:
             return(low_chi, tau_fin, tau_err_fin, gauss_width_fin, pbf_width_fin, beta_fin)
 
 
-        elif beta_ind != -1 and gwidth_ind != -1 and dec_exp = False:
+        elif beta_ind != -1 and gwidth_ind != -1 and dec_exp == False:
 
             num_par = 3 # number of fitted parameters
 
@@ -627,11 +627,11 @@ class Profile:
             gwidth = gauss_fwhm[gwidth_ind]
 
             chi_sqs = np.zeros(num_pbfwidth)
-            for i in itertools.product(beta_ind, pbfwidth_inds, gwidth_ind):
+            for i in pbfwidth_inds:
 
-                template = convolved_profiles[i[0]][i[1]][i[2]]
+                template = convolved_profiles[beta_ind][i][gwidth_ind]
                 chi_sq = fit_sing(template, self.xind, data_care, freq_care, num_par)
-                chi_sqs[i[1]] = chi_sq
+                chi_sqs[i] = chi_sq
 
             chi_sqs_array = np.divide(i,(self.rms_noise**2))
             self.chi_plot(chi_sqs_array, beta = beta, gwidth = gwidth)
@@ -657,18 +657,18 @@ class Profile:
             return(low_chi, tau_fin, [tau_low, tau_up], gwidth, pbf_width_fin, beta)
 
 
-        elif dec_exp = True and gwidth_ind != -1:
+        elif dec_exp == True and gwidth_ind != -1:
 
             num_par = 3 #number of fitted parameters
 
             gwidth = gauss_fwhm[gwidth_ind]
             chi_sqs = np.zeros(num_pbfwidth)
 
-            for i in itertools.product(pbfwidth_inds, gwidth_ind):
+            for i in pbfwidth_inds:
 
-                template = convolved_profiles_exp[i[0]]
+                template = convolved_profiles_exp[i][gwidth_ind]
                 chi_sq = fit_sing(template, self.xind, data_care, freq_care, num_par)
-                chi_sqs[i[1]] = chi_sq
+                chi_sqs[i] = chi_sq
 
             chi_sqs_array = np.divide(i,(self.rms_noise**2))
             self.chi_plot(chi_sqs_array, exp = True, gwidth = gwidth)
