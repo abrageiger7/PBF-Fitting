@@ -24,6 +24,7 @@ import numpy as np
 from scipy.integrate import trapz
 from scipy.interpolate import CubicSpline
 from scipy import special
+import itertools
 import convolved_pbfs as conv
 import intrinsic_pbfs as intrins
 import tau
@@ -323,35 +324,35 @@ class Profile:
         #Used later to calculate normalized chi-squared.
 
         rms_collect = 0
-        for i in range(opr_size):
+        for i in range(Profile.opr_size):
             rms_collect += self.data_suba[i]**2
-        rms = math.sqrt(rms_collect/opr_size)
+        rms = math.sqrt(rms_collect/Profile.opr_size)
 
         self.rms_noise = rms
 
         #mode of data profile to shift template to
-        x = np.max(data_care)
-        self.xind = np.where(data_care == x)[0][0]
+        x = np.max(self.data_suba)
+        self.xind = np.where(self.data_suba == x)[0][0]
 
         #Set the offpulse regions to zero for fitting because essentially
         #oscillating there.
         #This region size varies depending on frequency
 
-        mask = np.zeros(num_phase_bins)
+        mask = np.zeros(Profile.num_phase_bins)
 
-        if freqs_care >= 1600:
+        if self.freq_suba >= 1600:
             self.start_index = 700
             self.stop_index = 1548
-        elif freqs_care >= 1400 and freqs_care < 1600:
-            self.tart_index = 700
+        elif self.freq_suba >= 1400 and self.freq_suba < 1600:
+            self.start_index = 700
             self.stop_index = 1648
-        elif freqs_care >= 1200 and freqs_care < 1400:
+        elif self.freq_suba >= 1200 and self.freq_suba < 1400:
             self.start_index = 650
             self.stop_index = 1798
-        elif freqs_care >= 1000 and freqs_care < 1200:
+        elif self.freq_suba >= 1000 and self.freq_suba < 1200:
             self.start_index = 600
             self.stop_index = 1948
-        mask[start_index:stop_index] = 1.0
+        mask[self.start_index:self.stop_index] = 1.0
 
         self.mask = mask
 
@@ -422,7 +423,7 @@ class Profile:
 
         beta_inds = np.arange(num_beta)
         gwidth_inds = np.arange(num_gwidth)
-        pbfwidth_inds = np.arange(num_pbf_width)
+        pbfwidth_inds = np.arange(num_pbfwidth)
 
         data_care = self.data_forfit
         freq_care = self.freq_suba
@@ -431,11 +432,11 @@ class Profile:
 
             num_par = 5 #number of fitted parameters
 
-            chi_sqs = np.zeros(num_beta, num_gwidth, num_pbfwidth)
+            chi_sqs = np.zeros((num_beta, num_gwidth, num_pbfwidth))
             for i in itertools.product(beta_inds, pbfwidth_inds, gwidth_inds):
 
                 template = convolved_profiles[i[0]][i[1]][i[2]]
-                chi_sq = fit_sing(template, xind, data_care, freq_care, num_par)
+                chi_sq = fit_sing(template, selfxind, data_care, freq_care, num_par)
                 chi_sqs[i[0]][i[1]][i[2]] = chi_sq
 
             chi_sqs_collect = np.zeros(num_beta)
