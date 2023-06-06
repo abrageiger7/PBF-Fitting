@@ -386,7 +386,7 @@ class Profile:
             plt.xticks(ticks = np.linspace(0,200,num=10), labels = gauss_ticks)
             plt.yticks(ticks = np.linspace(0,200,num=10), labels = pbf_ticks)
 
-            plt.imshow(chi_sqs_array, cmap=plt.cm.viridis_r, origin = 'lower')
+            plt.imshow(chi_sq_arr, cmap=plt.cm.viridis_r, origin = 'lower')
             plt.colorbar()
 
             if beta != -1:
@@ -405,7 +405,7 @@ class Profile:
             plt.title('Fit Chi-sqs')
             plt.xlabel('PBF Width')
             plt.ylabel('Reduced Chi-Sq')
-            plt.plot(widths, chi_sqs_array)
+            plt.plot(widths, chi_sq_arr)
 
             if beta != -1:
                 title = f"ONEBSETG|PBF_fit_chisq|MJD={self.mjd_round}|\
