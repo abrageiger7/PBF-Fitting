@@ -422,9 +422,9 @@ class Profile:
     def fit_plot(self, beta_ind, pbfwidth_ind, gwidth_ind, exp = False):
 
         if not exp:
-            i = convolved_profiles[beta_ind][pbf_width_ind][gwidth_ind]
+            i = convolved_profiles[beta_ind][pbfwidth_ind][gwidth_ind]
         elif exp:
-            i = eonvolved_profiles_exp[pbf_width_ind][gwidth_ind]
+            i = convolved_profiles_exp[pbfwidth_ind][gwidth_ind]
 
         profile = i / np.max(i) #fitPulse requires template height of one
         z = np.max(profile)
@@ -433,7 +433,7 @@ class Profile:
         #this lines the profiles up approximately so that Single Pulse finds the
         #true minimum, not just a local min
         profile = np.roll(profile, ind_diff)
-        sp = SinglePulse(self.data_forfit, opw = np.arange(0, self.start_index))
+        sp = SinglePulse(self.data_suba, opw = np.arange(0, self.start_index))
         fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template
         #matching, scale factor, TOA error, scale factor error, signal to noise
         #ratio, cross-correlation coefficient
@@ -443,7 +443,7 @@ class Profile:
         spt = SinglePulse(profile*fitting[2])
         fitted_template = spt.shiftit(fitting[1])
 
-        fitted_template = fitted_template*mask
+        fitted_template = fitted_template*self.mask
 
         plt.figure(50)
         fig1 = plt.figure(50)
@@ -455,13 +455,13 @@ class Profile:
         elif exp:
             plt.title('Best Fit Template over Data')
         plt.ylabel('Pulse Intensity')
-        plt.plot(time, data_care, '.', ms = '2.4')
+        plt.plot(time, self.data_forfit, '.', ms = '2.4')
         plt.plot(time, fitted_template)
         frame1.set_xticklabels([]) #Remove x-tic labels for the first frame
         plt.plot()
 
         #Residual plot
-        difference = np.subtract(data_care, fitted_template)
+        difference = np.subtract(self.data_forfit, fitted_template)
         frame2=fig1.add_axes((.1,.1,.8,.2))
         plt.plot(time, difference, '.', ms = '2.4')
         plt.xlabel('Pulse Period (milliseconds)')
@@ -654,7 +654,7 @@ class Profile:
 
             self.fit_plot(beta_ind, lsqs_pbf_index, gwidth_ind)
 
-            return(low_chi, tau_fin, [tau_low, tau_up], gwidth, pbf_width_fin, beta)
+            return(low_chi, tau_fin, tau_low, tau_up, gwidth, pbf_width_fin, beta)
 
 
         elif dec_exp == True and gwidth_ind != -1:
@@ -690,7 +690,7 @@ class Profile:
 
             self.fit_plot(0, lsqs_pbf_index, gwidth_ind, exp = True)
 
-            return(low_chi, tau_fin, [tau_low, tau_up], gwidth, pbf_width_fin)
+            return(low_chi, tau_fin, tau_low, tau_up, gwidth, pbf_width_fin)
 
 
 
