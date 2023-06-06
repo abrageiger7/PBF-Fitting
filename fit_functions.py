@@ -358,9 +358,74 @@ class Profile:
 
         self.data_forfit = self.data_suba*mask
 
-    def fit_plot(self, beta_ind, pbfwidth_ind, gwidth_ind):
+    def chi_plot(self, chi_sq_arr, beta = -1, exp = False, gwidth = -1, pbfwidth = -1):
 
-        i = convolved_profiles[beta_ind][pbf_width_ind][gwidth_ind]
+        '''Plots the inputted chi_sq_arr against the given parameters.
+
+        If gwidth is -1, indicates that the chi-squared surface exists over
+        all possible gaussian widths. Same for pbfwidth.
+
+        If bets is -1, must be for decaying exponential and exp != -1. Vice
+        versa.'''
+
+        plt.figure(45)
+
+        if gwidth = -1 and pbfwidth = -1:
+
+            plt.title("Fit Chi-sqs")
+            plt.xlabel("Gaussian FWHM (microseconds)")
+            plt.ylabel("PBF Width")
+
+            #adjust the imshow tick marks
+            gauss_ticks = np.zeros(10)
+            for ii in range(10):
+                gauss_ticks[ii] = str(gauss_fwhm[ii*20])[:3]
+            pbf_ticks = np.zeros(10)
+            for ii in range(10):
+                pbf_ticks[ii] = str(widths[ii*20])[:3]
+            plt.xticks(ticks = np.linspace(0,200,num=10), labels = gauss_ticks)
+            plt.yticks(ticks = np.linspace(0,200,num=10), labels = pbf_ticks)
+
+            plt.imshow(chi_sqs_array, cmap=plt.cm.viridis_r, origin = 'lower')
+            plt.colorbar()
+
+            if beta != -1:
+                title = f"ONEB|PBF_fit_chisq|MJD={self.mjd_round}|\
+                FREQ={self.freq_round}|BETA={beta}.png"
+
+            elif exp:
+                title = f"EXP|PBF_fit_chisq|MJD={self.mjd_round}|\
+                FREQ={self.freq_round}.png"
+
+            plt.savefig(title)
+            plt.close(45)
+
+        elif gwidth != -1:
+
+            plt.title('Fit Chi-sqs')
+            plt.xlabel('PBF Width')
+            plt.ylabel('Reduced Chi-Sq')
+            plt.plot(widths, chi_sqs_array)
+
+            if beta != -1:
+                title = f"ONEBSETG|PBF_fit_chisq|MJD={self.mjd_round}|\
+                FREQ={self.freq_round}|BETA={beta}|GWIDTH={gwidth}.png"
+
+            elif exp:
+                title = f"EXPSETG|PBF_fit_chisq|MJD={self.mjd_round}|\
+                FREQ={self.freq_round}|GWIDTH={gwidth}.png"
+
+            plt.savefig(title)
+            plt.close(45)
+
+
+    def fit_plot(self, beta_ind, pbfwidth_ind, gwidth_ind, exp = False):
+
+        if not exp:
+            i = convolved_profiles[beta_ind][pbf_width_ind][gwidth_ind]
+        elif exp:
+            i = eonvolved_profiles_exp[pbf_width_ind][gwidth_ind]
+
         profile = i / np.max(i) #fitPulse requires template height of one
         z = np.max(profile)
         zind = np.where(profile == z)[0][0]
@@ -385,7 +450,10 @@ class Profile:
         #Plot Data-model
         frame1=fig1.add_axes((.1,.3,.8,.6))
         #xstart, ystart, xend, yend [units are fraction of the image frame, from bottom left corner]
-        plt.title(f'Best Fit Template over Data with Beta = {betaselect[beta_ind]}')
+        if not exp:
+            plt.title(f'Best Fit Template over Data with Beta = {betaselect[beta_ind]}')
+        elif exp:
+            plt.title('Best Fit Template over Data')
         plt.ylabel('Pulse Intensity')
         plt.plot(time, data_care, '.', ms = '2.4')
         plt.plot(time, fitted_template)
@@ -400,13 +468,17 @@ class Profile:
         plt.ylabel('Residuals')
         plt.plot()
 
-        title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}\
-        |BETA={betaselect[beta_ind]}|PBFW={widths[pbfwidth_ind]}\
-        |GW={gauss_fwhm[gwidth_ind]}.png'
+        if not exp:
+            title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}\
+            |BETA={betaselect[beta_ind]}|PBFW={widths[pbfwidth_ind]}\
+            |GW={gauss_fwhm[gwidth_ind]}.png'
+        elif exp:
+            title = f'FIT|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}\
+            |PBFW={widths[pbfwidth_ind]}|GW={gauss_fwhm[gwidth_ind]}.png'
         plt.savefig(title)
         plt.close(50)
 
-    def fit(self, beta_ind = 0, gwidth_ind = 0, pbfwidth_ind = 0, dec_exp = False):
+    def fit(self, beta_ind = -1, gwidth_ind = -1, pbfwidth_ind = -1, dec_exp = False):
         '''Calculates the best broadening function and corresponding parameters
         for the Profile object.
 
@@ -428,11 +500,11 @@ class Profile:
         data_care = self.data_forfit
         freq_care = self.freq_suba
 
-        if beta_ind == 0 & gwidth_ind == 0:
+        if beta_ind == -1 & gwidth_ind == -1 and dec_exp = False:
 
             num_par = 5 #number of fitted parameters
 
-            chi_sqs = np.zeros((num_beta, num_gwidth, num_pbfwidth))
+            chi_sqs = np.zeros((num_beta, num_pbfwidth, num_gwidth))
             for i in itertools.product(beta_inds, pbfwidth_inds, gwidth_inds):
 
                 template = convolved_profiles[i[0]][i[1]][i[2]]
@@ -449,30 +521,9 @@ class Profile:
 
                 beta = betaselect[ind]
 
-                plt.figure(1*ind)
-                plt.title(f"Fit Chi-sqs for Beta = {beta}")
-                plt.xlabel("Gaussian FWHM (microseconds)")
-                plt.ylabel("PBF Width")
-
                 #scale the chi-squared array by the rms value of the profile
                 chi_sqs_array = np.divide(i,(self.rms_noise**2))
-
-                #adjust the imshow tick marks
-                gauss_ticks = np.zeros(10)
-                for ii in range(10):
-                    gauss_ticks[ii] = str(gauss_fwhm[ii*5])[:3]
-                pbf_ticks = np.zeros(10)
-                for ii in range(10):
-                    pbf_ticks[i] = str(widths[ii*5])[:3]
-                plt.xticks(ticks = np.linspace(0,50,num=10), labels = gauss_ticks)
-                plt.yticks(ticks = np.linspace(0,50,num=10), labels = pbf_ticks)
-
-                plt.imshow(chi_sqs_array, cmap=plt.cm.viridis_r, origin = 'lower')
-                plt.colorbar()
-                title = f"ONEB|PBF_fit_chisq|MJD={self.mjd_round}|\
-                FREQ={self.freq_round}|BETA={beta} + .png"
-                plt.savefig(title)
-                plt.close(1*ind)
+                self.chi_plot(chi_sqs_array, beta = beta)
 
                 #least squares
                 low_chi = find_nearest(chi_sqs_array, 0.0)[0]
@@ -492,14 +543,20 @@ class Profile:
 
                 #ERROR TEST - one reduced chi-squared unit above and below and these
                 #chi-squared bins are for varying pbf width
-                low_bound_chi_val = low_chi+.99
-                up_bound_chi_val = low_chi+1.01
 
-                below = np.where((chi_sqs_array >= low_bound_chi_val \
-                & chi_sqs_array <= up_bound_chi_val))
-                above = np.where((chi_sqs_array[low_chi_index:] >= \
-                low_bound_chi_val & chi_sqs_array[:low_chi_index:] <=
-                up_bound_chi_val))[0][0] + low_chi_index
+                #low_bound_chi_val = low_chi+.99
+                #up_bound_chi_val = low_chi+1.01
+
+                #NEED TO DO FIND NEAREST INSTEAD AND CONSIDER 2D SURFACE
+
+                #below = find_nearest(chi_sqs_array, low_chi+1)[]
+                #above = find_nearest(chi_sqs_array[:low_chi_index])
+
+                #below = np.where((chi_sqs_array >= low_bound_chi_val \
+                #& chi_sqs_array <= up_bound_chi_val))
+                #above = np.where((chi_sqs_array[low_chi_index:] >= \
+                #low_bound_chi_val & chi_sqs_array[:low_chi_index:] <=
+                #up_bound_chi_val))[0][0] + low_chi_index
 
                 tau_arr = tau_values[ind]
                 tau_low = tau_arr[below]
@@ -527,38 +584,114 @@ class Profile:
             pbf_width_ind = np.where(widths == pbf_width_fin)[0][0]
             gauss_width_ind = np.where(((gauss_widths  * (2.0*math.sqrt(2*math.log(2))) * (0.0021499/2048) * 1e6) == gaussian_width_collect[chi_beta_ind]))[0][0]
 
-            plt.figure(25)
-            plt.xlabel('Beta')
-            plt.ylabel('Chi-Squared')
-            plt.plot(betaselect, chi_sqs_collect)
-            title = f'ALL|PBF_fit_overall_chisqs|MJD={self.mjd_round}|FREQ={self.freq_round}|bestBETA={betaselect[chi_beta_ind]}.png'
-            plt.savefig(title)
-            plt.close(25)
-            plt.figure(26)
-            plt.xlabel('Beta')
-            plt.ylabel('Overall Best PBF Width')
-            plt.plot(betaselect, pbf_width_collect)
-            title = f'ALL|PBF_fit_overall_pbfw|MJD={self.mjd_round}|FREQ={self.freq_round}|bestBETA={betaselect[chi_beta_ind]}.png'
-            plt.savefig(title)
-            plt.close(26)
-            plt.figure(27)
-            plt.xlabel('Beta')
-            plt.ylabel('Overall Best Gaussian Width FWHM (milliseconds)')
-            plt.plot(betaselect, gaussian_width_collect) #already converted to micro fwhm
-            title = f'ALL|PBF_fit_overall_gwidth|MJD={self.mjd_round}|FREQ={self.freq_round}|bestBETA={betaselect[chi_beta_ind]}.png'
-            plt.savefig(title)
-            plt.close(27)
-            plt.figure(28)
-            plt.xlabel('Beta')
-            plt.ylabel('Overall Best Tau (microseconds)')
-            plt.plot(betaselect, taus_collect)
-            title = f'ALL|PBF_fit_overall_tau|MJD={self.mjd_round}|FREQ={self.freq_round}|bestBETA={betaselect[chi_beta_ind]}.png'
-            plt.savefig(title)
-            plt.close(28)
+            #plotting the fit parameters over beta
+            for i in range(4):
+
+                plt.figure(i*4)
+                plt.xlabel('Beta')
+
+                if i = 0:
+                    plt.ylabel('Chi-Squared')
+                    plt.plot(betaselect, chi_sqs_collect)
+                    param = 'chisqs'
+
+                if i = 1:
+                    plt.ylabel('Overall Best PBF Width')
+                    plt.plot(betaselect, pbf_width_collect)
+                    param = 'pbfw'
+
+                if i = 2:
+                    plt.ylabel('Overall Best Gaussian Width FWHM (milliseconds)')
+                    plt.plot(betaselect, gaussian_width_collect) #already converted to micro fwhm
+                    param = 'gwidth'
+
+                if i = 3:
+                    plt.ylabel('Overall Best Tau (microseconds)')
+                    plt.plot(betaselect, taus_collect)
+                    param = 'tau'
+
+                title = f'ALL|PBF_fit_overall_{param}|MJD={self.mjd_round}|FREQ={self.freq_round}|bestBETA={betaselect[chi_beta_ind]}.png'
+                plt.savefig(title)
+                plt.close(i*4)
 
             self.fit_plot(chi_beta_ind, pbf_width_ind, gauss_width_ind)
 
-            return(low_chi, tau_fin, tau_err_fin, gauss_width_fin, pbf_width_fin, beta_fin, freqs_care)
+            return(low_chi, tau_fin, tau_err_fin, gauss_width_fin, pbf_width_fin, beta_fin)
+
+
+        elif beta_ind != -1 and gwidth_ind != -1 and dec_exp = False:
+
+            num_par = 3 # number of fitted parameters
+
+            beta = betaselect[beta_ind]
+            gwidth = gauss_fwhm[gwidth_ind]
+
+            chi_sqs = np.zeros(num_pbfwidth)
+            for i in itertools.product(beta_ind, pbfwidth_inds, gwidth_ind):
+
+                template = convolved_profiles[i[0]][i[1]][i[2]]
+                chi_sq = fit_sing(template, self.xind, data_care, freq_care, num_par)
+                chi_sqs[i[1]] = chi_sq
+
+            chi_sqs_array = np.divide(i,(self.rms_noise**2))
+            self.chi_plot(chi_sqs_array, beta = beta, gwidth = gwidth)
+
+            low_chi = find_nearest(chi_sqs_array, 0.0)[0][0][0]
+            lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+            lsqs_pbf_val = widths[lsqs_pbf_index]
+
+            tau_fin = tau_values[beta_ind][lsqs_pbf_index]
+            pbf_width_fin = lsqs_pbf_val
+
+            #ERROR TEST - one reduced chi-squared unit above and below and these
+            #chi-squared bins are for varying pbf width
+            below = find_nearest(chi_sqs_array, low_chi+1)[1][0][0]
+            above = find_nearest(chi_sqs_array[low_chi_index:], low_chi+1)[1][0][0]
+
+            tau_arr = tau_values[beta_ind]
+            tau_low = tau_arr[below]
+            tau_up = tau_arr[above]
+
+            self.fit_plot(beta_ind, lsqs_pbf_index, gwidth_ind)
+
+            return(low_chi, tau_fin, [tau_low, tau_up], gwidth, pbf_width_fin, beta)
+
+
+        elif dec_exp = True and gwidth_ind != -1:
+
+            num_par = 3 #number of fitted parameters
+
+            gwidth = gauss_fwhm[gwidth_ind]
+            chi_sqs = np.zeros(num_pbfwidth)
+
+            for i in itertools.product(pbfwidth_inds, gwidth_ind):
+
+                template = convolved_profiles_exp[i[0]]
+                chi_sq = fit_sing(template, self.xind, data_care, freq_care, num_par)
+                chi_sqs[i[1]] = chi_sq
+
+            chi_sqs_array = np.divide(i,(self.rms_noise**2))
+            self.chi_plot(chi_sqs_array, exp = True, gwidth = gwidth)
+
+            low_chi = find_nearest(chi_sqs_array, 0.0)[0][0][0]
+            lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+            lsqs_pbf_val = widths[lsqs_pbf_index]
+
+            tau_fin = tau_values_exp[lsqs_pbf_index]
+            pbf_width_fin = lsqs_pbf_val
+
+            #ERROR TEST - one reduced chi-squared unit above and below and these
+            #chi-squared bins are for varying pbf width
+            below = find_nearest(chi_sqs_array, low_chi+1)[1][0][0]
+            above = find_nearest(chi_sqs_array[low_chi_index:], low_chi+1)[1][0][0]
+
+            tau_low = tau_values_exp[below]
+            tau_up = tau_values_exp[above]
+
+            self.fit_plot(0, lsqs_pbf_index, gwidth_ind, exp = True)
+
+            return(low_chi, tau_fin, [tau_low, tau_up], gwidth, pbf_width_fin)
+
 
 
 def fit_all_profile(mjdi, data, freqsm, freq_subint_index):
@@ -1721,8 +1854,8 @@ def fit_cons_beta_gauss_profile(mjdi, data, freqsm, freq_subint_index, beta_inde
 
     plt.figure(1)
     plt.title('Fit Chi-sqs')
-    plt.xlabel('Rounded Gaussian FWHM (microseconds)')
-    plt.ylabel('PBF Width')
+    plt.xlabel('PBF Width')
+    plt.ylabel('Chi-sqs')
     chi_sqs_array = np.divide(chi_sqs_array,(rms*rms))
     plt.plot(widths, chi_sqs_array)
     title = 'ONEBSETG_fit_chisq_for_MJD=' + str(mjdi)[:5] +'_FREQ=' + str(freqs_care)[:4] + '_BETA=' + str(betaselect[beta_index]) + '_GWIDTH=' + str(gauss_widths[gwidth_index]*(0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))[:4] + '.png'

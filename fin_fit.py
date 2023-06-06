@@ -44,9 +44,11 @@ freq0 = freq[40][:num_chan0]
 
 p1 = fittin.Profile(mjds[40],data0,freq0,11)
 
-data_test = p1.fit()
+data_testb = p1.fit(beta_ind = 11, gwidth_ind = 4)
+data_teste = p1.fit(gwidth_ind = 4, dec_exp = True)
 
-np.save('data_test', data_test)
+np.save('data_testb', data_testb)
+np.save('data_teste', data_teste)
 
 #testing of errors for tau
 # num_chan0 = int(chan[40])
