@@ -550,7 +550,7 @@ class Profile:
                 low_chi = find_nearest(chi_sqs_array, 0.0)[0]
                 chi_sqs_collect[ind] = low_chi
 
-            if chi_sqs_array[0] < low_chi+1 and chi_sqs_array[-1] < low_chi+1:
+                if chi_sqs_array[0] < low_chi+1 and chi_sqs_array[-1] < low_chi+1:
                     raise Exception('NOT CONVERGING ENOUGH')
 
                 #lsqs pbf width
