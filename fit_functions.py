@@ -251,23 +251,6 @@ def fit_sing(i, xind, data_care, freqsy, num_fitted, plot = False, beta_ind = 0,
 
     Returns the fit chi-squared value (float)'''
 
-    profile = i / np.max(i) #fitPulse requires template height of one
-    z = np.max(profile)
-    zind = np.where(profile == z)[0][0]
-    ind_diff = xind-zind
-    #this lines the profiles up approximately so that Single Pulse finds the
-    #true minimum, not just a local min
-    profile = np.roll(profile, ind_diff)
-    sp = SinglePulse(data_care, opw = np.arange(0, 800))
-    fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template
-    #matching, scale factor, TOA error, scale factor error, signal to noise
-    #ratio, cross-correlation coefficient
-    #based on the fitPulse fitting, scale and shift the profile to best fit
-    #the inputted data
-    #fitPulse figures out the best amplitude itself
-    spt = SinglePulse(profile*fitting[2])
-    fitted_template = spt.shiftit(fitting[1])
-
     #decide where to cut off noise depending on the frequency (matches with
     #data as well)
 
@@ -290,7 +273,24 @@ def fit_sing(i, xind, data_care, freqsy, num_fitted, plot = False, beta_ind = 0,
         num_masked = phase_bins - (stop_index-start_index)
     mask[start_index:stop_index] = 1.0
 
-    chi_sq_measure = chi2_distance(data_care, (fitted_template*mask), num_fitted+num_masked)
+    profile = i / np.max(i) #fitPulse requires template height of one
+    z = np.max(profile)
+    zind = np.where(profile == z)[0][0]
+    ind_diff = xind-zind
+    #this lines the profiles up approximately so that Single Pulse finds the
+    #true minimum, not just a local min
+    profile = np.roll(profile, ind_diff)
+    sp = SinglePulse(data_care, opw = np.arange(0, start_index))
+    fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template
+    #matching, scale factor, TOA error, scale factor error, signal to noise
+    #ratio, cross-correlation coefficient
+    #based on the fitPulse fitting, scale and shift the profile to best fit
+    #the inputted data
+    #fitPulse figures out the best amplitude itself
+    spt = SinglePulse(profile*fitting[2])
+    fitted_template = spt.shiftit(fitting[1])
+
+    chi_sq_measure = chi2_distance((data_care*mask), (fitted_template*mask), num_fitted+num_masked)
 
     return(chi_sq_measure)
 
@@ -300,7 +300,7 @@ class Profile:
     num_phase_bins = 2048 #number of phase bins for pulse period in data
     opr_size = 600 #number of phase bins for offpulse noise calculation
 
-    def __init__(self, mjd, data, frequencies, freq_subint_index):
+    def __init__(self, mjd, data, frequencies, freq_subint_index, dur):
         '''
         mjd (float) - epoch of observation
         data (2D array) - pulse data for epoch
@@ -312,6 +312,7 @@ class Profile:
         self.mjd_round = np.round(mjd)
         self.data_orig = data
         self.freq_orig = frequencies
+        self.dur = dur
 
         #subaverages the data for every four frequency channels
 
@@ -477,6 +478,24 @@ class Profile:
         plt.savefig(title)
         plt.close(50)
 
+    def comp_fse(self, tau):
+        '''Calculates the error due to the finite scintile effect. Reference
+        Michael's email for details. Tau is the fitted time delay in microseconds.'''
+
+        T = self.dur
+        B = 12.5 #approximate frequency range for each channel in MHz
+        D = 0.64 #approximate distance to the pulsar in kpc
+        nt = 0.2 #filling factor over time
+        nv = 0.2 #filling factor over bandwidth
+
+        v = self.freq_suba / 1000.0
+        vd = (1.16)/(2.0*(math.pi)*tau) #MHz
+        #td = ((math.sqrt(D*(vd*1000.0)))/v)*(1338.62433862) #seconds
+        td = ((math.sqrt(D*(vd)))/v)*(1338.62433862) #seconds
+        nscint = (1.0 + nt*(T/td))*(1.0 + nv*(B/vd))
+        error1 = tau/(math.sqrt(nscint)) #microseconds
+        return(error)
+
     def fit(self, beta_ind = -1, gwidth_ind = -1, pbfwidth_ind = -1, dec_exp = False):
         '''Calculates the best broadening function and corresponding parameters
         for the Profile object.
@@ -496,7 +515,7 @@ class Profile:
         gwidth_inds = np.arange(num_gwidth)
         pbfwidth_inds = np.arange(num_pbfwidth)
 
-        data_care = self.data_forfit
+        data_care = self.data_suba
         freq_care = self.freq_suba
 
         if beta_ind == -1 & gwidth_ind == -1 and dec_exp == False:
@@ -616,7 +635,7 @@ class Profile:
 
             self.fit_plot(chi_beta_ind, pbf_width_ind, gauss_width_ind)
 
-            return(low_chi, tau_fin, tau_err_fin, gauss_width_fin, pbf_width_fin, beta_fin)
+            return(low_chi, tau_fin, tau_err_fin, self.comp_fse(tau_fin), gauss_width_fin, pbf_width_fin, beta_fin)
 
 
         elif beta_ind != -1 and gwidth_ind != -1 and dec_exp == False:
@@ -654,7 +673,7 @@ class Profile:
 
             self.fit_plot(beta_ind, lsqs_pbf_index, gwidth_ind)
 
-            return(low_chi, tau_fin, tau_low, tau_up, gwidth, pbf_width_fin, beta)
+            return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin, beta)
 
 
         elif dec_exp == True and gwidth_ind != -1:
@@ -690,7 +709,7 @@ class Profile:
 
             self.fit_plot(0, lsqs_pbf_index, gwidth_ind, exp = True)
 
-            return(low_chi, tau_fin, tau_low, tau_up, gwidth, pbf_width_fin)
+            return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
 
 
 

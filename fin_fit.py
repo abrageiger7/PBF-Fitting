@@ -26,6 +26,7 @@ data = np.load("J1903_data.npy")
 freq = np.load("J1903_freqs.npy")
 mjds = np.load("J1903_mjds.npy")
 chan = np.load("J1903_numchan.npy")
+dur = np.load("J1903_dur.npy")
 
 #TO DO: find number of subintegrations, find best gauss width, find best beta
 #eventually compare to decaying exponential, and intrinsic pulse shape convolution
@@ -43,6 +44,7 @@ chan = np.load("J1903_numchan.npy")
 
 mjd_list = []
 freq_list = []
+dur_list = []
 
 pbf_width_listb = []
 low_chi_listb = []
@@ -66,8 +68,9 @@ for i in range(56):
         num_chan0 = int(chan[i])
         data0 = data[i][:num_chan0]
         freq0 = freq[i][:num_chan0]
-        p = fittin.Profile(mjds[i], data0, freq0, ii)
+        p = fittin.Profile(mjds[i], data0, freq0, ii, dur[i])
 
+        dur_list.append(dur[i])
         mjd_list.append(mjds[i])
         freq_list.append(p.freq_suba)
 
