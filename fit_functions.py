@@ -550,8 +550,7 @@ class Profile:
                 low_chi = find_nearest(chi_sqs_array, 0.0)[0]
                 chi_sqs_collect[ind] = low_chi
 
-                if chi_sqs_array[0] not >= low_chi+1 and chi_sqs_array[-1] \
-                not >= low_chi+1:
+            if chi_sqs_array[0] < low_chi+1 and chi_sqs_array[-1] < low_chi+1:
                     raise Exception('NOT CONVERGING ENOUGH')
 
                 #lsqs pbf width
@@ -666,8 +665,7 @@ class Profile:
             lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
             lsqs_pbf_val = widths[lsqs_pbf_index]
 
-            if chi_sqs_array[0] not >= low_chi+1 and chi_sqs_array[-1] \
-            not >= low_chi+1:
+            if chi_sqs_array[0] < low_chi+1 and chi_sqs_array[-1] < low_chi+1:
                 raise Exception('NOT CONVERGING ENOUGH')
 
             tau_fin = tau_values[beta_ind][lsqs_pbf_index]
@@ -708,8 +706,7 @@ class Profile:
             lsqs_pbf_val = widths[lsqs_pbf_index]
 
 
-            if chi_sqs_array[0] not >= low_chi+1 and chi_sqs_array[-1] \
-            not >= low_chi+1:
+            if chi_sqs_array[0] < low_chi+1 and chi_sqs_array[-1] < low_chi+1:
                 raise Exception('NOT CONVERGING ENOUGH')
 
             tau_fin = tau_values_exp[lsqs_pbf_index]
