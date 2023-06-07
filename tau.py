@@ -108,6 +108,8 @@ for i in widths_exp_array:
     tau_values_exp[data_index] = calculate_tau_exp(i)[0]
     data_index = data_index+1
 
+np.save('tau_values_exp', tau_values_exp)
+
 
 #plot tau over pbf width for decaying exponential
 #plt.xlabel("PBF Width (stretch factor)")
