@@ -45,6 +45,8 @@ dur = np.load("J1903_dur.npy")
 mjd_list = []
 freq_list = []
 dur_list = []
+subavg_chan_list = []
+
 
 pbf_width_listb = []
 low_chi_listb = []
@@ -64,6 +66,7 @@ gauss_width_liste = []
 for i in range(56):
     sub_int = True
     ii = 0
+    subavg_chan_list.append(p.num_sub)
     while sub_int == True:
         num_chan0 = int(chan[i])
         data0 = data[i][:num_chan0]
@@ -102,6 +105,8 @@ np.save('setg4setb11_data', setg4setb11_data)
 setg4dece_data = np.array([mjd_list, freq_list, pbf_width_liste, low_chi_liste, tau_liste, tau_low_liste, tau_high_liste, gauss_width_liste])
 
 np.save('setg4dece_data', setg4dece_data)
+
+np.save('J1903_subavgnumchan', subavg_chan_list)
 
 #=============================================================================
 # Test of new class and errors on tau
