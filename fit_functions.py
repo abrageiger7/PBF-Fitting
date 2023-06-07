@@ -493,7 +493,7 @@ class Profile:
         #td = ((math.sqrt(D*(vd*1000.0)))/v)*(1338.62433862) #seconds
         td = ((math.sqrt(D*(vd)))/v)*(1338.62433862) #seconds
         nscint = (1.0 + nt*(T/td))*(1.0 + nv*(B/vd))
-        error1 = tau/(math.sqrt(nscint)) #microseconds
+        error = tau/(math.sqrt(nscint)) #microseconds
         return(error)
 
     def fit(self, beta_ind = -1, gwidth_ind = -1, pbfwidth_ind = -1, dec_exp = False):
