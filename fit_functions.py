@@ -173,12 +173,15 @@ def subaverages4(mjdi, data, freqsm, plot = False):
         #      is" + str(ar.getNsubint()))
 
     #see if the number of frequency channels is evenly divisible by 4
-    if len(freqsm)%4 == 0:
-        subs = np.zeros((len(freqsm)//4,2048))
-        center_freqs = np.zeros(len(freqsm)//4)
-    else:
-        subs = np.zeros((len(freqsm)//4+1,2048))
-        center_freqs = np.zeros((len(freqsm)//4)+1)
+    # if len(freqsm)%4 == 0:
+    #     subs = np.zeros((len(freqsm)//4,2048))
+    #     center_freqs = np.zeros(len(freqsm)//4)
+    # else:
+    #     subs = np.zeros((len(freqsm)//4+1,2048))
+    #     center_freqs = np.zeros((len(freqsm)//4)+1)
+
+    subs = np.zeros((len(freqsm)//4,2048))
+    center_freqs = np.zeros(len(freqsm)//4)
 
     #floor division for subintegrations all of 4 frequency channels
     #also compute the average frequencies for each subintegration
@@ -189,13 +192,13 @@ def subaverages4(mjdi, data, freqsm, plot = False):
         center_freqs[i] = np.average(dataf)
 
     #if number of frequency channels not divisible by 4
-    if len(freqsm)%4 != 0:
+    # if len(freqsm)%4 != 0:
         #print('All subintegrations have 4 frequency channels except final\
         #    subintegration has ' + str(len(freqsm)%4) + ' frequencie(s)')
-        data_d = data[len(freqsm)-(len(freqsm)%4):]
-        subs[-1] = np.average(data_d, axis = 0)
-        dataf = freqsm[len(freqsm)-(len(freqsm)%4):]
-        center_freqs[-1] = np.average(dataf)
+    #     data_d = data[len(freqsm)-(len(freqsm)%4):]
+    #     subs[-1] = np.average(data_d, axis = 0)
+    #     dataf = freqsm[len(freqsm)-(len(freqsm)%4):]
+    #     center_freqs[-1] = np.average(dataf)
     #else:
         #print('All subintegrations have 4 frequency channels')
 
