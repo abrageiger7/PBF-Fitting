@@ -237,7 +237,7 @@ def subaverages4(mjdi, data, freqsm, plot = False):
             plt.show()
 
     #print the total number of subaverages
-    print('Number of subaverages is ' + str(len(center_freqs)))
+    #print('Number of subaverages is ' + str(len(center_freqs)))
 
     return(subs, center_freqs, mjdi)
 
@@ -497,6 +497,7 @@ class Profile:
         td = ((math.sqrt(D*(vd)))/v)*(1338.62433862) #seconds
         nscint = (1.0 + nt*(T/td))*(1.0 + nv*(B/vd))
         error = tau/(math.sqrt(nscint)) #microseconds
+        print(error)
         return(error)
 
     def fit(self, beta_ind = -1, gwidth_ind = -1, pbfwidth_ind = -1, dec_exp = False):
