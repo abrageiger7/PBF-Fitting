@@ -54,6 +54,7 @@ tau_listb = []
 tau_low_listb = []
 tau_high_listb = []
 gauss_width_listb = []
+fse_listb = []
 
 pbf_width_liste = []
 low_chi_liste = []
@@ -61,6 +62,7 @@ tau_liste = []
 tau_low_liste = []
 tau_high_liste = []
 gauss_width_liste = []
+fse_liste = []
 
 
 for i in range(56):
@@ -79,21 +81,24 @@ for i in range(56):
         freq_list.append(p.freq_suba)
 
         datab = p.fit(beta_ind = 11, gwidth_ind = 4)
-        gauss_width_listb.append(datab[4])
-        pbf_width_listb.append(datab[5])
+        gauss_width_listb.append(datab[5])
+        pbf_width_listb.append(datab[6])
         low_chi_listb.append(datab[0])
         tau_listb.append(datab[1])
         tau_low_listb.append(datab[2])
         tau_high_listb.append(datab[3])
+        fse_listb.append(datab[4])
 
 
         datae = p.fit(gwidth_ind = 4, dec_exp = True)
-        gauss_width_liste.append(datae[4])
-        pbf_width_liste.append(datae[5])
+        gauss_width_liste.append(datae[5])
+        pbf_width_liste.append(datae[6])
         low_chi_liste.append(datae[0])
         tau_liste.append(datae[1])
         tau_low_liste.append(datae[2])
         tau_high_liste.append(datae[3])
+        fse_liste.append(datae[4])
+
 
         ii += 1
         if ii > p.num_sub - 1:
