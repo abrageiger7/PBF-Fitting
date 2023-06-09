@@ -6,7 +6,6 @@ Last Edited on Wed May 31st 2023
 Calculating Tau Values for Varing Tau and PBF Width Values
 """
 
-import fit_functions as fittin
 import convolved_pbfs as conv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,6 +20,15 @@ time = conv.time
 num_phasebins = np.shape(convolved_profiles[0][0][0])
 j1903_period = 0.0021499 * 1e6 #microseconds
 
+def find_nearest(a, a0):
+    '''Element in nd array `a` closest to the scalar value `a0`
+
+    Preconditions: a is an n dimensional array and a0 is a scalar value
+
+    Returns index, value'''
+    idx = np.abs(a - a0).argmin()
+    return a.flat[idx], np.where((a == a.flat[idx]))
+
 def calculate_tau(profile):
     '''Calculates tau value of J1903 profile by calculating where it decays to the value of its max divided by e
 
@@ -29,7 +37,7 @@ def calculate_tau(profile):
     #isolate decaying part of pbf
     maxim = np.where((iii == np.max(iii)))[0][0]
     iii[:maxim] = 0.0
-    near = fittin.find_nearest(iii, np.max(iii)/math.e)
+    near = find_nearest(iii, np.max(iii)/math.e)
     tau = (near[1][0][0] - maxim) * j1903_period / num_phasebins #microseconds
     tau_index = near[1][0][0]
     tau_unconvert = near[0]
@@ -83,7 +91,7 @@ def calculate_tau_exp(profile):
     Preconditions: profile is a 1 dimensional array of length 2048'''
     iii = np.copy(profile)
     #isolate decaying part of pbf
-    near = fittin.find_nearest(iii, np.max(iii)/math.e)
+    near = find_nearest(iii, np.max(iii)/math.e)
     #RESCALE THE TAU VALUES HERE FOR CONVOLUTION
     tau = (near[1][0][0]) * j1903_period / num_phasebins #microseconds
     tau_index = near[1][0][0]
