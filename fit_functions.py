@@ -367,7 +367,7 @@ class Profile:
         If gwidth is -1, indicates that the chi-squared surface exists over
         all possible gaussian widths. Same for pbfwidth.
 
-        If bets is -1, must be for decaying exponential and exp != -1. Vice
+        If beta is -1, must be for decaying exponential and exp != -1. Vice
         versa.'''
 
         plt.figure(45)
@@ -420,6 +420,12 @@ class Profile:
 
 
     def fit_plot(self, beta_ind, pbfwidth_ind, gwidth_ind, exp = False):
+
+        '''Plots and saves the fit of the profile subaveraged data to the
+        template indicated by the argument indexes and the bolean
+        indicating if decaying exponential wanted for the broadening function.
+
+        beta_ind, pbfwidth_ind, gwidth_ind are ints; exp is boolean'''
 
         if not exp:
             i = convolved_profiles[beta_ind][pbfwidth_ind][gwidth_ind]
