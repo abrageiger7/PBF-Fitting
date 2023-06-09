@@ -26,6 +26,8 @@ widths = np.concatenate((np.linspace(0.1, 1.0, 40), np.linspace(1.1, 42.0, 160))
 
 #array of gaussian widths (phase bins)
 widths_gaussian = np.linspace(0.1, 250.0, 50)
+#gauss widths converted to fwhm microseconds
+gauss_fwhm = gauss_widths * ((0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))
 
 #gaussian parameters in phase bins and arbitrary intensity comparitive to data
 parameters = np.zeros((50, 3))
