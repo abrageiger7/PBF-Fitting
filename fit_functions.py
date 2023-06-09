@@ -261,20 +261,18 @@ def fit_sing(i, xind, data_care, freqsy, num_fitted, plot = False, beta_ind = 0,
     if freqsy >= 1600:
         start_index = 700
         stop_index = 1548
-        num_masked = phase_bins - (stop_index-start_index)
     elif freqsy >= 1400 and freqsy < 1600:
         start_index = 700
         stop_index = 1648
-        num_masked = phase_bins - (stop_index-start_index)
     elif freqsy >= 1200 and freqsy < 1400:
         start_index = 650
         stop_index = 1798
-        num_masked = phase_bins - (stop_index-start_index)
     elif freqsy >= 1000 and freqsy < 1200:
         start_index = 600
         stop_index = 1948
-        num_masked = phase_bins - (stop_index-start_index)
     mask[start_index:stop_index] = 1.0
+
+    num_masked = phase_bins - (stop_index-start_index)
 
     profile = i / np.max(i) #fitPulse requires template height of one
     z = np.max(profile)
