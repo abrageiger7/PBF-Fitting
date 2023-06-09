@@ -37,16 +37,15 @@ gauss_widths = conv.widths_gaussian
 widths_gaussian = conv.widths_gaussian
 betaselect = conv.betaselect
 time = conv.time
-convolved_w_dataintrins = intrins.convolved_w_dataintrins
+gauss_fwhm = conv.gauss_fwhm
 parameters = conv.parameters
+convolved_w_dataintrins = intrins.convolved_w_dataintrins
 convolved_profiles_exp = cexp.convolved_profiles_exp
 tau_values_exp = tau.tau_values_exp
 tau_values = tau.tau_values
 
 phase_bins = 2048
 t = np.linspace(0, phase_bins, phase_bins)
-#gauss widths converted to fwhm microseconds
-gauss_fwhm = gauss_widths * ((0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))
 
 def find_nearest(a, a0):
     '''Element in nd array `a` closest to the scalar value `a0`
