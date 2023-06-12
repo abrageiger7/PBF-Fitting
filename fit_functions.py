@@ -134,7 +134,8 @@ def chi2_distance(A, B, std, subt_deg_of_freedom = 0):
         sq_res = (a-b)**2
         squared_residuals.append(sq_res)
 
-    chi_squared = sum(squared_residuals/(std**2)) / (len(squared_residuals) - subt_deg_of_freedom)
+    squared_residuals = np.array(squared_residuals)
+    chi_squared = np.sum(squared_residuals/(std**2)) / (len(squared_residuals) - subt_deg_of_freedom)
 
     return(chi_squared)
 
