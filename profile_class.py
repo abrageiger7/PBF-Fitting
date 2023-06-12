@@ -84,7 +84,7 @@ class Profile:
         If beta is -1, must be for decaying exponential and exp != -1. Vice
         versa.'''
 
-        plt.figure(45)
+        plt.figure(45, figsize = (10,6))
 
         if gwidth == -1 and pbfwidth == -1:
 
