@@ -103,9 +103,10 @@ for i in range(56):
 
         freq_list.append(p.freq_suba)
 
-        if ii > p.num_sub:
-            sub_int = False
         ii += 1
+        if ii > p.num_sub - 1:
+            sub_int = False
+
 
 setg4setb11_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listb, low_chi_listb, tau_listb, tau_low_listb, tau_high_listb, gauss_width_listb])
 
