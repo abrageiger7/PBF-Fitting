@@ -521,6 +521,34 @@ from fit_functions import *
 # Time averaging every 8 data points
 # ==============================================================================
 
+#print(convolved_profiles)
+print(np.shape(convolved_profiles))
+#print(convolved_profiles_exp)
+print(np.shape(convolved_profiles_exp))
+
+convolved_profiles_timea = np.zeros((12,200,50,2048//8))
+
+for i in range(12):
+    for ii in range(200):
+        for iii in range(50):
+            not_2048 = np.zeros(2048//8)
+            for iv in range(2048//8):
+                not_2048[iv] = np.average(convolved_profiles[i][ii][iii][(8*iv):(iv*8)+8])
+            convolved_profiles_timea[i][ii][iii] = not_2048
+
+convolved_profiles_exp_timea = np.zeros((200,50, 2048//8))
+
+for i in range(200):
+    for ii in range(50):
+        not_2048 = np.zeros(2048//8)
+        for iii in range(2048//8):
+            not_2048[iii] = np.average(convolved_profiles_exp[i][ii][(8*iii):(iii*8)+8])
+        convolved_profiles_exp_timea[i][ii] = not_2048
+
+convolved_profiles = convolved_profiles_timea
+convolved_profiles_exp = convolved_profiles_exp_timea
+
+
 def subaverages4(mjdi, data, freqsm, plot = False):
     '''Takes an epoch of pulsar data and subaverages every four frequency
     channels
