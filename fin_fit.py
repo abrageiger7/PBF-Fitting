@@ -101,7 +101,7 @@ for i in range(56):
         num_chan0 = int(chan[i])
         data0 = data[i][:num_chan0]
         freq0 = freq[i][:num_chan0]
-        p = fittin.Profile(mjds[i], data0, freq0, ii, dur[i])
+        p = fittin.Profile(mjds[i], data0, freq0, dur[i])
         if ii == 0:
             subavg_chan_list.append(p.num_sub)
 
@@ -109,7 +109,7 @@ for i in range(56):
         mjd_list.append(mjds[i])
         freq_list.append(p.freq_suba)
 
-        datab = p.fit(beta_ind = 11, gwidth_ind = 4)
+        datab = p.fit(ii, beta_ind = 11, gwidth_ind = 4)
         gauss_width_listb.append(datab[5])
         pbf_width_listb.append(datab[6])
         low_chi_listb.append(datab[0])
@@ -119,7 +119,7 @@ for i in range(56):
         fse_listb.append(datab[4])
 
 
-        datae = p.fit(gwidth_ind = 4, dec_exp = True)
+        datae = p.fit(ii, gwidth_ind = 4, dec_exp = True)
         gauss_width_liste.append(datae[5])
         pbf_width_liste.append(datae[6])
         low_chi_liste.append(datae[0])
