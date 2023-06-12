@@ -13,6 +13,7 @@ import fit_functions as fittin
 import convolved_pbfs as conv
 import intrinsic_pbfs as intrins
 import math
+import profile_class.Profile as Profile
 
 #import the parameter bank for reference, comparing, and plotting
 convolved_profiles = conv.convolved_profiles
@@ -35,35 +36,6 @@ dur = np.load("J1903_dur.npy")
 #previous code difference between beta power law index and beta for pbfs
 
 #Below are various calculations of fit parameters using functions from fit_functions.py
-
-#=============================================================================
-# Comparing Exponential over Frequency and MJD
-# =============================================================================
-mjd_list = []
-beta_list = []
-freq_list = []
-gauss_width_list = []
-pbf_width_list = []
-low_chi_list = []
-tau_list = []
-
-for i in range(5):
-    for ii in range(12):
-        num_chan0 = int(chan[i*10])
-        data0 = data[i*10][:num_chan0]
-        freq0 = freq[i*10][:num_chan0]
-        dataer = fittin.fit_all_profile(mjds[i*10], data0, freq0, ii)
-        mjd_list.append(mjds[i*10])
-        beta_list.append(dataer[4])
-        freq_list.append(dataer[5])
-        gauss_width_list.append(dataer[2])
-        pbf_width_list.append(dataer[3])
-        low_chi_list.append(dataer[0])
-        tau_list.append(dataer[1])
-
-arrayyay = np.array([mjd_list, beta_list, freq_list, gauss_width_list, pbf_width_list, low_chi_list, tau_list])
-
-np.save('expdatayay', arrayyay)
 
 #=============================================================================
 # Fitting with Beta PBFs and Decaying Exponential with new Class
@@ -97,13 +69,14 @@ fse_liste = []
 for i in range(56):
     sub_int = True
     ii = 0
+
+    num_chan0 = int(chan[i])
+    data0 = data[i][:num_chan0]
+    freq0 = freq[i][:num_chan0]
+    p = fittin.Profile(mjds[i], data0, freq0, dur[i])
+    subavg_chan_list.append(p.num_sub)
+
     while sub_int == True:
-        num_chan0 = int(chan[i])
-        data0 = data[i][:num_chan0]
-        freq0 = freq[i][:num_chan0]
-        p = fittin.Profile(mjds[i], data0, freq0, dur[i])
-        if ii == 0:
-            subavg_chan_list.append(p.num_sub)
 
         dur_list.append(dur[i])
         mjd_list.append(mjds[i])
@@ -118,7 +91,6 @@ for i in range(56):
         tau_high_listb.append(datab[3])
         fse_listb.append(datab[4])
 
-
         datae = p.fit(ii, gwidth_ind = 4, dec_exp = True)
         gauss_width_liste.append(datae[5])
         pbf_width_liste.append(datae[6])
@@ -128,20 +100,50 @@ for i in range(56):
         tau_high_liste.append(datae[3])
         fse_liste.append(datae[4])
 
-
-        ii += 1
-        if ii > p.num_sub - 1:
+        if ii > p.num_sub:
             sub_int = False
+        ii += 1
 
-setg4setb11_data = np.array([mjd_list, freq_list, pbf_width_listb, low_chi_listb, tau_listb, tau_low_listb, tau_high_listb, gauss_width_listb])
+setg4setb11_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listb, low_chi_listb, tau_listb, tau_low_listb, tau_high_listb, gauss_width_listb])
 
 np.save('setg4setb11_data', setg4setb11_data)
 
-setg4dece_data = np.array([mjd_list, freq_list, pbf_width_liste, low_chi_liste, tau_liste, tau_low_liste, tau_high_liste, gauss_width_liste])
+setg4dece_data = np.array([mjd_list, freq_list, dur_list, pbf_width_liste, low_chi_liste, tau_liste, tau_low_liste, tau_high_liste, gauss_width_liste])
 
 np.save('setg4dece_data', setg4dece_data)
 
 np.save('J1903_subavgnumchan', subavg_chan_list)
+
+#=============================================================================
+# Comparing Exponential over Frequency and MJD
+# =============================================================================
+dur_list = []
+mjd_list = []
+freq_list = []
+gauss_width_list = []
+pbf_width_list = []
+low_chi_list = []
+tau_list = []
+
+for i in range(5):
+    mjd_index = i*10
+    num_chan0 = int(chan[mjd_index])
+    data0 = data[mjd_index][:num_chan0]
+    freq0 = freq[mjd_index][:num_chan0]
+    p = Profile(mjds[mjd_index], data0, freq0, dur[mjd_index])
+    for ii in range(12):
+        dataer = p.fit_all_profile(mjds[mjd_index], data0, freq0, ii)
+        dur_list.append(dur[mjd_index])
+        mjd_list.append(mjds[mjd_index])
+        freq_list.append(p.freq_suba)
+        gauss_width_list.append(dataer[1])
+        pbf_width_list.append(dataer[2])
+        low_chi_list.append(dataer[0])
+        tau_list.append(dataer[3])
+
+arrayyay = np.array([mjd_list, freq_list, dur_list, gauss_width_list, pbf_width_list, low_chi_list, tau_list])
+
+np.save('expdatayay', arrayyay)
 
 #=============================================================================
 # Test of new class and errors on tau
