@@ -284,8 +284,8 @@ class Profile:
         data_care = self.data_suba
         freq_care = self.freq_suba
 
-
-        if beta_ind == -1 & gwidth_ind == -1 and dec_exp == False:
+        #case where beta, gaussian width, and pbf width are not set
+        if beta_ind == -1 and gwidth_ind == -1 and pbfwidth_ind == -1 and dec_exp == False:
 
             num_par = 5 #number of fitted parameters
 
@@ -408,7 +408,7 @@ class Profile:
 
             return(low_chi, tau_fin, self.comp_fse(tau_fin), gauss_width_fin, pbf_width_fin, beta_fin)
 
-
+        #case where beta and gaussian width are set, but fitting for pbf width
         elif beta_ind != -1 and gwidth_ind != -1 and dec_exp == False:
 
             num_par = 3 # number of fitted parameters
@@ -447,7 +447,7 @@ class Profile:
 
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin, beta)
 
-
+        #case where gaussian width is set and fitting amongst decaying exponential templates
         elif dec_exp == True and gwidth_ind != -1:
 
             num_par = 3 #number of fitted parameters
@@ -485,6 +485,7 @@ class Profile:
 
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
 
+        #case where fitting for decaying exponential, but gauss width and pbf width not set
         elif gwidth_ind == -1 and pbf_width_ind == -1 and dec_exp == True:
 
             num_par = 4 #number of fitted parameters
