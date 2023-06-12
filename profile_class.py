@@ -52,7 +52,7 @@ class Profile:
 
         num_masked = phase_bins - (self.stop_index-self.start_index)
 
-        profile = i / np.max(i) #fitPulse requires template height of one
+        profile = profile / np.max(profile) #fitPulse requires template height of one
         z = np.max(profile)
         zind = np.where(profile == z)[0][0]
         ind_diff = slef.xind-zind
