@@ -73,7 +73,7 @@ for i in range(56):
     num_chan0 = int(chan[i])
     data0 = data[i][:num_chan0]
     freq0 = freq[i][:num_chan0]
-    p = fittin.Profile(mjds[i], data0, freq0, dur[i])
+    p = Profile(mjds[i], data0, freq0, dur[i])
     subavg_chan_list.append(p.num_sub)
 
     while sub_int == True:
