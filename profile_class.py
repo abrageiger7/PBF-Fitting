@@ -689,7 +689,7 @@ class Profile:
         #true minimum, not just a local min
         profile = np.roll(profile, ind_diff)
 
-        sp = SinglePulse(self.data_suba, opw = np.arange(0, self.start_index))
+        sp = SinglePulse(self.data_suba, opw = np.arange(0, self.xind-75))
         fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template
         #matching, scale factor, TOA error, scale factor error, signal to noise
         #ratio, cross-correlation coefficient
