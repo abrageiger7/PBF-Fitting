@@ -84,7 +84,7 @@ class Profile:
         If beta is -1, must be for decaying exponential and exp != -1. Vice
         versa.'''
 
-        plt.figure(45, figsize = (10,6))
+        plt.figure(45)
 
         if gwidth == -1 and pbfwidth == -1:
 
@@ -102,7 +102,7 @@ class Profile:
             plt.xticks(ticks = np.linspace(0,200,num=10), labels = gauss_ticks)
             plt.yticks(ticks = np.linspace(0,200,num=10), labels = pbf_ticks)
 
-            plt.imshow(chi_sq_arr, cmap=plt.cm.viridis_r, origin = 'lower')
+            plt.imshow(chi_sq_arr, cmap=plt.cm.viridis_r, origin = 'lower', aspect = 0.25)
             plt.colorbar()
 
             if beta != -1:
