@@ -38,6 +38,87 @@ dur = np.load("J1903_dur.npy")
 #functions from fit_functions.py
 
 #=============================================================================
+# Fitting with Beta PBFs and Decaying Exponential with time averaged data (2048//8)
+    # Setting gwidth to index 4
+    # Setting beta to index 11
+# =============================================================================
+
+mjd_list = []
+freq_list = []
+dur_list = []
+subavg_chan_list = []
+
+
+pbf_width_listb = []
+low_chi_listb = []
+tau_listb = []
+tau_low_listb = []
+tau_high_listb = []
+gauss_width_listb = []
+fse_listb = []
+
+pbf_width_liste = []
+low_chi_liste = []
+tau_liste = []
+tau_low_liste = []
+tau_high_liste = []
+gauss_width_liste = []
+fse_liste = []
+
+
+for i in range(56):
+    sub_int = True
+    ii = 0
+    print(f'MJD {i}')
+    num_chan0 = int(chan[i])
+    data0 = data[i][:num_chan0]
+    freq0 = freq[i][:num_chan0]
+    p = Profile(mjds[i], data0, freq0, dur[i])
+    subavg_chan_list.append(p.num_sub)
+
+    while sub_int == True:
+
+        print(f'Frequency {ii}')
+
+        dur_list.append(dur[i])
+        mjd_list.append(mjds[i])
+
+        datab = p.fit(ii, beta_ind = 11, gwidth_ind = 4)
+        gauss_width_listb.append(datab[5])
+        pbf_width_listb.append(datab[6])
+        low_chi_listb.append(datab[0])
+        tau_listb.append(datab[1])
+        tau_low_listb.append(datab[2])
+        tau_high_listb.append(datab[3])
+        fse_listb.append(datab[4])
+
+        datae = p.fit(ii, gwidth_ind = 4, dec_exp = True)
+        gauss_width_liste.append(datae[5])
+        pbf_width_liste.append(datae[6])
+        low_chi_liste.append(datae[0])
+        tau_liste.append(datae[1])
+        tau_low_liste.append(datae[2])
+        tau_high_liste.append(datae[3])
+        fse_liste.append(datae[4])
+
+        freq_list.append(p.freq_suba)
+
+        ii += 1
+        if ii > p.num_sub - 1:
+            sub_int = False
+
+
+setg4setb11_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listb, low_chi_listb, tau_listb, tau_low_listb, tau_high_listb, gauss_width_listb])
+
+np.save('timea_setg4setb11_data', setg4setb11_data)
+
+setg4dece_data = np.array([mjd_list, freq_list, dur_list, pbf_width_liste, low_chi_liste, tau_liste, tau_low_liste, tau_high_liste, gauss_width_liste])
+
+np.save('timea_setg4dece_data', setg4dece_data)
+
+np.save('J1903_subavgnumchan', subavg_chan_list)
+
+#=============================================================================
 # Fitting with Beta PBFs and Decaying Exponential with new Class
     # Setting gwidth to index 4
     # Setting beta to index 11
@@ -121,35 +202,35 @@ dur = np.load("J1903_dur.npy")
 #=============================================================================
 # Comparing Exponential over Frequency and MJD
 # =============================================================================
-dur_list = []
-mjd_list = []
-freq_list = []
-gauss_width_list = []
-pbf_width_list = []
-low_chi_list = []
-tau_list = []
-
-for i in range(5):
-    print(f'MJD {i}')
-    mjd_index = i*10
-    num_chan0 = int(chan[mjd_index])
-    data0 = data[mjd_index][:num_chan0]
-    freq0 = freq[mjd_index][:num_chan0]
-    p = Profile(mjds[mjd_index], data0, freq0, dur[mjd_index])
-    for ii in range(p.num_sub):
-        print(f'Frequency {ii}')
-        dataer = p.fit(ii, dec_exp = True)
-        dur_list.append(dur[mjd_index])
-        mjd_list.append(mjds[mjd_index])
-        freq_list.append(p.freq_suba)
-        gauss_width_list.append(dataer[1])
-        pbf_width_list.append(dataer[2])
-        low_chi_list.append(dataer[0])
-        tau_list.append(dataer[3])
-
-arrayyay = np.array([mjd_list, freq_list, dur_list, gauss_width_list, pbf_width_list, low_chi_list, tau_list])
-
-np.save('expdatayay', arrayyay)
+# dur_list = []
+# mjd_list = []
+# freq_list = []
+# gauss_width_list = []
+# pbf_width_list = []
+# low_chi_list = []
+# tau_list = []
+#
+# for i in range(5):
+#     print(f'MJD {i}')
+#     mjd_index = i*10
+#     num_chan0 = int(chan[mjd_index])
+#     data0 = data[mjd_index][:num_chan0]
+#     freq0 = freq[mjd_index][:num_chan0]
+#     p = Profile(mjds[mjd_index], data0, freq0, dur[mjd_index])
+#     for ii in range(p.num_sub):
+#         print(f'Frequency {ii}')
+#         dataer = p.fit(ii, dec_exp = True)
+#         dur_list.append(dur[mjd_index])
+#         mjd_list.append(mjds[mjd_index])
+#         freq_list.append(p.freq_suba)
+#         gauss_width_list.append(dataer[1])
+#         pbf_width_list.append(dataer[2])
+#         low_chi_list.append(dataer[0])
+#         tau_list.append(dataer[3])
+#
+# arrayyay = np.array([mjd_list, freq_list, dur_list, gauss_width_list, pbf_width_list, low_chi_list, tau_list])
+#
+# np.save('expdatayay', arrayyay)
 
 
 #===============================================================================
