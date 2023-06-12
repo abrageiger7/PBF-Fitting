@@ -1069,6 +1069,6 @@ class Profile:
             #print(f'Tau Upper Error: {tau_up}  microsec')
 
             self.fit_plot(0, lsqs_pbf_index, gwidth_ind, exp = True)
-            p#rint(f'RMS Noise = {self.rms_noise}')
+            #print(f'RMS Noise = {self.rms_noise}')
 
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
