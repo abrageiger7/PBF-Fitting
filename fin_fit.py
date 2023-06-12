@@ -13,7 +13,7 @@ import fit_functions as fittin
 import convolved_pbfs as conv
 import intrinsic_pbfs as intrins
 import math
-import profile_class.Profile as Profile
+from profile_class import Profile
 
 #import the parameter bank for reference, comparing, and plotting
 convolved_profiles = conv.convolved_profiles
