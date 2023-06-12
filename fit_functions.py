@@ -243,6 +243,16 @@ def subaverages4(mjdi, data, freqsm, plot = False):
 
     return(subs, center_freqs, mjdi)
 
+
+
+
+
+
+
+
+#OLD FUNCTIONS FOR CASES (different situations with different parameters fitting
+#for ) not covered in the profile class
+
 def fit_sing(i, xind, data_care, freqsy, num_fitted, plot = False, beta_ind = 0, gwidth_ind = 0, pbfwidth_ind = 0):
     '''Fits a data profile to a template
     Helper function for all fitting functions below
@@ -296,10 +306,6 @@ def fit_sing(i, xind, data_care, freqsy, num_fitted, plot = False, beta_ind = 0,
     chi_sq_measure = chi2_distance((data_care*mask), (fitted_template*mask), num_fitted+num_masked)
 
     return(chi_sq_measure)
-
-
-#OLD FUNCTIONS FOR CASES (different situations with different parameters fitting
-#for ) not covered in the profile class
 
 
 def fit_all_profile_set_gwidth(mjdi, data, freqsm, freq_subint_index, gwidth_index):
