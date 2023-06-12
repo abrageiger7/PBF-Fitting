@@ -69,7 +69,7 @@ fse_liste = []
 for i in range(56):
     sub_int = True
     ii = 0
-
+    print(f'MJD {i}'')
     num_chan0 = int(chan[i])
     data0 = data[i][:num_chan0]
     freq0 = freq[i][:num_chan0]
@@ -78,9 +78,10 @@ for i in range(56):
 
     while sub_int == True:
 
+        print(f'Frequency {ii}'')
+
         dur_list.append(dur[i])
         mjd_list.append(mjds[i])
-        freq_list.append(p.freq_suba)
 
         datab = p.fit(ii, beta_ind = 11, gwidth_ind = 4)
         gauss_width_listb.append(datab[5])
@@ -99,6 +100,8 @@ for i in range(56):
         tau_low_liste.append(datae[2])
         tau_high_liste.append(datae[3])
         fse_liste.append(datae[4])
+
+        freq_list.append(p.freq_suba)
 
         if ii > p.num_sub:
             sub_int = False
