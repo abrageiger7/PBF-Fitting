@@ -495,11 +495,12 @@ class Profile:
 
             num_par = 4 #number of fitted parameters
 
+            chi_sqs_array = np.zeros((num_pbfwidth, num_gwidth))
             for i in itertools.product(pbfwidth_inds, gwidth_inds):
 
                 template = convolved_profiles_exp[i[0]][i[1]]
                 chi_sq = self.fit_sing(template, num_par)
-                chi_sqs_array[i] = chi_sq
+                chi_sqs_array[i[0]][i[1]] = chi_sq
 
             self.chi_plot(chi_sqs_array, exp = True)
 
