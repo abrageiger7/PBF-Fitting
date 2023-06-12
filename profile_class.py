@@ -521,6 +521,8 @@ from fit_functions import *
 # Time averaging every 8 data points
 # ==============================================================================
 
+t = np.linspace(0, 2.15, 2048//8)
+
 #print(convolved_profiles)
 print(np.shape(convolved_profiles))
 #print(convolved_profiles_exp)
