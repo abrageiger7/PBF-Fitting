@@ -491,7 +491,7 @@ class Profile:
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
 
         #case where fitting for decaying exponential, but gauss width and pbf width not set
-        elif gwidth_ind == -1 and pbf_width_ind == -1 and dec_exp == True:
+        elif gwidth_ind == -1 and pbfwidth_ind == -1 and dec_exp == True:
 
             num_par = 4 #number of fitted parameters
 
