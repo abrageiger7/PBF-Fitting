@@ -240,8 +240,8 @@ class Profile:
 
 
         #isolate the data profile at the frequency desired for this fit
-        self.data_suba = s[0][freq_subint_index]
-        self.freq_suba = s[1][freq_subint_index]
+        self.data_suba = self.subaveraged_info[0][freq_subint_index]
+        self.freq_suba = self.subaveraged_info[1][freq_subint_index]
         self.freq_round = np.round(self.freq_suba)
 
 
@@ -287,7 +287,7 @@ class Profile:
         #set more convenient names for the data to be fitted to
         data_care = self.data_suba
         freq_care = self.freq_suba
-        
+
 
         #case where beta, gaussian width, and pbf width are not set
         if beta_ind == -1 and gwidth_ind == -1 and pbfwidth_ind == -1 and dec_exp == False:
