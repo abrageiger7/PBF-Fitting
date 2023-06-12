@@ -37,17 +37,6 @@ class Profile:
         self.subaveraged_info = s
 
 
-        #Calculates the root mean square noise of the off pulse.
-        #Used later to calculate normalized chi-squared.
-
-        rms_collect = 0
-        for i in range(Profile.opr_size):
-            rms_collect += self.data_suba[i]**2
-        rms = math.sqrt(rms_collect/Profile.opr_size)
-
-        self.rms_noise = rms
-
-
     def fit_sing(self, profile, num_par):
         '''Fits a data profile to a template
         Helper function for all fitting functions below
@@ -249,14 +238,17 @@ class Profile:
         gwidth_inds = np.arange(num_gwidth)
         pbfwidth_inds = np.arange(num_pbfwidth)
 
+
         #isolate the data profile at the frequency desired for this fit
         self.data_suba = s[0][freq_subint_index]
         self.freq_suba = s[1][freq_subint_index]
         self.freq_round = np.round(self.freq_suba)
 
+
         #Calculates mode of data profile to shift template to
         x = np.max(self.data_suba)
         self.xind = np.where(self.data_suba == x)[0][0]
+
 
         #Set the offpulse regions to zero for fitting because essentially
         #oscillating there.
@@ -280,9 +272,22 @@ class Profile:
 
         self.mask = mask
 
+
+        #Calculates the root mean square noise of the off pulse.
+        #Used later to calculate normalized chi-squared.
+
+        rms_collect = 0
+        for i in range(Profile.opr_size):
+            rms_collect += self.data_suba[i]**2
+        rms = math.sqrt(rms_collect/Profile.opr_size)
+
+        self.rms_noise = rms
+
+
         #set more convenient names for the data to be fitted to
         data_care = self.data_suba
         freq_care = self.freq_suba
+        
 
         #case where beta, gaussian width, and pbf width are not set
         if beta_ind == -1 and gwidth_ind == -1 and pbfwidth_ind == -1 and dec_exp == False:
