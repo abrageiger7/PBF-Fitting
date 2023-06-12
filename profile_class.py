@@ -98,7 +98,7 @@ class Profile:
                 gauss_ticks[ii] = str(gauss_fwhm[ii*20])[:3]
             pbf_ticks = np.zeros(10)
             for ii in range(10):
-                pbf_ticks[ii] = str(widths[ii*20])[:3]
+                pbf_ticks[ii] = str(widths[ii*5])[:3]
             plt.xticks(ticks = np.linspace(0,200,num=10), labels = gauss_ticks)
             plt.yticks(ticks = np.linspace(0,200,num=10), labels = pbf_ticks)
 
