@@ -50,7 +50,7 @@ class Profile:
         #decide where to cut off noise depending on the frequency (matches with
         #data as well)
 
-        num_masked = Profile.phase_bins - (self.stop_index-self.start_index)
+        num_masked = Profile.num_phase_bins - (self.stop_index-self.start_index)
 
         profile = profile / np.max(profile) #fitPulse requires template height of one
         z = np.max(profile)
