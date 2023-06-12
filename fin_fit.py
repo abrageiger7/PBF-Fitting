@@ -29,13 +29,13 @@ mjds = np.load("J1903_mjds.npy")
 chan = np.load("J1903_numchan.npy")
 dur = np.load("J1903_dur.npy")
 
-#TO DO: find number of subintegrations, find best gauss width, find best beta
-#eventually compare to decaying exponential, and intrinsic pulse shape convolution
+#TO DO: intrinsic pulse shape convolution -> not really valid because even highest
+#frequency is scattered
 
-#TO DO: Since fixed gaussian width units and chisquared, replot; fix in
-#previous code difference between beta power law index and beta for pbfs
+#TO DO: fix in previous code difference between beta power law index and beta for pbfs
 
-#Below are various calculations of fit parameters using functions from fit_functions.py
+#Below are various calculations of fit parameters using the Profile class and
+#functions from fit_functions.py
 
 #=============================================================================
 # Fitting with Beta PBFs and Decaying Exponential with new Class
@@ -126,13 +126,15 @@ low_chi_list = []
 tau_list = []
 
 for i in range(5):
+    print(f'MJD {i}')
     mjd_index = i*10
     num_chan0 = int(chan[mjd_index])
     data0 = data[mjd_index][:num_chan0]
     freq0 = freq[mjd_index][:num_chan0]
     p = Profile(mjds[mjd_index], data0, freq0, dur[mjd_index])
     for ii in range(12):
-        dataer = p.fit_all_profile(mjds[mjd_index], data0, freq0, ii)
+        print(f'Frequency{ii}')
+        dataer = p.fit(ii, dec_exp = True)
         dur_list.append(dur[mjd_index])
         mjd_list.append(mjds[mjd_index])
         freq_list.append(p.freq_suba)
@@ -145,114 +147,15 @@ arrayyay = np.array([mjd_list, freq_list, dur_list, gauss_width_list, pbf_width_
 
 np.save('expdatayay', arrayyay)
 
-#=============================================================================
-# Test of new class and errors on tau
+
+#===============================================================================
+# BEFORE PROFILE CLASS
 # =============================================================================
-
-# num_chan0 = int(chan[40])
-# data0 = data[40][:num_chan0]
-# freq0 = freq[40][:num_chan0]
-#
-# p1 = fittin.Profile(mjds[40],data0,freq0,0)
-#
-# data_testb = p1.fit(beta_ind = 11, gwidth_ind = 4)
-# data_teste = p1.fit(gwidth_ind = 4, dec_exp = True)
-#
-# np.save('data_testb_h', data_testb)
-# np.save('data_teste_h', data_teste)
-#
-# num_chan0 = int(chan[40])
-# data0 = data[40][:num_chan0]
-# freq0 = freq[40][:num_chan0]
-#
-# p1 = fittin.Profile(mjds[40],data0,freq0,0)
-#
-# data_testb = p1.fit(beta_ind = 11, gwidth_ind = 4)
-# data_teste = p1.fit(gwidth_ind = 4, dec_exp = True)
-#
-# np.save('data_testb_h', data_testb)
-# np.save('data_teste_h', data_teste)
-
+# Using fit_functions
 #=============================================================================
-# Fitting with Decaying Exponential and Gaussian Width
-    # Setting gwidth to index 4
-# =============================================================================
-
-# mjd_listeg = []
-# freq_listeg = []
-# pbf_width_listeg = []
-# low_chi_listeg = []
-# tau_listeg = []
-# gauss_width_listeg = []
-#
-# gwidth_index = 4
-#
-# for i in range(56):
-#     sub_int = True
-#     ii = 0
-#     while sub_int == True:
-#         num_chan0 = int(chan[i])
-#         data0 = data[i][:num_chan0]
-#         freq0 = freq[i][:num_chan0]
-#         dataer = fittin.fit_dec_setgwidth_exp(mjds[i], data0, freq0, ii, gwidth_index)
-#         mjd_listeg.append(mjds[i])
-#         freq_listeg.append(dataer[4])
-#         gauss_width_listeg.append(dataer[2])
-#         pbf_width_listeg.append(dataer[3])
-#         low_chi_listeg.append(dataer[0])
-#         tau_listeg.append(dataer[1])
-#         ii += 1
-#         if ii > dataer[5] - 1:
-#             sub_int = False
-#
-# setgdece_arrayyay = np.array([mjd_listeg, freq_listeg, gauss_width_listeg, pbf_width_listeg, low_chi_listeg, tau_listeg])
-#
-# np.save('setgdece_arrayyay', setgdece_arrayyay)
 
 
-#=============================================================================
-# Fitting with Constant Beta and Gaussian Width
-    # Setting gwidth to index 4
-    # Setting beta to index 11
-# =============================================================================
-
-# mjd_listgb = []
-# beta_listgb = []
-# freq_listgb = []
-# pbf_width_listgb = []
-# low_chi_listgb = []
-# tau_listgb = []
-# gauss_width_listgb = []
-# subavg_chan_listgb = []
-#
-# gwidth_index = 4
-# beta_index = 11
-#
-# for i in range(56):
-#     sub_int = True
-#     ii = 0
-#     while sub_int == True:
-#         num_chan0 = int(chan[i])
-#         data0 = data[i][:num_chan0]
-#         freq0 = freq[i][:num_chan0]
-#         dataer = fittin.fit_cons_beta_gauss_profile(mjds[i], data0, freq0, ii, beta_index, gwidth_index)
-#         mjd_listgb.append(mjds[i])
-#         freq_listgb.append(dataer[4])
-#         beta_listgb.append(betaselect[beta_index])
-#         gauss_width_listgb.append(dataer[2])
-#         pbf_width_listgb.append(dataer[3])
-#         low_chi_listgb.append(dataer[0])
-#         tau_listgb.append(dataer[1])
-#         subavg_chan_listgb.append(dataer[5])
-#         ii += 1
-#         if ii > dataer[5] - 1:
-#             sub_int = False
-#
-# setgsetb_arrayyay = np.array([mjd_listgb, beta_listgb, freq_listgb, gauss_width_listgb, pbf_width_listgb, low_chi_listgb, tau_listgb, subavg_chan_listgb])
-#
-# np.save('setgsetb_arrayyay', setgsetb_arrayyay)
-
-#=============================================================================
+#===============================================================================
 # Fitting Instrinsic Pulse
 # =============================================================================
 
@@ -311,36 +214,6 @@ np.save('expdatayay', arrayyay)
 #                  beta_fin, freqs_care]))
 
 # =============================================================================
-
-# num_chan0 = int(chan[0])
-# data0 = data[0][:num_chan0]
-# freq0 = freq[0][:num_chan0]
-
-# fittin.fit_all_profile(mjds[0], data0, freq0, 11) # for cons beta 11, plot_conv=True
-
-# low_chi, tau_fin, gauss_width_fin, pbf_width_fin, beta_fin, freqs_care = \
-#     fittin.fit_all_profile(mjds[0], data0, freq0, 0)
-# np.save('Varying_Beta'+str(mjds[0])[:5]+'highfreq', \
-#         np.array([low_chi, tau_fin, gauss_width_fin, pbf_width_fin, \
-#                   beta_fin, freqs_care]))
-
-# =============================================================================
-
-# num_chan0 = int(chan[25])
-# data0 = data[25][:num_chan0]
-# freq0 = freq[25][:num_chan0]
-#
-# low_chi, tau_fin, gauss_width_fin, pbf_width_fin, beta_fin, freqs_care = \
-#     fittin.fit_all_profile(mjds[25], data0, freq0, 0)
-# np.save('Varying_Beta'+str(mjds[25])[:5]+'highfreq', \
-#         np.array([low_chi, tau_fin, gauss_width_fin, pbf_width_fin, \
-#                   beta_fin, freqs_care]))
-
-# =============================================================================
-
-# fittin.fit_dec_exp(mjds[0], data0, freq0, 0)
-# fittin.fit_cons_beta_profile(mjds[0], data0, freq0, 0, 11)
-# fittin.fit_cons_beta_ipfd(mjds[0], data0, freq0, 0, 11)
 
 
 
