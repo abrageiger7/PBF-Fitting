@@ -506,4 +506,6 @@ class Profile:
 
             tau_fin = tau_values_exp[lsqs_pbf_index]
 
+            self.fit_plot(0, lsqs_pbf_index, lsqs_gauss_index, exp = True)
+
             return(low_chi, lsqs_gauss_val, lsqs_pbf_val, tau_fin)
