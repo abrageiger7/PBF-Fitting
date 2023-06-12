@@ -69,7 +69,7 @@ fse_liste = []
 for i in range(56):
     sub_int = True
     ii = 0
-    print(f'MJD {i}'')
+    print(f'MJD {i}')
     num_chan0 = int(chan[i])
     data0 = data[i][:num_chan0]
     freq0 = freq[i][:num_chan0]
@@ -78,7 +78,7 @@ for i in range(56):
 
     while sub_int == True:
 
-        print(f'Frequency {ii}'')
+        print(f'Frequency {ii}')
 
         dur_list.append(dur[i])
         mjd_list.append(mjds[i])
