@@ -99,7 +99,7 @@ from fit_functions import *
 #             pbf_ticks = np.zeros(10)
 #             for ii in range(10):
 #                 pbf_ticks[ii] = str(widths[ii*20])[:3]
-#             plt.xticks(ticks = np.linspace(0,200,num=10), labels = gauss_ticks)
+#             plt.xticks(ticks = np.linspace(0,50,num=10), labels = gauss_ticks)
 #             plt.yticks(ticks = np.linspace(0,200,num=10), labels = pbf_ticks)
 #
 #             plt.imshow(chi_sq_arr, cmap=plt.cm.viridis_r, origin = 'lower', aspect = 0.25)
@@ -728,7 +728,7 @@ class Profile:
             pbf_ticks = np.zeros(10)
             for ii in range(10):
                 pbf_ticks[ii] = str(widths[ii*20])[:3]
-            plt.xticks(ticks = np.linspace(0,200,num=10), labels = gauss_ticks)
+            plt.xticks(ticks = np.linspace(0,50,num=10), labels = gauss_ticks)
             plt.yticks(ticks = np.linspace(0,200,num=10), labels = pbf_ticks)
 
             plt.imshow(chi_sq_arr, cmap=plt.cm.viridis_r, origin = 'lower', aspect = 0.25)
