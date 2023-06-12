@@ -55,7 +55,7 @@ class Profile:
         profile = profile / np.max(profile) #fitPulse requires template height of one
         z = np.max(profile)
         zind = np.where(profile == z)[0][0]
-        ind_diff = slef.xind-zind
+        ind_diff = self.xind-zind
         #this lines the profiles up approximately so that Single Pulse finds the
         #true minimum, not just a local min
         profile = np.roll(profile, ind_diff)
