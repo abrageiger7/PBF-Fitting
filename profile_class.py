@@ -372,7 +372,7 @@ class Profile:
             tau_fin = taus_collect[chi_beta_ind]
 
             pbf_width_ind = np.where(widths == pbf_width_fin)[0][0]
-            gauss_width_ind = np.where(((gauss_fwhm == gaussian_width_collect[chi_beta_ind]))[0][0]
+            gauss_width_ind = np.where((gauss_fwhm == gaussian_width_collect[chi_beta_ind]))[0][0]
 
             #plotting the fit parameters over beta
             for i in range(4):
