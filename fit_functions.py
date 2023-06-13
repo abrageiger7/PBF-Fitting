@@ -45,7 +45,7 @@ convolved_profiles_exp = cexp.convolved_profiles_exp
 tau_values_exp = tau.tau_values_exp
 tau_values = tau.tau_values
 zeta_convolved_profiles = zconv.convolved_profiles
-zeta_tau_values = zconv.zeta_tau_values
+zeta_tau_values = tau.zeta_tau_values
 
 phase_bins = 2048
 t = np.linspace(0, phase_bins, phase_bins)
