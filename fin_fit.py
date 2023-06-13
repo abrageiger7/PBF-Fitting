@@ -14,6 +14,8 @@ import convolved_pbfs as conv
 import intrinsic_pbfs as intrins
 import math
 from profile_class import Profile
+import zeta_convolved_pbfs as zconv
+
 
 #import the parameter bank for reference, comparing, and plotting
 convolved_profiles = conv.convolved_profiles
@@ -21,6 +23,8 @@ widths = conv.widths
 gauss_widths = conv.widths_gaussian
 betaselect = conv.betaselect
 time = conv.time
+zetaselect = zconv.zetaselect
+
 
 #import data
 data = np.load("J1903_data.npy")
