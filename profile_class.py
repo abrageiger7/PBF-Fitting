@@ -203,7 +203,7 @@ class Profile:
             title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
         elif exp:
             title = f'FIT|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
-        if not exp and not zeta:
+        elif zeta:
             title = f'FIT|ZETA|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zetaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
 
         plt.savefig(title)
