@@ -127,7 +127,7 @@ np.save('tau_values_exp', tau_values_exp)
 
 import zeta_convolved_pbfs as zconv
 
-zetaselect = zconc.zetaselect
+zetaselect = zconv.zetaselect
 
 zeta_tau_values = np.zeros((np.size(zetaselect), np.size(widths)))
 
