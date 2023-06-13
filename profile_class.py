@@ -74,7 +74,7 @@ class Profile:
 
         return(chi_sq_measure)
 
-    def chi_plot(self, chi_sq_arr, beta = -1, exp = False, gwidth = -1, pbfwidth = -1):
+    def chi_plot(self, chi_sq_arr, beta = -1, exp = False, gwidth = -1, pbfwidth = -1, zeta = -1):
 
         '''Plots the inputted chi_sq_arr against the given parameters.
 
@@ -129,11 +129,14 @@ class Profile:
             elif exp:
                 title = f"EXPSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|GWIDTH={gwidth_round}.png"
 
+            elif zeta != -1
+                title = f"ONEZSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zeta}|GWIDTH={gwidth_round}.png"
+
             plt.savefig(title)
             plt.close(45)
 
 
-    def fit_plot(self, beta_ind, pbfwidth_ind, gwidth_ind, exp = False):
+    def fit_plot(self, zbeta_ind, pbfwidth_ind, gwidth_ind, exp = False, zeta = False):
 
         '''Plots and saves the fit of the profile subaveraged data to the
         template indicated by the argument indexes and the bolean
@@ -141,10 +144,12 @@ class Profile:
 
         beta_ind, pbfwidth_ind, gwidth_ind are ints; exp is boolean'''
 
-        if not exp:
-            i = convolved_profiles[beta_ind][pbfwidth_ind][gwidth_ind]
+        if not exp and not zeta:
+            i = convolved_profiles[zbeta_ind][pbfwidth_ind][gwidth_ind]
         elif exp:
             i = convolved_profiles_exp[pbfwidth_ind][gwidth_ind]
+        elif zeta:
+            i = zeta_convolved_profiles[zbeta_ind][pbfwidth_ind][gwidth_ind]
 
         profile = i / np.max(i) #fitPulse requires template height of one
         z = np.max(profile)
@@ -170,10 +175,13 @@ class Profile:
         #Plot Data-model
         frame1=fig1.add_axes((.1,.3,.8,.6))
         #xstart, ystart, xend, yend [units are fraction of the image frame, from bottom left corner]
-        if not exp:
-            plt.title(f'Best Fit Template over Data with Beta = {betaselect[beta_ind]}')
+        if not exp and not zeta:
+            plt.title(f'Best Fit Template over Data with Beta = {betaselect[zbeta_ind]}')
         elif exp:
             plt.title('Best Fit Template over Data')
+        elif zeta:
+            plt.title(f'Best Fit Template over Data with Zeta = {zetaselect[zbeta_ind]}')
+
         plt.ylabel('Pulse Intensity')
         plt.plot(time, self.data_suba*self.mask, '.', ms = '2.4')
         plt.plot(time, fitted_template)
@@ -191,10 +199,13 @@ class Profile:
         gwidth_round = str(gauss_fwhm[gwidth_ind])[:3]
         pbfwidth_round = str(widths[pbfwidth_ind])[:3]
 
-        if not exp:
+        if not exp and not zeta:
             title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[beta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
         elif exp:
             title = f'FIT|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
+        if not exp and not zeta:
+            title = f'FIT|ZETA|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zetaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
+
         plt.savefig(title)
         plt.close(50)
 
@@ -217,7 +228,7 @@ class Profile:
         #print(error) -> seems to be a very small number of microseconds (order of 1)
         return(error)
 
-    def fit(self, freq_subint_index, beta_ind = -1, gwidth_ind = -1, pbfwidth_ind = -1, dec_exp = False):
+    def fit(self, freq_subint_index, beta_ind = -1, gwidth_ind = -1, pbfwidth_ind = -1, dec_exp = False, zind = -1):
         '''Calculates the best broadening function and corresponding parameters
         for the Profile object.
 
@@ -515,6 +526,47 @@ class Profile:
             self.fit_plot(0, lsqs_pbf_index, lsqs_gauss_index, exp = True)
 
             return(low_chi, lsqs_gauss_val, lsqs_pbf_val, tau_fin)
+
+        elif zind != -1 and gwidth_ind != -1 and dec_exp = False:
+
+            num_par = 3 # number of fitted parameters
+
+            bzta = zetaselect[zeta_ind]
+            gwidth = gauss_fwhm[gwidth_ind]
+
+            chi_sqs_array = np.zeros(num_pbfwidth)
+            for i in pbfwidth_inds:
+
+                template = zeta_convolved_profiles[zeta_ind][i][gwidth_ind]
+                chi_sq = self.fit_sing(template, num_par)
+                chi_sqs_array[i] = chi_sq
+
+            self.chi_plot(chi_sqs_array, zeta = zeta, gwidth = gwidth)
+
+            low_chi = find_nearest(chi_sqs_array, 0.0)[0]
+            lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+            pbf_width_fin = widths[lsqs_pbf_index]
+
+            if chi_sqs_array[0] < low_chi+1 and chi_sqs_array[-1] < low_chi+1:
+                raise Exception('NOT CONVERGING ENOUGH')
+
+            tau_fin = zeta_tau_values[zeta_ind][lsqs_pbf_index]
+
+            #ERROR TEST - one reduced chi-squared unit above and below and these
+            #chi-squared bins are for varying pbf width
+            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+1)[1][0][0]
+            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+1)[1][0][0] + lsqs_pbf_index
+
+            tau_arr = zeta_tau_values[beta_ind]
+            tau_low = tau_fin - tau_arr[below]
+            tau_up = tau_arr[above] - tau_fin
+
+            self.fit_plot(zeta_ind, lsqs_pbf_index, gwidth_ind, zeta=True)
+
+            return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin, zeta)
+
+
+
 
 
 #===============================================================================
