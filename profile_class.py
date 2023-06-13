@@ -531,7 +531,7 @@ class Profile:
 
             num_par = 3 # number of fitted parameters
 
-            bzta = zetaselect[zind]
+            zeta = zetaselect[zind]
             gwidth = gauss_fwhm[gwidth_ind]
 
             chi_sqs_array = np.zeros(num_pbfwidth)
