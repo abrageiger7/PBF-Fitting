@@ -527,7 +527,7 @@ class Profile:
 
             return(low_chi, lsqs_gauss_val, lsqs_pbf_val, tau_fin)
 
-        elif zind != -1 and gwidth_ind != -1 and dec_exp = False:
+        elif zind != -1 and gwidth_ind != -1 and dec_exp == False:
 
             num_par = 3 # number of fitted parameters
 
