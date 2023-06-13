@@ -44,6 +44,7 @@ convolved_w_dataintrins = intrins.convolved_w_dataintrins
 convolved_profiles_exp = cexp.convolved_profiles_exp
 tau_values_exp = tau.tau_values_exp
 tau_values = tau.tau_values
+zetaselect = zconv.zetaselect
 zeta_convolved_profiles = zconv.convolved_profiles
 zeta_tau_values = tau.zeta_tau_values
 
