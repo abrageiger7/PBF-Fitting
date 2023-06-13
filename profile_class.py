@@ -200,7 +200,7 @@ class Profile:
         pbfwidth_round = str(widths[pbfwidth_ind])[:3]
 
         if not exp and not zeta:
-            title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[beta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
+            title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
         elif exp:
             title = f'FIT|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
         if not exp and not zeta:
@@ -550,7 +550,7 @@ class Profile:
             if chi_sqs_array[0] < low_chi+1 and chi_sqs_array[-1] < low_chi+1:
                 raise Exception('NOT CONVERGING ENOUGH')
 
-            tau_fin = zeta_tau_values[zeta_ind][lsqs_pbf_index]
+            tau_fin = zeta_tau_values[zind][lsqs_pbf_index]
 
             #ERROR TEST - one reduced chi-squared unit above and below and these
             #chi-squared bins are for varying pbf width
@@ -561,7 +561,7 @@ class Profile:
             tau_low = tau_fin - tau_arr[below]
             tau_up = tau_arr[above] - tau_fin
 
-            self.fit_plot(zeta_ind, lsqs_pbf_index, gwidth_ind, zeta=True)
+            self.fit_plot(zind, lsqs_pbf_index, gwidth_ind, zeta=True)
 
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin, zeta)
 
