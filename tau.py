@@ -124,3 +124,25 @@ np.save('tau_values_exp', tau_values_exp)
 #plt.plot(widths, tau_values[0], color = 'orange', label = 'Beta='+str(betaselect[0]))
 #plt.legend()
 #plt.show()
+
+import zeta_convolved_pbfs as zconv
+
+zetaselect = zconc.zetaselect
+
+zeta_tau_values = np.zeros((np.size(zetaselect), np.size(widths)))
+
+pbf_data_freqscale = zconv.pbf_data_freqscale
+
+
+data_index = 0
+for i in pbf_data_freqscale:
+    data_index2 = 0
+    for ii in i:
+        tau_ii = calculate_tau(ii)
+        zeta_tau_values[data_index][data_index2] = tau_ii[0]
+        #plt.plot(ii)
+        #plt.plot(tau_ii[1], tau_ii[2],'.')
+        data_index2 = data_index2+1
+    data_index = data_index+1
+#plt.show()
+np.save('zeta_tau_values', zeta_tau_values)
