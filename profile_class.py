@@ -129,7 +129,7 @@ class Profile:
             elif exp:
                 title = f"EXPSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|GWIDTH={gwidth_round}.png"
 
-            elif zeta != -1
+            elif zeta != -1:
                 title = f"ONEZSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zeta}|GWIDTH={gwidth_round}.png"
 
             plt.savefig(title)
