@@ -531,13 +531,13 @@ class Profile:
 
             num_par = 3 # number of fitted parameters
 
-            bzta = zetaselect[zeta_ind]
+            bzta = zetaselect[zind]
             gwidth = gauss_fwhm[gwidth_ind]
 
             chi_sqs_array = np.zeros(num_pbfwidth)
             for i in pbfwidth_inds:
 
-                template = zeta_convolved_profiles[zeta_ind][i][gwidth_ind]
+                template = zeta_convolved_profiles[zind][i][gwidth_ind]
                 chi_sq = self.fit_sing(template, num_par)
                 chi_sqs_array[i] = chi_sq
 
