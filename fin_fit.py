@@ -82,7 +82,7 @@ for i in range(0,56,5):
             dur_list.append(dur[i])
             mjd_list.append(mjds[i])
 
-            dataz = p.fit(ii, z_ind = zind, gwidth_ind = 4)
+            dataz = p.fit(ii, z_ind = z_ind, gwidth_ind = 4)
             gauss_width_listz.append(dataz[5])
             pbf_width_listz.append(dataz[6])
             low_chi_listz.append(dataz[0])
