@@ -199,12 +199,11 @@ def subaverages4(mjdi, data, freqsm, plot = False):
 
     #now subaveraging in time
     if phase_bins != 2048:
-         subs_time_avg = np.zeros((len(freqsm)//4,phase_bins))
+        subs_time_avg = np.zeros((len(freqsm)//4,phase_bins))
 
-         for i in range(len(freqsm)//4):
-             for ii in range(phase_bins):
-                 subs_time_avg[i][ii] = np.average(subs[i][((2048//phase_bins)*ii):((2048//phase_bins)*ii)+(2048//phase_bins)])
-
+        for i in range(len(freqsm)//4):
+            for ii in range(phase_bins):
+                subs_time_avg[i][ii] = np.average(subs[i][((2048//phase_bins)*ii):((2048//phase_bins)*ii)+(2048//phase_bins)])
         subs = subs_time_avg
 
     #if number of frequency channels not divisible by 4
