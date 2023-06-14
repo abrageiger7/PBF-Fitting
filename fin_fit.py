@@ -99,7 +99,7 @@ for i in range(0,56,5):
             sub_int = False
 
 
-setg4varyz_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listz, low_chi_listz, tau_listz, tau_low_listz, tau_high_listz, fse_listz, gauss_width_listz])
+setg4varyz_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listz, low_chi_listz, tau_listz, tau_low_listz, tau_high_listz, fse_listz, gauss_width_listz, zeta_listz])
 
 np.save('setg4varyz_data', setg4varyz_data)
 
