@@ -278,7 +278,7 @@ class Profile:
             self.stop_index = (1798//2048)*Profile.num_phase_bins
         elif self.freq_suba >= 1000 and self.freq_suba < 1200:
             self.start_index = (600//2048)*Profile.num_phase_bins
-            self.stop_index = (1948//2048)Profile.num_phase_bins
+            self.stop_index = (1948//2048)*Profile.num_phase_bins
         mask[self.start_index:self.stop_index] = 1.0
 
         self.mask = mask
