@@ -281,6 +281,8 @@ class Profile:
             self.stop_index = int((1948/2048)*Profile.num_phase_bins)
         mask[self.start_index:self.stop_index] = 1.0
 
+        self.bin_num_care = self.stop_index-self.start_index
+
         self.mask = mask
 
 
@@ -452,8 +454,8 @@ class Profile:
 
             #ERROR TEST - one reduced chi-squared unit above and below and these
             #chi-squared bins are for varying pbf width
-            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+1)[1][0][0]
-            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+1)[1][0][0] + lsqs_pbf_index
+            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/self.bin_num_care))[1][0][0]
+            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index
 
             tau_arr = tau_values[beta_ind]
             tau_low = tau_fin - tau_arr[below]
@@ -491,8 +493,8 @@ class Profile:
             #ERROR TEST - one reduced chi-squared unit above and below and these
             #chi-squared bins are for varying pbf width
 
-            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+1)[1][0][0]
-            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+1)[1][0][0] + lsqs_pbf_index
+            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/self.bin_num_care))[1][0][0]
+            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index
 
             tau_low = tau_fin - tau_values_exp[below]
             tau_up = tau_values_exp[above] - tau_fin
@@ -554,8 +556,8 @@ class Profile:
 
             #ERROR TEST - one reduced chi-squared unit above and below and these
             #chi-squared bins are for varying pbf width
-            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+1)[1][0][0]
-            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+1)[1][0][0] + lsqs_pbf_index
+            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/self.bin_num_care))[1][0][0]
+            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index
 
             tau_arr = zeta_tau_values[zind]
             tau_low = tau_fin - tau_arr[below]
