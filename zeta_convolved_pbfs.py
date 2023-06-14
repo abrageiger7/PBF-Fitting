@@ -27,7 +27,7 @@ widths = conv.widths
 #array of gaussian widths (phase bins)
 widths_gaussian = conv.widths_gaussian
 #gauss widths converted to fwhm microseconds
-gauss_fwhm = conv.gauss_fwhn
+gauss_fwhm = conv.gauss_fwhm
 
 parameters = conv.parameters
 
