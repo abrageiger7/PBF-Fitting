@@ -89,6 +89,7 @@ for i in pbf_data_unitarea:
             / trapz(p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2]))))
             print(np.size(t))
             print(np.size(ua_intrinsic_gauss))
+            print(np.size(ii))
             new_profile = (np.fft.ifft(np.fft.fft(ua_intrinsic_gauss)*np.fft.fft(ii)))
             new_profile = new_profile.real #take real component of convolution
             convolved_profiles[data_index0][data_index1][data_index2] = new_profile
