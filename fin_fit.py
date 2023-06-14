@@ -41,104 +41,44 @@ dur = np.load("J1903_dur.npy")
 #Below are various calculations of fit parameters using the Profile class and
 #functions from fit_functions.py
 
+
+
 #=============================================================================
 # Fitting with varying Zeta for PBFs
     # Setting gwidth to index 4
     # Time averaging every 8 points - set conv.phase_bins to 2048//8
 # =============================================================================
 
-# for z_ind in range(np.size(zetaselect)):
-#     zeta = zetaselect[z_ind]
-#
-#     mjd_list = []
-#     freq_list = []
-#     dur_list = []
-#     subavg_chan_list = []
-#
-#
-#     pbf_width_listz = []
-#     low_chi_listz = []
-#     tau_listz = []
-#     tau_low_listz = []
-#     tau_high_listz = []
-#     gauss_width_listz = []
-#     fse_listz = []
-#     zeta_listz = []
-#
-#
-#     for i in range(56):
-#         sub_int = True
-#         ii = 0
-#         print(f'MJD {i}')
-#         num_chan0 = int(chan[i])
-#         data0 = data[i][:num_chan0]
-#         freq0 = freq[i][:num_chan0]
-#         p = Profile(mjds[i], data0, freq0, dur[i])
-#         subavg_chan_list.append(p.num_sub)
-#
-#         while sub_int == True:
-#
-#             print(f'Frequency {ii}')
-#
-#             dur_list.append(dur[i])
-#             mjd_list.append(mjds[i])
-#
-#             dataz = p.fit(ii, zind = z_ind, gwidth_ind = 4)
-#             gauss_width_listz.append(dataz[5])
-#             pbf_width_listz.append(dataz[6])
-#             low_chi_listz.append(dataz[0])
-#             tau_listz.append(dataz[1])
-#             tau_low_listz.append(dataz[2])
-#             tau_high_listz.append(dataz[3])
-#             fse_listz.append(dataz[4])
-#             zeta_listz.append(dataz[7])
-#
-#             freq_list.append(p.freq_suba)
-#
-#             ii += 1
-#             if ii > p.num_sub - 1:
-#                 sub_int = False
-#
-#
-#     setg4varyz_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listz, low_chi_listz, tau_listz, tau_low_listz, tau_high_listz, fse_listz, gauss_width_listz, zeta_listz])
-#
-#     np.save(f'timea_z{z_ind}setg4_data', setg4varyz_data)
+for z_ind in range(np.size(zetaselect)):
+    zeta = zetaselect[z_ind]
+
+    mjd_list = []
+    freq_list = []
+    dur_list = []
+    subavg_chan_list = []
 
 
-#=============================================================================
-# Fitting with varying Zeta for PBFs
-    # Setting gwidth to index 4
-# =============================================================================
-
-mjd_list = []
-freq_list = []
-dur_list = []
-subavg_chan_list = []
-
-
-pbf_width_listz = []
-low_chi_listz = []
-tau_listz = []
-tau_low_listz = []
-tau_high_listz = []
-gauss_width_listz = []
-fse_listz = []
-zeta_listz = []
+    pbf_width_listz = []
+    low_chi_listz = []
+    tau_listz = []
+    tau_low_listz = []
+    tau_high_listz = []
+    gauss_width_listz = []
+    fse_listz = []
+    zeta_listz = []
 
 
-for i in range(0,56,5):
-    sub_int = True
-    ii = 0
-    print(f'MJD {i}')
-    num_chan0 = int(chan[i])
-    data0 = data[i][:num_chan0]
-    freq0 = freq[i][:num_chan0]
-    p = Profile(mjds[i], data0, freq0, dur[i])
-    subavg_chan_list.append(p.num_sub)
+    for i in range(56):
+        sub_int = True
+        ii = 0
+        print(f'MJD {i}')
+        num_chan0 = int(chan[i])
+        data0 = data[i][:num_chan0]
+        freq0 = freq[i][:num_chan0]
+        p = Profile(mjds[i], data0, freq0, dur[i])
+        subavg_chan_list.append(p.num_sub)
 
-    while sub_int == True:
-
-        for z_ind in range(np.size(zetaselect)):
+        while sub_int == True:
 
             print(f'Frequency {ii}')
 
@@ -157,14 +97,76 @@ for i in range(0,56,5):
 
             freq_list.append(p.freq_suba)
 
-        ii += 2
-        if ii > p.num_sub - 2:
-            sub_int = False
+            ii += 1
+            if ii > p.num_sub - 1:
+                sub_int = False
 
 
-setg4varyz_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listz, low_chi_listz, tau_listz, tau_low_listz, tau_high_listz, fse_listz, gauss_width_listz, zeta_listz])
+    setg4varyz_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listz, low_chi_listz, tau_listz, tau_low_listz, tau_high_listz, fse_listz, gauss_width_listz, zeta_listz])
 
-np.save('setg4varyz_data', setg4varyz_data)
+    np.save(f'timea_z{z_ind}setg4_data', setg4varyz_data)
+
+
+#=============================================================================
+# Fitting with varying Zeta for PBFs
+    # Setting gwidth to index 4
+# =============================================================================
+
+# mjd_list = []
+# freq_list = []
+# dur_list = []
+# subavg_chan_list = []
+#
+#
+# pbf_width_listz = []
+# low_chi_listz = []
+# tau_listz = []
+# tau_low_listz = []
+# tau_high_listz = []
+# gauss_width_listz = []
+# fse_listz = []
+# zeta_listz = []
+#
+#
+# for i in range(0,56,5):
+#     sub_int = True
+#     ii = 0
+#     print(f'MJD {i}')
+#     num_chan0 = int(chan[i])
+#     data0 = data[i][:num_chan0]
+#     freq0 = freq[i][:num_chan0]
+#     p = Profile(mjds[i], data0, freq0, dur[i])
+#     subavg_chan_list.append(p.num_sub)
+#
+#     while sub_int == True:
+#
+#         for z_ind in range(np.size(zetaselect)):
+#
+#             print(f'Frequency {ii}')
+#
+#             dur_list.append(dur[i])
+#             mjd_list.append(mjds[i])
+#
+#             dataz = p.fit(ii, zind = z_ind, gwidth_ind = 4)
+#             gauss_width_listz.append(dataz[5])
+#             pbf_width_listz.append(dataz[6])
+#             low_chi_listz.append(dataz[0])
+#             tau_listz.append(dataz[1])
+#             tau_low_listz.append(dataz[2])
+#             tau_high_listz.append(dataz[3])
+#             fse_listz.append(dataz[4])
+#             zeta_listz.append(dataz[7])
+#
+#             freq_list.append(p.freq_suba)
+#
+#         ii += 2
+#         if ii > p.num_sub - 2:
+#             sub_int = False
+#
+#
+# setg4varyz_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listz, low_chi_listz, tau_listz, tau_low_listz, tau_high_listz, fse_listz, gauss_width_listz, zeta_listz])
+#
+# np.save('setg4varyz_data', setg4varyz_data)
 
 
 #=============================================================================
