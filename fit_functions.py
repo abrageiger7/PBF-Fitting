@@ -26,7 +26,7 @@ from scipy.interpolate import CubicSpline
 from scipy import special
 import itertools
 import convolved_pbfs as conv
-import intrinsic_pbfs as intrins
+#import intrinsic_pbfs as intrins
 import tau
 import convolved_exp as cexp
 import zeta_convolved_pbfs as zconv
