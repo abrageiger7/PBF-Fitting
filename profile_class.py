@@ -11,7 +11,7 @@ from fit_functions import *
 class Profile:
 
     num_phase_bins = phase_bins #number of phase bins for pulse period in data
-    opr_size = (600//2048)*num_phase_bins #number of phase bins for offpulse noise calculation
+    opr_size = int((600/2048)*num_phase_bins) #number of phase bins for offpulse noise calculation
 
     def __init__(self, mjd, data, frequencies, dur):
         '''
@@ -268,17 +268,17 @@ class Profile:
         mask = np.zeros(Profile.num_phase_bins)
 
         if self.freq_suba >= 1600:
-            self.start_index = (700//2048)*Profile.num_phase_bins
-            self.stop_index = (1548//2048)*Profile.num_phase_bins
+            self.start_index = int((700/2048)*Profile.num_phase_bins)
+            self.stop_index = int((1548/2048)*Profile.num_phase_bins)
         elif self.freq_suba >= 1400 and self.freq_suba < 1600:
-            self.start_index = (700//2048)*Profile.num_phase_bins
-            self.stop_index = (1648//2048)*Profile.num_phase_bins
+            self.start_index = int((700/2048)*Profile.num_phase_bins)
+            self.stop_index = int((1648/2048)*Profile.num_phase_bins)
         elif self.freq_suba >= 1200 and self.freq_suba < 1400:
-            self.start_index = (650//2048)*Profile.num_phase_bins
-            self.stop_index = (1798//2048)*Profile.num_phase_bins
+            self.start_index = int((650/2048)*Profile.num_phase_bins)
+            self.stop_index = int((1798/2048)*Profile.num_phase_bins)
         elif self.freq_suba >= 1000 and self.freq_suba < 1200:
-            self.start_index = (600//2048)*Profile.num_phase_bins
-            self.stop_index = (1948//2048)*Profile.num_phase_bins
+            self.start_index = int((600/2048)*Profile.num_phase_bins)
+            self.stop_index = int((1948/2048)*Profile.num_phase_bins)
         mask[self.start_index:self.stop_index] = 1.0
 
         self.mask = mask
@@ -290,7 +290,6 @@ class Profile:
         rms_collect = 0
         for i in range(Profile.opr_size):
             rms_collect += self.data_suba[i]**2
-        print(Profile.opr_size)
         rms = math.sqrt(rms_collect/Profile.opr_size)
 
         self.rms_noise = rms
