@@ -290,6 +290,7 @@ class Profile:
         rms_collect = 0
         for i in range(Profile.opr_size):
             rms_collect += self.data_suba[i]**2
+        print(Profile.opr_size)
         rms = math.sqrt(rms_collect/Profile.opr_size)
 
         self.rms_noise = rms
