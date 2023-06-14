@@ -49,63 +49,63 @@ dur = np.load("J1903_dur.npy")
     # Time averaging every 8 points - set conv.phase_bins to 2048//8
 # =============================================================================
 
-for z_ind in range(np.size(zetaselect)):
-    zeta = zetaselect[z_ind]
-
-    mjd_list = []
-    freq_list = []
-    dur_list = []
-    subavg_chan_list = []
-
-
-    pbf_width_listz = []
-    low_chi_listz = []
-    tau_listz = []
-    tau_low_listz = []
-    tau_high_listz = []
-    gauss_width_listz = []
-    fse_listz = []
-    zeta_listz = []
-
-
-    for i in range(56):
-        sub_int = True
-        ii = 0
-        print(f'MJD {i}')
-        num_chan0 = int(chan[i])
-        data0 = data[i][:num_chan0]
-        freq0 = freq[i][:num_chan0]
-        p = Profile(mjds[i], data0, freq0, dur[i])
-        subavg_chan_list.append(p.num_sub)
-
-        while sub_int == True:
-
-            print(f'Frequency {ii}')
-
-            dur_list.append(dur[i])
-            mjd_list.append(mjds[i])
-
-            dataz = p.fit(ii, zind = z_ind, gwidth_ind = 4)
-            gauss_width_listz.append(dataz[5])
-            pbf_width_listz.append(dataz[6])
-            low_chi_listz.append(dataz[0])
-            tau_listz.append(dataz[1])
-            tau_low_listz.append(dataz[2])
-            tau_high_listz.append(dataz[3])
-            fse_listz.append(dataz[4])
-            zeta_listz.append(dataz[7])
-
-            freq_list.append(p.freq_suba)
-
-            ii += 1
-            if ii > p.num_sub - 1:
-                sub_int = False
-
-
-    setg4varyz_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listz, low_chi_listz, tau_listz, tau_low_listz, tau_high_listz, fse_listz, gauss_width_listz, zeta_listz])
-
-    np.save(f'timea_z{z_ind}setg4_data', setg4varyz_data)
-
+# for z_ind in range(np.size(zetaselect)):
+#     zeta = zetaselect[z_ind]
+#
+#     mjd_list = []
+#     freq_list = []
+#     dur_list = []
+#     subavg_chan_list = []
+#
+#
+#     pbf_width_listz = []
+#     low_chi_listz = []
+#     tau_listz = []
+#     tau_low_listz = []
+#     tau_high_listz = []
+#     gauss_width_listz = []
+#     fse_listz = []
+#     zeta_listz = []
+#
+#
+#     for i in range(56):
+#         sub_int = True
+#         ii = 0
+#         print(f'MJD {i}')
+#         num_chan0 = int(chan[i])
+#         data0 = data[i][:num_chan0]
+#         freq0 = freq[i][:num_chan0]
+#         p = Profile(mjds[i], data0, freq0, dur[i])
+#         subavg_chan_list.append(p.num_sub)
+#
+#         while sub_int == True:
+#
+#             print(f'Frequency {ii}')
+#
+#             dur_list.append(dur[i])
+#             mjd_list.append(mjds[i])
+#
+#             dataz = p.fit(ii, zind = z_ind, gwidth_ind = 4)
+#             gauss_width_listz.append(dataz[5])
+#             pbf_width_listz.append(dataz[6])
+#             low_chi_listz.append(dataz[0])
+#             tau_listz.append(dataz[1])
+#             tau_low_listz.append(dataz[2])
+#             tau_high_listz.append(dataz[3])
+#             fse_listz.append(dataz[4])
+#             zeta_listz.append(dataz[7])
+#
+#             freq_list.append(p.freq_suba)
+#
+#             ii += 1
+#             if ii > p.num_sub - 1:
+#                 sub_int = False
+#
+#
+#     setg4varyz_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listz, low_chi_listz, tau_listz, tau_low_listz, tau_high_listz, fse_listz, gauss_width_listz, zeta_listz])
+#
+#     np.save(f'timea_z{z_ind}setg4_data', setg4varyz_data)
+#
 
 #=============================================================================
 # Fitting with varying Zeta for PBFs
@@ -234,84 +234,85 @@ for z_ind in range(np.size(zetaselect)):
 
 #=============================================================================
 # Fitting with Beta PBFs and Decaying Exponential with time averaged data (2048//8)
-    # Setting gwidth to index 4
+    # Setting gwidth to index 4 for beta pbfs
+    # Setting gwidth to index 3 for decaying exponential pbfs (fwhm of about 38 microseconds)
     # Setting beta to index 11
 # =============================================================================
 
-# mjd_list = []
-# freq_list = []
-# dur_list = []
-# subavg_chan_list = []
-#
-#
-# pbf_width_listb = []
-# low_chi_listb = []
-# tau_listb = []
-# tau_low_listb = []
-# tau_high_listb = []
-# gauss_width_listb = []
-# fse_listb = []
-#
-# pbf_width_liste = []
-# low_chi_liste = []
-# tau_liste = []
-# tau_low_liste = []
-# tau_high_liste = []
-# gauss_width_liste = []
-# fse_liste = []
-#
-#
-# for i in range(56):
-#     sub_int = True
-#     ii = 0
-#     print(f'MJD {i}')
-#     num_chan0 = int(chan[i])
-#     data0 = data[i][:num_chan0]
-#     freq0 = freq[i][:num_chan0]
-#     p = Profile(mjds[i], data0, freq0, dur[i])
-#     subavg_chan_list.append(p.num_sub)
-#
-#     while sub_int == True:
-#
-#         print(f'Frequency {ii}')
-#
-#         dur_list.append(dur[i])
-#         mjd_list.append(mjds[i])
-#
-#         datab = p.fit(ii, beta_ind = 11, gwidth_ind = 4)
-#         gauss_width_listb.append(datab[5])
-#         pbf_width_listb.append(datab[6])
-#         low_chi_listb.append(datab[0])
-#         tau_listb.append(datab[1])
-#         tau_low_listb.append(datab[2])
-#         tau_high_listb.append(datab[3])
-#         fse_listb.append(datab[4])
-#
-#         datae = p.fit(ii, gwidth_ind = 4, dec_exp = True)
-#         gauss_width_liste.append(datae[5])
-#         pbf_width_liste.append(datae[6])
-#         low_chi_liste.append(datae[0])
-#         tau_liste.append(datae[1])
-#         tau_low_liste.append(datae[2])
-#         tau_high_liste.append(datae[3])
-#         fse_liste.append(datae[4])
-#
-#         freq_list.append(p.freq_suba)
-#
-#         ii += 1
-#         if ii > p.num_sub - 1:
-#             sub_int = False
-#
-#
-# setg4setb11_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listb, low_chi_listb, tau_listb, tau_low_listb, tau_high_listb, fse_listb, gauss_width_listb])
-#
-# np.save('timea_setg4setb11_data', setg4setb11_data)
-#
-# setg4dece_data = np.array([mjd_list, freq_list, dur_list, pbf_width_liste, low_chi_liste, tau_liste, tau_low_liste, tau_high_liste, fse_liste, gauss_width_liste])
-#
-# np.save('timea_setg4dece_data', setg4dece_data)
-#
-# np.save('J1903_subavgnumchan', subavg_chan_list)
+mjd_list = []
+freq_list = []
+dur_list = []
+subavg_chan_list = []
+
+
+pbf_width_listb = []
+low_chi_listb = []
+tau_listb = []
+tau_low_listb = []
+tau_high_listb = []
+gauss_width_listb = []
+fse_listb = []
+
+pbf_width_liste = []
+low_chi_liste = []
+tau_liste = []
+tau_low_liste = []
+tau_high_liste = []
+gauss_width_liste = []
+fse_liste = []
+
+
+for i in range(56):
+    sub_int = True
+    ii = 0
+    print(f'MJD {i}')
+    num_chan0 = int(chan[i])
+    data0 = data[i][:num_chan0]
+    freq0 = freq[i][:num_chan0]
+    p = Profile(mjds[i], data0, freq0, dur[i])
+    subavg_chan_list.append(p.num_sub)
+
+    while sub_int == True:
+
+        print(f'Frequency {ii}')
+
+        dur_list.append(dur[i])
+        mjd_list.append(mjds[i])
+
+        datab = p.fit(ii, beta_ind = 11, gwidth_ind = 4)
+        gauss_width_listb.append(datab[5])
+        pbf_width_listb.append(datab[6])
+        low_chi_listb.append(datab[0])
+        tau_listb.append(datab[1])
+        tau_low_listb.append(datab[2])
+        tau_high_listb.append(datab[3])
+        fse_listb.append(datab[4])
+
+        datae = p.fit(ii, gwidth_ind = 3, dec_exp = True)
+        gauss_width_liste.append(datae[5])
+        pbf_width_liste.append(datae[6])
+        low_chi_liste.append(datae[0])
+        tau_liste.append(datae[1])
+        tau_low_liste.append(datae[2])
+        tau_high_liste.append(datae[3])
+        fse_liste.append(datae[4])
+
+        freq_list.append(p.freq_suba)
+
+        ii += 1
+        if ii > p.num_sub - 1:
+            sub_int = False
+
+
+setg4setb11_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listb, low_chi_listb, tau_listb, tau_low_listb, tau_high_listb, fse_listb, gauss_width_listb])
+
+np.save('timea_setg4setb11_data', setg4setb11_data)
+
+setg4dece_data = np.array([mjd_list, freq_list, dur_list, pbf_width_liste, low_chi_liste, tau_liste, tau_low_liste, tau_high_liste, fse_liste, gauss_width_liste])
+
+np.save('timea_setg3dece_data', setg4dece_data)
+
+np.save('J1903_subavgnumchan', subavg_chan_list)
 
 #=============================================================================
 # Fitting with Beta PBFs and Decaying Exponential with new Class
@@ -396,6 +397,7 @@ for z_ind in range(np.size(zetaselect)):
 
 #=============================================================================
 # Comparing Exponential over Frequency and MJD
+# Not time averaged and below calculations are also not time averaged
 # =============================================================================
 # dur_list = []
 # mjd_list = []
