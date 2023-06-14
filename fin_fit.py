@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import fit_functions as fittin
 import convolved_pbfs as conv
-import intrinsic_pbfs as intrins
+#import intrinsic_pbfs as intrins
 import math
 from profile_class import Profile
 import zeta_convolved_pbfs as zconv
