@@ -10,7 +10,7 @@ from fit_functions import *
 
 class Profile:
 
-    num_phase_bins = 2048 #number of phase bins for pulse period in data
+    num_phase_bins = phase_bins #number of phase bins for pulse period in data
     opr_size = 600 #number of phase bins for offpulse noise calculation
 
     def __init__(self, mjd, data, frequencies, dur):
@@ -268,17 +268,17 @@ class Profile:
         mask = np.zeros(Profile.num_phase_bins)
 
         if self.freq_suba >= 1600:
-            self.start_index = 700
-            self.stop_index = 1548
+            self.start_index = (700//2048)*Profile.num_phase_bins
+            self.stop_index = (1548//2048)*Profile.num_phase_bins
         elif self.freq_suba >= 1400 and self.freq_suba < 1600:
-            self.start_index = 700
-            self.stop_index = 1648
+            self.start_index = (700//2048)*Profile.num_phase_bins
+            self.stop_index = (1648//2048)*Profile.num_phase_bins
         elif self.freq_suba >= 1200 and self.freq_suba < 1400:
-            self.start_index = 650
-            self.stop_index = 1798
+            self.start_index = (650//2048)*Profile.num_phase_bins
+            self.stop_index = (1798//2048)*Profile.num_phase_bins
         elif self.freq_suba >= 1000 and self.freq_suba < 1200:
-            self.start_index = 600
-            self.stop_index = 1948
+            self.start_index = (600//2048)*Profile.num_phase_bins
+            self.stop_index = (1948//2048)Profile.num_phase_bins
         mask[self.start_index:self.stop_index] = 1.0
 
         self.mask = mask

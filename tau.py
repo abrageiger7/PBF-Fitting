@@ -32,7 +32,7 @@ def find_nearest(a, a0):
 def calculate_tau(profile):
     '''Calculates tau value of J1903 profile by calculating where it decays to the value of its max divided by e
 
-    Preconditions: profile is a 1 dimensional array of length num_phasebins (2048)'''
+    Preconditions: profile is a 1 dimensional array of length num_phasebins'''
     iii = np.copy(profile)
     #isolate decaying part of pbf
     maxim = np.where((iii == np.max(iii)))[0][0]
@@ -88,7 +88,7 @@ def calculate_tau_exp(profile):
     '''Calculates tau value of J1903 profile by calculating where it decays to
     the value of its max divided by e. Microseconds
 
-    Preconditions: profile is a 1 dimensional array of length 2048'''
+    Preconditions: profile is a 1 dimensional array of length number of phase bins'''
     iii = np.copy(profile)
     #isolate decaying part of pbf
     near = find_nearest(iii, np.max(iii)/math.e)

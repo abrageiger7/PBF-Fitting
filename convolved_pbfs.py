@@ -17,6 +17,10 @@ from scipy.interpolate import CubicSpline
 #import profiles from professor Cordes
 cordes_profs = np.load('widths_pbf_data.npy')
 
+#phase bins
+phase_bins = 2048//8
+t = np.linspace(0, phase_bins, phase_bins)
+
 #array of beta values used
 betaselect = np.array([3.1, 3.5, 3.667, 3.8, 3.9, 3.95, 3.975, 3.99, 3.995, 3.9975, 3.999, 3.99999])
 
@@ -27,7 +31,7 @@ widths = np.concatenate((np.linspace(0.1, 1.0, 40), np.linspace(1.1, 42.0, 160))
 #array of gaussian widths (phase bins)
 widths_gaussian = np.linspace(0.1, 250.0, 50)
 #gauss widths converted to fwhm microseconds
-gauss_fwhm = widths_gaussian * ((0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))
+gauss_fwhm = widths_gaussian * ((0.0021499/phase_bins) * 1e6 * (2.0*math.sqrt(2*math.log(2))))
 
 #gaussian parameters in phase bins and arbitrary intensity comparitive to data
 parameters = np.zeros((50, 3))
@@ -35,19 +39,15 @@ parameters[:,0] = 0.3619 #general amplitude to be scaled
 parameters[:,1] = 1025.0 #general mean
 parameters[:,2] = widths_gaussian #independent variable
 
-#phase bins
-phase_bins = 2048
-t = np.linspace(0, phase_bins, phase_bins)
-
 # first want to scale the time to match the phase bins
-#this way we have 9549 values and they go up to 2048s
+#this way we have 9549 values and they go up to however many phase bins
 cordes_phase_bins = 9549
 times_scaled = np.zeros(cordes_phase_bins)
 for i in range(cordes_phase_bins):
     times_scaled[i] = phase_bins/cordes_phase_bins*i
 
-#an array of the broadening functions scaled to 2048 data values
-pbf_data_freqscale = np.zeros((np.size(betaselect), np.size(widths), 2048))
+#an array of the broadening functions scaled to number of phase bins data values
+pbf_data_freqscale = np.zeros((np.size(betaselect), np.size(widths), phase_bins))
 
 data_index1 = 0
 for i in cordes_profs:

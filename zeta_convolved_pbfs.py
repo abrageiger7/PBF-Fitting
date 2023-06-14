@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import math
 from scipy.integrate import trapz
 from scipy.interpolate import CubicSpline
+import convolved_pbfs as conv
 
 #import profiles from professor Cordes
 cordes_profs = np.load('zeta_widths_pbf_data.npy')
@@ -21,32 +22,25 @@ cordes_profs = np.load('zeta_widths_pbf_data.npy')
 zetaselect = np.array([0.01, 0.1, 0.2, 0.3, 0.5, 1.0, 2.0, 5.0])
 
 #array of widths used (pbf stretch factors)
-widths = np.concatenate((np.linspace(0.1, 1.0, 40), np.linspace(1.1, 42.0, 160)))
+widths = conv.widths
 
 #array of gaussian widths (phase bins)
-widths_gaussian = np.linspace(0.1, 250.0, 50)
+widths_gaussian = conv.widths_gaussian
 #gauss widths converted to fwhm microseconds
-gauss_fwhm = widths_gaussian * ((0.0021499/2048) * 1e6 * (2.0*math.sqrt(2*math.log(2))))
+gauss_fwhm = conv.gauss_fwhn
 
-#gaussian parameters in phase bins and arbitrary intensity comparitive to data
-parameters = np.zeros((50, 3))
-parameters[:,0] = 0.3619 #general amplitude to be scaled
-parameters[:,1] = 1025.0 #general mean
-parameters[:,2] = widths_gaussian #independent variable
+parameters = conv.parameters
 
 #phase bins
-phase_bins = 2048
-t = np.linspace(0, phase_bins, phase_bins)
+phase_bins = conv.phase_bins
+t = conv.t
 
 # first want to scale the time to match the phase bins
-#this way we have 9549 values and they go up to 2048s
-cordes_phase_bins = 9549
-times_scaled = np.zeros(cordes_phase_bins)
-for i in range(cordes_phase_bins):
-    times_scaled[i] = phase_bins/cordes_phase_bins*i
+#this way we have 9549 values and they go up to however many phase bins
+times_scaled = conv.times_scaled
 
-#an array of the broadening functions scaled to 2048 data values
-pbf_data_freqscale = np.zeros((np.size(zetaselect), np.size(widths), 2048))
+#an array of the broadening functions scaled to however many phase bins data values
+pbf_data_freqscale = np.zeros((np.size(zetaselect), np.size(widths), phase_bins))
 
 data_index1 = 0
 for i in cordes_profs:
@@ -93,9 +87,7 @@ for i in pbf_data_unitarea:
         data_index1 = data_index1+1
     data_index0 = data_index0+1
 
-sec_pulse_per = 0.0021499
-s_to_ms_conv = 1e3
-time = np.arange(0,phase_bins,1) * (sec_pulse_per/phase_bins) * s_to_ms_conv #milliseconds
+time = conv.time #milliseconds
 
 np.save('zeta_convolved_profs', convolved_profiles)
 
