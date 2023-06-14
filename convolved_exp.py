@@ -20,11 +20,12 @@ widths = conv.widths
 gauss_widths = conv.widths_gaussian
 parameters = conv.parameters
 
+phase_bins = conv.phase_bins
+len_dec_exp_profile = 45
+
 #create varying exponential profiles
 widths_exp_array = np.zeros((np.size(widths), phase_bins))
 
-phase_bins = conv.phase_bins
-len_dec_exp_profile = 45
 
 time_bins = np.linspace(0,len_dec_exp_profile,phase_bins)
 exponential = np.exp(-time_bins)
