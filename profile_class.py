@@ -557,7 +557,7 @@ class Profile:
             below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+1)[1][0][0]
             above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+1)[1][0][0] + lsqs_pbf_index
 
-            tau_arr = zeta_tau_values[beta_ind]
+            tau_arr = zeta_tau_values[zind]
             tau_low = tau_fin - tau_arr[below]
             tau_up = tau_arr[above] - tau_fin
 
