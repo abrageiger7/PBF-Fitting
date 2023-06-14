@@ -11,7 +11,7 @@ from fit_functions import *
 class Profile:
 
     num_phase_bins = phase_bins #number of phase bins for pulse period in data
-    opr_size = (600//2048)*Profile.num_phase_bins #number of phase bins for offpulse noise calculation
+    opr_size = (600//2048)*num_phase_bins #number of phase bins for offpulse noise calculation
 
     def __init__(self, mjd, data, frequencies, dur):
         '''
