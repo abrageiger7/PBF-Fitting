@@ -218,9 +218,7 @@ class Profile:
             fitted_templatel = spt.shiftit(fitting[1])
 
             fitted_templatel = fitted_templatel*self.mask
-
-            plt.plot(time, fitted_templatel, alpha = 0.5, label = fr'Lower Error; $\tau$ = {tau_val_low} $\mu$s')
-
+            
 
         #plot the upper error profile alongside the best fit for comparison
         if high_pbf != -1:
