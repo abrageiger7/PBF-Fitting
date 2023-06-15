@@ -39,7 +39,7 @@ freq0 = freq[0][:num_chan0]
 
 p = Profile(mjds[0], data0, freq0, dur[0])
 
-ii = 0
+ii = 6
 
 datab = p.fit(ii, beta_ind = 11, gwidth_ind = 4)
 
