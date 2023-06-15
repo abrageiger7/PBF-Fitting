@@ -46,6 +46,7 @@ dur = np.load("J1903_dur.npy")
 # Fitting with Decaying Exponential PBFs with time averaged data (2048//8)
     # Setting gwidth to index 5 for decaying exponential pbfs (fwhm of about 63 microseconds)
     # Setting beta to index 11
+    # Setting gwidth the index 4 for beta
 # =============================================================================
 
 mjd_list = []
@@ -53,6 +54,14 @@ freq_list = []
 dur_list = []
 subavg_chan_list = []
 
+
+pbf_width_listb = []
+low_chi_listb = []
+tau_listb = []
+tau_low_listb = []
+tau_high_listb = []
+gauss_width_listb = []
+fse_listb = []
 
 pbf_width_liste = []
 low_chi_liste = []
@@ -80,6 +89,15 @@ for i in range(56):
         dur_list.append(dur[i])
         mjd_list.append(mjds[i])
 
+        datab = p.fit(ii, beta_ind = 11, gwidth_ind = 4)
+        gauss_width_listb.append(datab[5])
+        pbf_width_listb.append(datab[6])
+        low_chi_listb.append(datab[0])
+        tau_listb.append(datab[1])
+        tau_low_listb.append(datab[2])
+        tau_high_listb.append(datab[3])
+        fse_listb.append(datab[4])
+
         datae = p.fit(ii, gwidth_ind = 5, dec_exp = True)
         gauss_width_liste.append(datae[5])
         pbf_width_liste.append(datae[6])
@@ -96,9 +114,13 @@ for i in range(56):
             sub_int = False
 
 
+setg4setb11_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listb, low_chi_listb, tau_listb, tau_low_listb, tau_high_listb, fse_listb, gauss_width_listb])
+
+np.save('timea_setg4setb11_data', setg4setb11_data)
+
 setg5dece_data = np.array([mjd_list, freq_list, dur_list, pbf_width_liste, low_chi_liste, tau_liste, tau_low_liste, tau_high_liste, fse_liste, gauss_width_liste])
 
-np.save('timea_setg3dece_data', setg4dece_data)
+np.save('timea_setg5dece_data', setg5dece_data)
 
 
 #=============================================================================
