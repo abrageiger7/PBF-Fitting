@@ -218,7 +218,7 @@ class Profile:
             fitted_templatel = spt.shiftit(fitting[1])
 
             fitted_templatel = fitted_templatel*self.mask
-            
+
 
         #plot the upper error profile alongside the best fit for comparison
         if high_pbf != -1:
@@ -246,7 +246,7 @@ class Profile:
         plt.ylabel('Pulse Intensity')
         plt.plot(time, self.data_suba*self.mask, '.', ms = '2.4', label = 'Data')
         plt.plot(time, fitted_template, label = fr'Best fit; $\tau$ = {tau_val} $\mu$s')
-        if high_pbf != -1
+        if high_pbf != -1:
             plt.plot(time, fitted_templateh, alpha = 0.5, label = fr'Upper Error; $\tau$ = {tau_val_high} $\mu$s')
         if low_pbf != -1:
             plt.plot(time, fitted_templatel, alpha = 0.5, label = fr'Lower Error; $\tau$ = {tau_val_low} $\mu$s')
