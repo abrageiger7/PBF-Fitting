@@ -106,10 +106,10 @@ class Profile:
             plt.colorbar()
 
             if beta != -1:
-                title = f"ONEB|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}.png"
+                title = f"ONEB|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}.pdf"
 
             elif exp:
-                title = f"EXP|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}.png"
+                title = f"EXP|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
 
             plt.savefig(title)
             plt.close(45)
@@ -124,16 +124,16 @@ class Profile:
             plt.plot(widths, chi_sq_arr, drawstyle='steps-pre')
 
             if beta != -1:
-                title = f"ONEBSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}|GWIDTH={gwidth_round}.png"
+                title = f"ONEBSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}|GWIDTH={gwidth_round}.pdf"
 
             elif exp:
-                title = f"EXPSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|GWIDTH={gwidth_round}.png"
+                title = f"EXPSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|GWIDTH={gwidth_round}.pdf"
 
             elif zeta != -1:
-                title = f"ONEZSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zeta}|GWIDTH={gwidth_round}.png"
+                title = f"ONEZSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zeta}|GWIDTH={gwidth_round}.pdf"
 
             plt.savefig(title)
-            print(title)
+            #print(title)
             plt.close(45)
 
 
@@ -158,7 +158,7 @@ class Profile:
             if low_pbf != -1:
                 tau_val_low = tau.tau_values_exp[low_pbf]
             if high_pbf != -1:
-                tau_val_high = tau.tau_values_Exp[high_pbf]
+                tau_val_high = tau.tau_values_exp[high_pbf]
         elif zeta:
             i = zeta_convolved_profiles[zbeta_ind][pbfwidth_ind][gwidth_ind]
             tau_val = tau.zeta_tau_values[zbeta_ind][pbfwidth_ind]
@@ -268,14 +268,14 @@ class Profile:
 
 
         if not exp and not zeta:
-            title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
+            title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
         elif exp:
-            title = f'FIT|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
+            title = f'FIT|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
         elif zeta:
-            title = f'FIT|ZETA|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zetaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
+            title = f'FIT|ZETA|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zetaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
 
         plt.savefig(title)
-        print(title)
+        #print(title)
         plt.close(50)
 
     def comp_fse(self, tau):
@@ -487,7 +487,7 @@ class Profile:
                     plt.plot(betaselect, taus_collect)
                     param = 'tau'
 
-                title = f'ALL|PBF_fit_overall_{param}|MJD={self.mjd_round}|FREQ={self.freq_round}|bestBETA={betaselect[chi_beta_ind]}.png'
+                title = f'ALL|PBF_fit_overall_{param}|MJD={self.mjd_round}|FREQ={self.freq_round}|bestBETA={betaselect[chi_beta_ind]}.pdf'
                 plt.savefig(title)
                 plt.close(i*4)
 
@@ -888,10 +888,10 @@ class Profile:
 #             plt.colorbar()
 #
 #             if beta != -1:
-#                 title = f"TIMEA|ONEB|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}.png"
+#                 title = f"TIMEA|ONEB|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}.pdf"
 #
 #             elif exp:
-#                 title = f"TIMEA|EXP|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}.png"
+#                 title = f"TIMEA|EXP|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
 #
 #             plt.savefig(title)
 #             plt.close(45)
@@ -906,10 +906,10 @@ class Profile:
 #             plt.plot(widths, chi_sq_arr)
 #
 #             if beta != -1:
-#                 title = f"TIMEA|ONEBSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}|GWIDTH={gwidth_round}.png"
+#                 title = f"TIMEA|ONEBSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}|GWIDTH={gwidth_round}.pdf"
 #
 #             elif exp:
-#                 title = f"TIMEA|EXPSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|GWIDTH={gwidth_round}.png"
+#                 title = f"TIMEA|EXPSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|GWIDTH={gwidth_round}.pdf"
 #
 #             plt.savefig(title)
 #             plt.close(45)
@@ -979,9 +979,9 @@ class Profile:
 #         pbfwidth_round = str(widths[pbfwidth_ind])[:3]
 #
 #         if not exp:
-#             title = f'TIMEA|FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[beta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
+#             title = f'TIMEA|FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[beta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
 #         elif exp:
-#             title = f'TIMEA|FIT|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
+#             title = f'TIMEA|FIT|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
 #         plt.savefig(title)
 #         plt.close(50)
 #
