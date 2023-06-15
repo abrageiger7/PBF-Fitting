@@ -146,21 +146,21 @@ class Profile:
 
         if not exp and not zeta:
             i = convolved_profiles[zbeta_ind][pbfwidth_ind][gwidth_ind]
-            tau_val = tau.tau_values[zbeta_ind][pbf_width_ind]
+            tau_val = tau.tau_values[zbeta_ind][pbfwidth_ind]
             if low_pbf != -1:
                 tau_val_low = tau.tau_values[zbeta_ind][low_pbf]
             if high_pbf != -1:
                 tau_val_high = tau.tau_values[zbeta_ind][high_pbf]
         elif exp:
             i = convolved_profiles_exp[pbfwidth_ind][gwidth_ind]
-            tau_val = tau.tau_values_exp[pbf_width_ind]
+            tau_val = tau.tau_values_exp[pbfwidth_ind]
             if low_pbf != -1:
                 tau_val_low = tau.tau_values_exp[low_pbf]
             if high_pbf != -1:
                 tau_val_high = tau.tau_values_Exp[high_pbf]
         elif zeta:
             i = zeta_convolved_profiles[zbeta_ind][pbfwidth_ind][gwidth_ind]
-            tau_val = tau.zeta_tau_values[zbeta_ind][pbf_width_ind]
+            tau_val = tau.zeta_tau_values[zbeta_ind][pbfwidth_ind]
             if low_pbf != -1:
                 tau_val_low = tau.zeta_tau_values[zbeta_ind][low_pbf]
             if high_pbf != -1:
