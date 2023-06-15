@@ -252,6 +252,7 @@ class Profile:
         plt.plot(time, self.data_suba*self.mask, '.', ms = '2.4')
         plt.plot(time, fitted_template, label = fr'Best fit; $\tau$ = {tau_val} $\mu$s')
         frame1.set_xticklabels([]) #Remove x-tic labels for the first frame
+        plt.legend()
         plt.plot()
 
         #Residual plot
@@ -261,8 +262,6 @@ class Profile:
         plt.xlabel('Pulse Period (milliseconds)')
         plt.ylabel('Residuals')
         plt.plot()
-
-        plt.legend()
 
         gwidth_round = str(gauss_fwhm[gwidth_ind])[:3]
         pbfwidth_round = str(widths[pbfwidth_ind])[:3]
