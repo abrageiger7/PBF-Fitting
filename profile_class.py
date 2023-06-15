@@ -274,6 +274,7 @@ class Profile:
             title = f'FIT|ZETA|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zetaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
 
         plt.savefig(title)
+        print(title)
         plt.close(50)
 
     def comp_fse(self, tau):
