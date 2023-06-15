@@ -136,7 +136,7 @@ class Profile:
             plt.close(45)
 
 
-    def fit_plot(self, zbeta_ind, pbfwidth_ind, gwidth_ind, exp = False, zeta = False):
+    def fit_plot(self, zbeta_ind, pbfwidth_ind, gwidth_ind, exp = False, zeta = False, low_pbf = -1, high_pbf = -1):
 
         '''Plots and saves the fit of the profile subaveraged data to the
         template indicated by the argument indexes and the bolean
@@ -146,10 +146,25 @@ class Profile:
 
         if not exp and not zeta:
             i = convolved_profiles[zbeta_ind][pbfwidth_ind][gwidth_ind]
+            tau_val = tau.tau_values[zbeta_ind][pbf_width_ind]
+            if low_pbf != -1:
+                tau_val_low = tau.tau_values[zbeta_ind][low_pbf]
+            if high_pbf != -1:
+                tau_val_high = tau.tau_values[zbeta_ind][high_pbf]
         elif exp:
             i = convolved_profiles_exp[pbfwidth_ind][gwidth_ind]
+            tau_val = tau.tau_values_exp[pbf_width_ind]
+            if low_pbf != -1:
+                tau_val_low = tau.tau_values_exp[low_pbf]
+            if high_pbf != -1:
+                tau_val_high = tau.tau_values_Exp[high_pbf]
         elif zeta:
             i = zeta_convolved_profiles[zbeta_ind][pbfwidth_ind][gwidth_ind]
+            tau_val = tau.zeta_tau_values[zbeta_ind][pbf_width_ind]
+            if low_pbf != -1:
+                tau_val_low = tau.zeta_tau_values[zbeta_ind][low_pbf]
+            if high_pbf != -1:
+                tau_val_high = tau.zeta_tau_values[zbeta_ind][high_pbf]
 
         profile = i / np.max(i) #fitPulse requires template height of one
         z = np.max(profile)
@@ -182,9 +197,60 @@ class Profile:
         elif zeta:
             plt.title(f'Best Fit Template over Data with Zeta = {zetaselect[zbeta_ind]}')
 
+        #plot the lower error profile alongside the best fit for comparison
+        if low_pbf != -1:
+
+            profilel = i / np.max(i) #fitPulse requires template height of one
+            z = np.max(profilel)
+            zind = np.where(profilel == z)[0][0]
+            ind_diff = self.xind-zind
+            #this lines the profiles up approximately so that Single Pulse finds the
+            #true minimum, not just a local min
+            profilel = np.roll(profilel, ind_diff)
+            sp = SinglePulse(self.data_suba, opw = np.arange(0, self.start_index))
+            fitting = sp.fitPulse(profilel) #TOA cross-correlation, TOA template
+            #matching, scale factor, TOA error, scale factor error, signal to noise
+            #ratio, cross-correlation coefficient
+            #based on the fitPulse fitting, scale and shift the profile to best fit
+            #the inputted data
+            #fitPulse figures out the best amplitude itself
+            spt = SinglePulse(profilel*fitting[2])
+            fitted_templatel = spt.shiftit(fitting[1])
+
+            fitted_templatel = fitted_templatel*self.mask
+
+            plt.plot(time, fitted_templatel, alpha = 0.5, label = fr'Lower Error; $\tau$ = {tau_val_low} $\mu$s')
+
+
+        #plot the upper error profile alongside the best fit for comparison
+        if high_pbf != -1:
+
+            profileh = i / np.max(i) #fitPulse requires template height of one
+            z = np.max(profileh)
+            zind = np.where(profileh == z)[0][0]
+            ind_diff = self.xind-zind
+            #this lines the profiles up approximately so that Single Pulse finds the
+            #true minimum, not just a local min
+            profileh = np.roll(profileh, ind_diff)
+            sp = SinglePulse(self.data_suba, opw = np.arange(0, self.start_index))
+            fitting = sp.fitPulse(profileh) #TOA cross-correlation, TOA template
+            #matching, scale factor, TOA error, scale factor error, signal to noise
+            #ratio, cross-correlation coefficient
+            #based on the fitPulse fitting, scale and shift the profile to best fit
+            #the inputted data
+            #fitPulse figures out the best amplitude itself
+            spt = SinglePulse(profileh*fitting[2])
+            fitted_templateh = spt.shiftit(fitting[1])
+
+            fitted_templateh = fitted_templateh*self.mask
+
+
+            plt.plot(time, fitted_templateh, alpha = 0.5, label = fr'Upper Error; $\tau$ = {tau_val_high} $\mu$s')
+
+
         plt.ylabel('Pulse Intensity')
         plt.plot(time, self.data_suba*self.mask, '.', ms = '2.4')
-        plt.plot(time, fitted_template)
+        plt.plot(time, fitted_template, label = fr'Best fit; $\tau$ = {tau_val} $\mu$s')
         frame1.set_xticklabels([]) #Remove x-tic labels for the first frame
         plt.plot()
 
@@ -196,8 +262,11 @@ class Profile:
         plt.ylabel('Residuals')
         plt.plot()
 
+        plt.legend()
+
         gwidth_round = str(gauss_fwhm[gwidth_ind])[:3]
         pbfwidth_round = str(widths[pbfwidth_ind])[:3]
+
 
         if not exp and not zeta:
             title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.png'
@@ -461,7 +530,7 @@ class Profile:
             tau_low = tau_fin - tau_arr[below]
             tau_up = tau_arr[above] - tau_fin
 
-            self.fit_plot(beta_ind, lsqs_pbf_index, gwidth_ind)
+            self.fit_plot(beta_ind, lsqs_pbf_index, gwidth_ind, low_pbf = below, high_pbf = above)
 
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin, beta)
 
@@ -499,7 +568,7 @@ class Profile:
             tau_low = tau_fin - tau_values_exp[below]
             tau_up = tau_values_exp[above] - tau_fin
 
-            self.fit_plot(0, lsqs_pbf_index, gwidth_ind, exp = True)
+            self.fit_plot(0, lsqs_pbf_index, gwidth_ind, exp = True, low_pbf = below, high_pbf = above)
 
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
 
@@ -525,7 +594,7 @@ class Profile:
 
             tau_fin = tau_values_exp[lsqs_pbf_index]
 
-            self.fit_plot(0, lsqs_pbf_index, lsqs_gauss_index, exp = True)
+            self.fit_plot(0, lsqs_pbf_index, lsqs_gauss_index, exp = True, low_pbf = below, high_pbf = above)
 
             return(low_chi, lsqs_gauss_val, lsqs_pbf_val, tau_fin)
 
@@ -563,7 +632,7 @@ class Profile:
             tau_low = tau_fin - tau_arr[below]
             tau_up = tau_arr[above] - tau_fin
 
-            self.fit_plot(zind, lsqs_pbf_index, gwidth_ind, zeta=True)
+            self.fit_plot(zind, lsqs_pbf_index, gwidth_ind, zeta=True, low_pbf = below, high_pbf = above)
 
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin, zeta)
 
