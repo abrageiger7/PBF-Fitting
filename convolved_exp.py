@@ -24,10 +24,10 @@ phase_bins = conv.phase_bins
 len_dec_exp_profile = 45
 
 #create varying exponential profiles
-widths_exp_array = np.zeros((np.size(widths), phase_bins))
+widths_exp_array = np.zeros((np.size(widths), conv.cordes_phase_bins))
 
 
-time_bins = np.linspace(0,len_dec_exp_profile,phase_bins)
+time_bins = np.linspace(0,len_dec_exp_profile, conv.cordes_phase_bins)
 exponential = np.exp(-time_bins)
 i = exponential
 
@@ -45,18 +45,18 @@ for ii in widths:
         #interpolate the pulse in its broadened state
         interpolate_width = CubicSpline(times_adjusted, i)
         #2- interpolate to get section of the pulse desired
-        width_pbf_data = np.zeros(phase_bins)
+        width_pbf_data = np.zeros(conv.cordes_phase_bins)
 
         #add the intensity that loops around for stretched pulses
         index = 0
         while(index<(np.max(times_adjusted))-len_dec_exp_profile):
-            interp_sect = interpolate_width(np.linspace(index,index+len_dec_exp_profile,phase_bins))
+            interp_sect = interpolate_width(np.linspace(index,index+len_dec_exp_profile,conv.cordes_phase_bins))
             width_pbf_data = np.add(width_pbf_data, interp_sect)
             index = index+len_dec_exp_profile
 
         final_interp_sect_array = np.arange(index, int(np.max(times_adjusted))+1, 1)
         final_interp_sect = interpolate_width(final_interp_sect_array)
-        final_interp_sect = np.concatenate((final_interp_sect, np.zeros((phase_bins-np.size(final_interp_sect)))))
+        final_interp_sect = np.concatenate((final_interp_sect, np.zeros((conv.cordes_phase_bins-np.size(final_interp_sect)))))
         width_pbf_data = np.add(width_pbf_data, final_interp_sect)
 
         #plt.xlabel('Phase Bins')
@@ -68,14 +68,14 @@ for ii in widths:
         #squeezing broadening function
 
         #lengthen the array of the pulse so the pulse is comparatively narrow, adding zeros to the end
-        width_pbf_data = np.zeros(int((1/ii)*phase_bins))
-        width_pbf_data[:phase_bins] = i
-        times_scaled = np.zeros(int((1/ii)*phase_bins))
+        width_pbf_data = np.zeros(int((1/ii)*conv.cordes_phase_bins))
+        width_pbf_data[:conv.cordes_phase_bins] = i
+        times_scaled = np.zeros(int((1/ii)*conv.cordes_phase_bins))
         #scale back to an array of size number of phase bins
-        for iv in range(int((1/ii)*phase_bins)):
-            times_scaled[iv] = phase_bins/(int((1/ii)*phase_bins))*iv
+        for iv in range(int((1/ii)*conv.cordes_phase_bins)):
+            times_scaled[iv] = conv.cordes_phase_bins/(int((1/ii)*conv.cordes_phase_bins))*iv
         interpolate_less1 = CubicSpline(times_scaled, width_pbf_data)
-        width_pbf_data = interpolate_less1(np.arange(phase_bins))
+        width_pbf_data = interpolate_less1(np.arange(conv.cordes_phase_bins))
 
 
     elif ii == 1:
@@ -91,7 +91,7 @@ for ii in widths:
     #plt.xlabel('Phase Bins')
     #plt.ylabel('Arbitrary Pulse Intensity')
     #plt.title('Broadened Pulse with Stretch Factor of ' + str(ii))
-    #plt.plot(np.arange(phase_bins), np.roll(width_pbf_data, 5))
+    #plt.plot(np.arange(conv.cordes_phase_bins), np.roll(width_pbf_data, 5))
     #plt.show()
 
     #append broadening function to array
@@ -103,11 +103,32 @@ for ii in widths:
 #    plt.plot(widths_exp_array[i*5])
 #plt.show()
 
+#an array of the broadening functions scaled to number of phase bins data values
+
+times_scaled = np.zeros(conv.cordes_phase_bins)
+for i in range(conv.cordes_phase_bins):
+    times_scaled[i] = phase_bins/conv.cordes_phase_bins*i
+
+exppbf_data_freqscale = np.zeros((np.size(betaselect), np.size(widths), phase_bins))
+
+data_index1 = 0
+for i in widths_exp_array:
+    data_index2 = 0
+    timetofreq_pbfdata = np.zeros((np.size(widths), phase_bins))
+    for ii in i:
+        interpolate_first_beta = CubicSpline(times_scaled, ii)
+        pbfdata_freqs = interpolate_first_beta(np.arange(0,phase_bins,1))
+        timetofreq_pbfdata[data_index2] = pbfdata_freqs
+        data_index2 = data_index2+1
+    pbf_data_freqscale[data_index1] = timetofreq_pbfdata
+    data_index1 = data_index1+1
+
+
 #scale all profiles to unit area
 exp_data_unitarea = np.zeros((np.size(widths), phase_bins))
 
 data_index2 = 0
-for ii in widths_exp_array:
+for ii in exppbf_data_freqscale:
     tsum = trapz(ii)
     exp_data_unitarea[data_index2] = ii/tsum
     data_index2 = data_index2+1

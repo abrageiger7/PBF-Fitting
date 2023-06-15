@@ -17,7 +17,7 @@ gauss_widths = conv.widths_gaussian
 betaselect = conv.betaselect
 time = conv.time
 
-num_phasebins = np.shape(convolved_profiles[0][0][0])
+num_phasebins = conv.cordes_phase_bins
 j1903_period = 0.0021499 * 1e6 #microseconds
 
 def find_nearest(a, a0):
@@ -52,7 +52,7 @@ pbf_data_freqscale = conv.pbf_data_freqscale
 #plt.figure(1)
 
 data_index = 0
-for i in pbf_data_freqscale:
+for i in conv.cordes_profs:
     data_index2 = 0
     for ii in i:
         tau_ii = calculate_tau(ii)
@@ -131,7 +131,7 @@ zetaselect = zconv.zetaselect
 
 zeta_tau_values = np.zeros((np.size(zetaselect), np.size(widths)))
 
-pbf_data_freqscale = zconv.pbf_data_freqscale
+pbf_data_freqscale = zconv.cordes_profs
 
 
 data_index = 0
