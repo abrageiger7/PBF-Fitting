@@ -133,6 +133,7 @@ class Profile:
                 title = f"ONEZSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zeta}|GWIDTH={gwidth_round}.png"
 
             plt.savefig(title)
+            print(title)
             plt.close(45)
 
 
