@@ -121,7 +121,7 @@ class Profile:
             plt.title('Fit Chi-sqs')
             plt.xlabel('PBF Width')
             plt.ylabel('Reduced Chi-Sq')
-            plt.plot(widths, chi_sq_arr)
+            plt.plot(widths, chi_sq_arr, drawstyle='steps-pre')
 
             if beta != -1:
                 title = f"ONEBSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}|GWIDTH={gwidth_round}.png"
