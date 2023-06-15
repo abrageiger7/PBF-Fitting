@@ -18,7 +18,7 @@ from scipy.interpolate import CubicSpline
 cordes_profs = np.load('widths_pbf_data.npy')
 
 #phase bins
-phase_bins = 2048//8
+phase_bins = 2048
 t = np.linspace(0, phase_bins, phase_bins)
 
 #array of beta values used
