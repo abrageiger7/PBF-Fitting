@@ -48,3 +48,10 @@ print(mjds[0])
 print('low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)')
 
 print(datab)
+
+
+import tau
+
+print(tau.tau_values)
+print(tau.tau_values_exp)
+print(tau.zeta_tau_values)
