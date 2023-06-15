@@ -516,7 +516,7 @@ class Profile:
             lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
             pbf_width_fin = widths[lsqs_pbf_index]
 
-            if chi_sqs_array[0] < low_chi+1 and chi_sqs_array[-1] < low_chi+1:
+            if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
                 raise Exception('NOT CONVERGING ENOUGH')
 
             tau_fin = tau_values[beta_ind][lsqs_pbf_index]
@@ -554,7 +554,7 @@ class Profile:
             lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
             pbf_width_fin = widths[lsqs_pbf_index]
 
-            if chi_sqs_array[0] < low_chi+1 and chi_sqs_array[-1] < low_chi+1:
+            if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
                 raise Exception('NOT CONVERGING ENOUGH')
 
             tau_fin = tau_values_exp[lsqs_pbf_index]
@@ -618,7 +618,7 @@ class Profile:
             lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
             pbf_width_fin = widths[lsqs_pbf_index]
 
-            if chi_sqs_array[0] < low_chi+1 and chi_sqs_array[-1] < low_chi+1:
+            if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
                 raise Exception('NOT CONVERGING ENOUGH')
 
             tau_fin = zeta_tau_values[zind][lsqs_pbf_index]
