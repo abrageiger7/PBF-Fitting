@@ -524,7 +524,7 @@ class Profile:
             #ERROR TEST - one reduced chi-squared unit above and below and these
             #chi-squared bins are for varying pbf width
             below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/self.bin_num_care))[1][0][0]
-            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index
+            above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index
 
             tau_arr = tau_values[beta_ind]
             tau_low = tau_fin - tau_arr[below]
@@ -563,7 +563,7 @@ class Profile:
             #chi-squared bins are for varying pbf width
 
             below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/self.bin_num_care))[1][0][0]
-            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index
+            above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index
 
             tau_low = tau_fin - tau_values_exp[below]
             tau_up = tau_values_exp[above] - tau_fin
@@ -626,7 +626,7 @@ class Profile:
             #ERROR TEST - one reduced chi-squared unit above and below and these
             #chi-squared bins are for varying pbf width
             below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/self.bin_num_care))[1][0][0]
-            above = find_nearest(chi_sqs_array[lsqs_pbf_index:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index
+            above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index
 
             tau_arr = zeta_tau_values[zind]
             tau_low = tau_fin - tau_arr[below]
