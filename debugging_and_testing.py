@@ -43,6 +43,8 @@ ii = p.num_sub - 1
 
 datab = p.fit(ii, beta_ind = 11, gwidth_ind = 4)
 
+print(mjds[0])
+
 print('low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)')
 
 print(datab)
