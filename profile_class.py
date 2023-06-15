@@ -248,9 +248,9 @@ class Profile:
         plt.plot(time, self.data_suba*self.mask, '.', ms = '2.4', label = 'Data')
         plt.plot(time, fitted_template, label = fr'Best fit; $\tau$ = {tau_val} $\mu$s', color = 'red')
         if high_pbf != -1:
-            plt.plot(time, fitted_templateh, alpha = 0.1, label = fr'Upper Error; $\tau$ = {tau_val_high} $\mu$s', color = 'orange')
+            plt.plot(time, fitted_templateh, alpha = 0.7, label = fr'Upper Error; $\tau$ = {tau_val_high} $\mu$s', color = 'orange')
         if low_pbf != -1:
-            plt.plot(time, fitted_templatel, alpha = 0.1, label = fr'Lower Error; $\tau$ = {tau_val_low} $\mu$s', color = 'orange')
+            plt.plot(time, fitted_templatel, alpha = 0.7, label = fr'Lower Error; $\tau$ = {tau_val_low} $\mu$s', color = 'orange')
         plt.legend()
         frame1.set_xticklabels([]) #Remove x-tic labels for the first frame
         plt.plot()
