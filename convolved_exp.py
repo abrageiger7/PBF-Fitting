@@ -109,18 +109,13 @@ times_scaled = np.zeros(conv.cordes_phase_bins)
 for i in range(conv.cordes_phase_bins):
     times_scaled[i] = phase_bins/conv.cordes_phase_bins*i
 
-exppbf_data_freqscale = np.zeros((np.size(betaselect), np.size(widths), phase_bins))
+exppbf_data_freqscale = np.zeros((np.size(widths), phase_bins))
 
 data_index1 = 0
-for i in widths_exp_array:
-    data_index2 = 0
-    timetofreq_pbfdata = np.zeros((np.size(widths), phase_bins))
-    for ii in i:
-        interpolate_first_beta = CubicSpline(times_scaled, ii)
-        pbfdata_freqs = interpolate_first_beta(np.arange(0,phase_bins,1))
-        timetofreq_pbfdata[data_index2] = pbfdata_freqs
-        data_index2 = data_index2+1
-    pbf_data_freqscale[data_index1] = timetofreq_pbfdata
+for ii in widths_exp_array:
+    interpolate_first_beta = CubicSpline(times_scaled, ii)
+    pbfdata_freqs = interpolate_first_beta(np.arange(0,phase_bins,1))
+    pbf_data_freqscale[data_index1] = pbfdata_freqs
     data_index1 = data_index1+1
 
 
