@@ -563,7 +563,7 @@ class Profile:
             #chi-squared bins are for varying pbf width
 
             below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/self.bin_num_care))[1][0][0]
-            above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index
+            above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index + 1
 
             tau_low = tau_fin - tau_values_exp[below]
             tau_up = tau_values_exp[above] - tau_fin
