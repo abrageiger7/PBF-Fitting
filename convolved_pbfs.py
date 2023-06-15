@@ -18,7 +18,7 @@ from scipy.interpolate import CubicSpline
 cordes_profs = np.load('widths_pbf_data.npy')
 
 #phase bins
-phase_bins = 2048
+phase_bins = 2048//8
 t = np.linspace(0, phase_bins, phase_bins)
 
 #array of beta values used
@@ -26,11 +26,11 @@ betaselect = np.array([3.1, 3.5, 3.667, 3.8, 3.9, 3.95, 3.975, 3.99, 3.995, 3.99
 
 #array of widths used (pbf stretch factors)
 #widths = np.concatenate((np.linspace(0.1, 1.0, 10), np.linspace(1.1, 42.0, 40)))
-widths = np.concatenate((np.linspace(0.1, 1.0, 40), np.linspace(1.1, 42.0, 160)))
-#widths = np.concatenate((np.linspace(0.1, 1.0, 98), np.linspace(1.1, 30.0, 294)))
+#widths = np.concatenate((np.linspace(0.1, 1.0, 40), np.linspace(1.1, 42.0, 160)))
+widths = np.concatenate((np.linspace(0.1, 1.0, 98), np.linspace(1.1, 30.0, 294)))
 
 #array of gaussian widths (phase bins)
-widths_gaussian = np.linspace(0.1, 250.0, 50)
+widths_gaussian = np.linspace((0.1/2048)*phase_bins, (250.0/2048)*phase_bins, 50)
 #gauss widths converted to fwhm microseconds
 gauss_fwhm = widths_gaussian * ((0.0021499/phase_bins) * 1e6 * (2.0*math.sqrt(2*math.log(2))))
 
