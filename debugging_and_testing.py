@@ -52,16 +52,15 @@ print(datab)
 
 import tau
 
-print(tau.tau_values)
+#testing that no tau values are the same to confirm that grid spacing is resolved enough
+
 for i in range(len(betaselect)):
     for ii in range(np.size(tau.tau_values)-1):
         if tau.tau_values[ii] == tau.tau_values[ii+1]:
             return('MORE RESOLUTION NECESSARY')
-print(tau.tau_values_exp)
 for ii in range(np.size(tau.tau_values_exp)-1):
     if tau.tau_values_exp[ii] == tau.tau_values_exp[ii+1]:
         return('MORE RESOLUTION NECESSARY')
-print(tau.zeta_tau_values)
 for i in range(len(zetaselect)):
     for ii in range(np.size(tau.zeta_tau_values)-1):
         if tau.zeta_tau_values[ii] == tau.zeta_tau_values[ii+1]:
