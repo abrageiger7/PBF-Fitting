@@ -115,7 +115,7 @@ data_index1 = 0
 for ii in widths_exp_array:
     interpolate_first_beta = CubicSpline(times_scaled, ii)
     pbfdata_freqs = interpolate_first_beta(np.arange(0,phase_bins,1))
-    pbf_data_freqscale[data_index1] = pbfdata_freqs
+    exppbf_data_freqscale[data_index1] = pbfdata_freqs
     data_index1 = data_index1+1
 
 
