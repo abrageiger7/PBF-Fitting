@@ -36,6 +36,9 @@ num_chan0 = int(chan[0])
 data0 = data[0][:num_chan0]
 freq0 = freq[0][:num_chan0]
 
+ii = p.num_sub - 1
+
+
 p = Profile(mjds[0], data0, freq0, dur[0])
 
 datab = p.fit(ii, beta_ind = 11, gwidth_ind = 4)
