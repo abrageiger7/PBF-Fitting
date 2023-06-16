@@ -247,10 +247,10 @@ class Profile:
         plt.ylabel('Pulse Intensity')
         plt.plot(time, self.data_suba*self.mask, '.', ms = '2.4', label = 'Data')
         if high_pbf != -1:
-            plt.plot(time, fitted_templateh, alpha = 0.35, label = fr'Upper Error; $\tau$ = {tau_val_high} $\mu$s', color = 'orange', lw = 3)
+            plt.plot(time, fitted_templateh, alpha = 0.35, label = fr'Upper Error; $\tau$ = {round(tau_val_high,2)} $\mu$s', color = 'orange', lw = 3)
         if low_pbf != -1:
-            plt.plot(time, fitted_templatel, alpha = 0.35, label = fr'Lower Error; $\tau$ = {tau_val_low} $\mu$s', color = 'orange', lw = 3)
-        plt.plot(time, fitted_template, label = fr'Best fit; $\tau$ = {tau_val} $\mu$s', color = 'red')
+            plt.plot(time, fitted_templatel, alpha = 0.35, label = fr'Lower Error; $\tau$ = {round(tau_val_low,2)} $\mu$s', color = 'orange', lw = 3)
+        plt.plot(time, fitted_template, label = fr'Best fit; $\tau$ = {round(tau_val,2)} $\mu$s', color = 'red')
         plt.legend()
         frame1.set_xticklabels([]) #Remove x-tic labels for the first frame
         plt.plot()

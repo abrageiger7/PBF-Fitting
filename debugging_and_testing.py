@@ -54,6 +54,10 @@ import tau
 
 #testing that no tau values are the same to confirm that grid spacing is resolved enough
 
+print(tau.tau_values)
+print(tau.tau_values_exp)
+print(tau.zeta_tau_values)
+
 for i in range(len(betaselect)):
     for ii in range(np.size(tau.tau_values[0])-1):
         if tau.tau_values[i][ii] == tau.tau_values[i][ii+1]:
