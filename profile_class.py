@@ -517,15 +517,15 @@ class Profile:
             lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
             pbf_width_fin = widths[lsqs_pbf_index]
 
-            if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
+            if chi_sqs_array[0] < low_chi+(1/self.(self.bin_num_care-num_par)) and chi_sqs_array[-1] < low_chi+(1/(self.bin_num_care-num_par)):
                 raise Exception('NOT CONVERGING ENOUGH')
 
             tau_fin = tau_values[beta_ind][lsqs_pbf_index]
 
             #ERROR TEST - one reduced chi-squared unit above and below and these
             #chi-squared bins are for varying pbf width
-            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/self.bin_num_care))[1][0][0]
-            above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index + 1
+            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
+            above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
 
             tau_arr = tau_values[beta_ind]
             tau_low = tau_fin - tau_arr[below]
@@ -563,8 +563,8 @@ class Profile:
             #ERROR TEST - one reduced chi-squared unit above and below and these
             #chi-squared bins are for varying pbf width
 
-            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/self.bin_num_care))[1][0][0]
-            above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index + 1
+            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
+            above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
 
             tau_low = tau_fin - tau_values_exp[below]
             tau_up = tau_values_exp[above] - tau_fin
@@ -619,15 +619,15 @@ class Profile:
             lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
             pbf_width_fin = widths[lsqs_pbf_index]
 
-            if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
+            if chi_sqs_array[0] < low_chi+(1/(self.bin_num_care-num_par)) and chi_sqs_array[-1] < low_chi+(1/(self.bin_num_care-num_par)):
                 raise Exception('NOT CONVERGING ENOUGH')
 
             tau_fin = zeta_tau_values[zind][lsqs_pbf_index]
 
             #ERROR TEST - one reduced chi-squared unit above and below and these
             #chi-squared bins are for varying pbf width
-            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/self.bin_num_care))[1][0][0]
-            above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/self.bin_num_care))[1][0][0] + lsqs_pbf_index + 1
+            below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
+            above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
 
             tau_arr = zeta_tau_values[zind]
             tau_low = tau_fin - tau_arr[below]
