@@ -133,7 +133,7 @@ class Profile:
                 title = f"ONEZSETG|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zeta}|GWIDTH={gwidth_round}.pdf"
 
             plt.savefig(title)
-            print(title)
+            #print(title)
             plt.close(45)
 
 
@@ -276,7 +276,7 @@ class Profile:
             title = f'FIT|ZETA|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zetaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
 
         plt.savefig(title)
-        print(title)
+        #print(title)
         plt.close(50)
 
     def comp_fse(self, tau):
