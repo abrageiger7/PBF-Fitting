@@ -115,6 +115,41 @@ datael = p.fit(iii, dec_exp=True, gwidth_ind = 9)
 print(datael[0])
 
 
+dataeh = p.fit(ii, dec_exp=True, gwidth_ind = 10)
+print(dataeh[0])
+
+
+dataem = p.fit(iv, dec_exp=True, gwidth_ind = 10)
+print(dataem[0])
+
+
+datael = p.fit(iii, dec_exp=True, gwidth_ind = 10)
+print(datael[0])
+
+
+dataeh = p.fit(ii, dec_exp=True, gwidth_ind = 11)
+print(dataeh[0])
+
+
+dataem = p.fit(iv, dec_exp=True, gwidth_ind = 11)
+print(dataem[0])
+
+
+datael = p.fit(iii, dec_exp=True, gwidth_ind = 11)
+print(datael[0])
+
+
+dataeh = p.fit(ii, dec_exp=True, gwidth_ind = 12)
+print(dataeh[0])
+
+
+dataem = p.fit(iv, dec_exp=True, gwidth_ind = 12)
+print(dataem[0])
+
+
+datael = p.fit(iii, dec_exp=True, gwidth_ind = 12)
+print(datael[0])
+
 
 
 # import tau
