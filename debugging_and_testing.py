@@ -51,12 +51,29 @@ print('low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_wi
 
 print(datab)
 
+dataeh = p.fit(ii, dec_exp=True, gwidth_ind = 4)
+print(dataeh[0])
+
+dataem = p.fit(iv, dec_exp=True, gwidth_ind = 4)
+print(dataem[0])
+
+datael = p.fit(iii, dec_exp=True, gwidth_ind = 4)
+print(datael[0])
+
+dataeh = p.fit(ii, dec_exp=True, gwidth_ind = 5)
+print(dataeh[0])
+
+dataem = p.fit(iv, dec_exp=True, gwidth_ind = 5)
+print(dataem[0])
+
+datael = p.fit(iii, dec_exp=True, gwidth_ind = 5)
+print(datael[0])
+
 dataeh = p.fit(ii, dec_exp=True, gwidth_ind = 6)
 print(dataeh[0])
 
 dataem = p.fit(iv, dec_exp=True, gwidth_ind = 6)
 print(dataem[0])
-
 
 datael = p.fit(iii, dec_exp=True, gwidth_ind = 6)
 print(datael[0])
