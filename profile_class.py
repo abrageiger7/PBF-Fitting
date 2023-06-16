@@ -137,7 +137,7 @@ class Profile:
             plt.close(45)
 
 
-    def fit_plot(self, zbeta_ind, pbfwidth_ind, gwidth_ind, exp = False, zeta = False, low_pbf = -1, high_pbf = -1):
+    def fit_plot(self, zbeta_ind, pbfwidth_ind, gwidth_ind, low_chi, exp = False, zeta = False, low_pbf = -1, high_pbf = -1):
 
         '''Plots and saves the fit of the profile subaveraged data to the
         template indicated by the argument indexes and the bolean
@@ -250,8 +250,8 @@ class Profile:
             plt.plot(time, fitted_templateh, alpha = 0.35, label = fr'Upper Error; $\tau$ = {int(round(tau_val_high,0))} $\mu$s', color = 'orange', lw = 3)
         if low_pbf != -1:
             plt.plot(time, fitted_templatel, alpha = 0.35, label = fr'Lower Error; $\tau$ = {int(round(tau_val_low,0))} $\mu$s', color = 'orange', lw = 3)
-        plt.plot(time, fitted_template, label = fr'Best fit; $\tau$ = {int(round(tau_val,0))} $\mu$s', color = 'red')
-        plt.legend()
+        plt.plot(time, fitted_template, label = fr'Best fit; $\tau$ = {int(round(tau_val,0))} $\mu$s \n min $\chi^2$ = {round(low_chi,2)}', color = 'red')
+        plt.legend(prop={'size': 4})
         frame1.set_xticklabels([]) #Remove x-tic labels for the first frame
         plt.plot()
 
@@ -446,7 +446,7 @@ class Profile:
                 if below <= 40:
                     raise Exception('Different Tau Error Conversion May Be Needed')
 
-                self.fit_plot(ind, lsqs_pbf_index, lsqs_gauss_index)
+                self.fit_plot(ind, lsqs_pbf_index, lsqs_gauss_index, low_chi)
 
                 ind+=1
 
@@ -491,7 +491,7 @@ class Profile:
                 plt.savefig(title)
                 plt.close(i*4)
 
-            self.fit_plot(chi_beta_ind, pbf_width_ind, gauss_width_ind)
+            self.fit_plot(chi_beta_ind, pbf_width_ind, gauss_width_ind, low_chi)
 
             return(low_chi, tau_fin, self.comp_fse(tau_fin), gauss_width_fin, pbf_width_fin, beta_fin)
 
@@ -530,7 +530,7 @@ class Profile:
             tau_low = tau_fin - tau_arr[below]
             tau_up = tau_arr[above] - tau_fin
 
-            self.fit_plot(beta_ind, lsqs_pbf_index, gwidth_ind, low_pbf = below, high_pbf = above)
+            self.fit_plot(beta_ind, lsqs_pbf_index, gwidth_ind, low_chi, low_pbf = below, high_pbf = above)
 
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin, beta)
 
@@ -568,7 +568,7 @@ class Profile:
             tau_low = tau_fin - tau_values_exp[below]
             tau_up = tau_values_exp[above] - tau_fin
 
-            self.fit_plot(0, lsqs_pbf_index, gwidth_ind, exp = True, low_pbf = below, high_pbf = above)
+            self.fit_plot(0, lsqs_pbf_index, gwidth_ind, low_chi, exp = True, low_pbf = below, high_pbf = above)
 
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
 
@@ -594,7 +594,7 @@ class Profile:
 
             tau_fin = tau_values_exp[lsqs_pbf_index]
 
-            self.fit_plot(0, lsqs_pbf_index, lsqs_gauss_index, exp = True, low_pbf = below, high_pbf = above)
+            self.fit_plot(0, lsqs_pbf_index, lsqs_gauss_index, low_chi, exp = True, low_pbf = below, high_pbf = above)
 
             return(low_chi, lsqs_gauss_val, lsqs_pbf_val, tau_fin)
 
@@ -632,7 +632,7 @@ class Profile:
             tau_low = tau_fin - tau_arr[below]
             tau_up = tau_arr[above] - tau_fin
 
-            self.fit_plot(zind, lsqs_pbf_index, gwidth_ind, zeta=True, low_pbf = below, high_pbf = above)
+            self.fit_plot(zind, lsqs_pbf_index, gwidth_ind, low_chi, zeta=True, low_pbf = below, high_pbf = above)
 
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin, zeta)
 
