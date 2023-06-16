@@ -98,7 +98,7 @@ for i in range(56):
         tau_high_listb.append(datab[3])
         fse_listb.append(datab[4])
 
-        datae = p.fit(ii, gwidth_ind = 5, dec_exp = True)
+        datae = p.fit(ii, gwidth_ind = 7, dec_exp = True)
         gauss_width_liste.append(datae[5])
         pbf_width_liste.append(datae[6])
         low_chi_liste.append(datae[0])
@@ -120,7 +120,7 @@ np.save('timea_setg4setb11_data', setg4setb11_data)
 
 setg5dece_data = np.array([mjd_list, freq_list, dur_list, pbf_width_liste, low_chi_liste, tau_liste, tau_low_liste, tau_high_liste, fse_liste, gauss_width_liste])
 
-np.save('timea_setg5dece_data', setg5dece_data)
+np.save('timea_setg7dece_data', setg5dece_data)
 
 
 #=============================================================================
