@@ -250,8 +250,9 @@ class Profile:
             plt.plot(time, fitted_templateh, alpha = 0.35, label = fr'Upper Error; $\tau$ = {int(round(tau_val_high,0))} $\mu$s', color = 'orange', lw = 3)
         if low_pbf != -1:
             plt.plot(time, fitted_templatel, alpha = 0.35, label = fr'Lower Error; $\tau$ = {int(round(tau_val_low,0))} $\mu$s', color = 'orange', lw = 3)
-        plt.plot(time, fitted_template, label = fr'Best fit; $\tau$ = {int(round(tau_val,0))} $\mu$s \n min $\chi^2$ = {round(low_chi,2)}', color = 'red')
-        plt.legend(prop={'size': 4})
+        plt.plot(time, fitted_template, label = fr'Best fit; $\tau$ = {int(round(tau_val,0))} $\mu$s', color = 'red')
+        plt.plot([], [], ' ', label=fr"min $\chi^2$ = {round(low_chi,2)}")
+        plt.legend(prop={'size': 7})
         frame1.set_xticklabels([]) #Remove x-tic labels for the first frame
         plt.plot()
 
