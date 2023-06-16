@@ -57,6 +57,18 @@ dataem = p.fit(iv, dec_exp=True, gwidth_ind = 6)
 
 datael = p.fit(iii, dec_exp=True, gwidth_ind = 6)
 
+dataeh = p.fit(ii, dec_exp=True, gwidth_ind = 7)
+
+dataem = p.fit(iv, dec_exp=True, gwidth_ind = 7)
+
+datael = p.fit(iii, dec_exp=True, gwidth_ind = 7)
+
+dataeh = p.fit(ii, dec_exp=True, gwidth_ind = 8)
+
+dataem = p.fit(iv, dec_exp=True, gwidth_ind = 8)
+
+datael = p.fit(iii, dec_exp=True, gwidth_ind = 8)
+
 
 
 # import tau
