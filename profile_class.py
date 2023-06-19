@@ -81,8 +81,8 @@ class Profile:
         If gwidth is -1, indicates that the chi-squared surface exists over
         all possible gaussian widths. Same for pbfwidth.
 
-        If beta is -1, must be for decaying exponential and exp != -1. Vice
-        versa.'''
+        If beta is -1, must be for decaying exponential if exp == True. Otherwise
+        fit for beta as well.'''
 
         plt.figure(45)
 
@@ -95,12 +95,12 @@ class Profile:
             #adjust the imshow tick marks
             gauss_ticks = np.zeros(10)
             for ii in range(10):
-                gauss_ticks[ii] = str(gauss_fwhm[ii*5])[:3]
+                gauss_ticks[ii] = str(gauss_fwhm[ii*20])[:3]
             pbf_ticks = np.zeros(10)
             for ii in range(10):
-                pbf_ticks[ii] = str(widths[ii*20])[:3]
+                pbf_ticks[ii] = str(widths[ii*40])[:3]
             plt.xticks(ticks = np.linspace(0,200,num=10), labels = gauss_ticks)
-            plt.yticks(ticks = np.linspace(0,200,num=10), labels = pbf_ticks)
+            plt.yticks(ticks = np.linspace(0,400,num=10), labels = pbf_ticks)
 
             plt.imshow(chi_sq_arr, cmap=plt.cm.viridis_r, origin = 'lower', aspect = 0.25)
             plt.colorbar()
@@ -299,41 +299,9 @@ class Profile:
         #print(error) -> seems to be a very small number of microseconds (order of 1)
         return(error)
 
-    def fit(self, freq_subint_index, beta_ind = -1, gwidth_ind = -1, pbfwidth_ind = -1, dec_exp = False, zind = -1, gwidth_pwr_law = False):
-        '''Calculates the best broadening function and corresponding parameters
-        for the Profile object.
-
-        beta_ind (int): if nonzero, set beta to this index of betaselect
-        gwidth_ind (int): if nonzero, set gauss width to this index of gauss_widths
-        pbf_width_ind (int) : if nonzero, set pbf width to this index of widths
-        dec_exp (bool) : if True, fit decaying exponential broadening functions
-
-        No error calculations for varying more than one parameter
-        '''
-
-        # if gwidth_pwr_law == True and dec_exp == True:
-        #
-        #     v_0_dece =
-        #
-        #     v_0_gwifth_0_dece =
-        #
-        #     pwr_ind =
-        #
-        #     for i in range(self.num_sub):
-        #
-        #         gwidth_set = v_0_gwifth_0_dece * np.power((self.freq_suba / v_0_dece), pwr_ind)
-        #         gwidth_ind = find_nearest(gauss_fwhm, gwidth_set)[1][0][0]
-        #
-
-        #number of each parameter in the parameter grid
-        num_beta = np.size(betaselect)
-        num_gwidth = np.size(gauss_widths)
-        num_pbfwidth = np.size(widths)
-
-        beta_inds = np.arange(num_beta)
-        gwidth_inds = np.arange(num_gwidth)
-        pbfwidth_inds = np.arange(num_pbfwidth)
-
+    def init_freq_subint(self, freq_subint_index):
+        '''Initializes variables dependent upon the index of frequency subintegration.
+        For use by fitting functions.'''
 
         #isolate the data profile at the frequency desired for this fit
         self.data_suba = self.subaveraged_info[0][freq_subint_index]
@@ -381,6 +349,29 @@ class Profile:
 
         self.rms_noise = rms
 
+
+    def fit(self, freq_subint_index, beta_ind = -1, gwidth_ind = -1, pbfwidth_ind = -1, dec_exp = False, zind = -1, gwidth_pwr_law = False):
+        '''Calculates the best broadening function and corresponding parameters
+        for the Profile object.
+
+        beta_ind (int): if nonzero, set beta to this index of betaselect
+        gwidth_ind (int): if nonzero, set gauss width to this index of gauss_widths
+        pbf_width_ind (int) : if nonzero, set pbf width to this index of widths
+        dec_exp (bool) : if True, fit decaying exponential broadening functions
+
+        No error calculations for varying more than one parameter
+        '''
+
+        self.init_freq_subint(freq_subint_index)
+
+        #number of each parameter in the parameter grid
+        num_beta = np.size(betaselect)
+        num_gwidth = np.size(gauss_widths)
+        num_pbfwidth = np.size(widths)
+
+        beta_inds = np.arange(num_beta)
+        gwidth_inds = np.arange(num_gwidth)
+        pbfwidth_inds = np.arange(num_pbfwidth)
 
         #set more convenient names for the data to be fitted to
         data_care = self.data_suba
@@ -627,10 +618,6 @@ class Profile:
 
             num_par = 4 #number of fitted parameters
 
-            #if gwidth_pwr_law == True:
-            #
-            #
-
             chi_sqs_array = np.zeros((num_pbfwidth, num_gwidth))
             for i in itertools.product(pbfwidth_inds, gwidth_inds):
 
@@ -690,6 +677,36 @@ class Profile:
 
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin, zeta)
 
+    def fit_pwr_law_g(self):
+        '''This method tests a number of different power law indices for the
+        varaition of gaussian width over frequency.'''
+
+        if gwidth_pwr_law == True and dec_exp == True:
+
+            v_0_dece =
+
+            v_0_gwifth_0_dece =
+
+            pwr_ind = np.arange(0,1,0.1)
+
+            chi_sqs_collect = np.zeros(len(pwr_ind))
+
+            for i in range(len(pwr_ind)):
+
+                for ii in range(self.num_sub):
+
+                    self.init_freq_subint(ii)
+
+                    gwidth_set = v_0_gwifth_0_dece * np.power((self.freq_suba / v_0_dece), pwr_ind[i])
+                    gwidth_ind = find_nearest(gauss_fwhm, gwidth_set)[1][0][0]
+
+                    dataret = self.fit(dec_exp = True, gwidth_ind = gwidth_ind)
+
+                    chi_sqs_collect[i] += dataret[0]
+
+            lowest_chi_ind = np.where((chi_sqs_collect == np.min(chi_sqs_collect)))[0][0]
+
+            return(pwr_ind[lowest_chi_ind])
 
 
 
