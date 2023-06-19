@@ -706,7 +706,9 @@ class Profile:
         plt.xlabel('Gaussian Width Power Law Indices')
         plt.ylabel('Summed Chi Squared')
         plt.title('Chi-Squared for Gwidth Power Law Index (over all freqs)')
-        plt.show()
+        title = f'EXP|gwidth_pwrlaw|chisq_plot|MJD={self.mjd_round}.pdf'
+        plt.savefig(title)
+        print(title)
 
         lowest_chi_ind = np.where((chi_sqs_collect == np.min(chi_sqs_collect)))[0][0]
 
