@@ -56,8 +56,11 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     - tau_0 versus alpha with correlation coefficient'''
 
     #set the tested slope and yint vals:
-    slope_test = np.linspace(-5.0, -0.5, num = 500)
-    yint_test = np.linspace(140.0, 190.0, num = 500)
+    num_slope = 500
+    num_yint = 500
+
+    slope_test = np.linspace(-5.0, -0.5, num = num_slope)
+    yint_test = np.linspace(140.0, 190.0, num = num_yint)
 
     #to collect the likelihood distributions for each mjd's fit
     likelihood_slopeb = np.zeros((np.size(mjds),num_slope))
