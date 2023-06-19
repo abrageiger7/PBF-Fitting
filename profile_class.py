@@ -377,6 +377,16 @@ class Profile:
         data_care = self.data_suba
         freq_care = self.freq_suba
 
+        if gwidth_pwr_law == True and dec_exp == True:
+
+            v_0_dece = 1742.0
+
+            v_0_gwifth_0_dece = 70.0 # reference width in microseconds for v_0_dece freq
+
+            pwr_ind = 0.9 #the tested best fit - reference function below
+
+            gwidth_set = v_0_gwifth_0_dece * np.power((freq_care / v_0_dece), -pwr_ind)
+            gwidth_ind = find_nearest(gauss_fwhm, gwidth_set)[1][0][0]
 
         #case where beta, gaussian width, and pbf width are not set
         if beta_ind == -1 and gwidth_ind == -1 and pbfwidth_ind == -1 and dec_exp == False:
@@ -679,7 +689,9 @@ class Profile:
 
     def fit_pwr_law_g(self):
         '''This method tests a number of different power law indices for the
-        varaition of gaussian width over frequency.'''
+        varaition of gaussian width over frequency.
+
+        Tested this over several MJDs and the best fit power law is about 0.9.'''
 
         v_0_dece = 1742.0
 
@@ -702,12 +714,14 @@ class Profile:
 
                 chi_sqs_collect[i] += dataret[0]
 
+        plt.figure(10)
         plt.plot(pwr_ind, chi_sqs_collect, drawstyle = 'steps')
         plt.xlabel('Gaussian Width Power Law Indices')
         plt.ylabel('Summed Chi Squared')
         plt.title('Chi-Squared for Gwidth Power Law Index (over all freqs)')
         title = f'EXP|gwidth_pwrlaw|chisq_plot|MJD={self.mjd_round}.pdf'
         plt.savefig(title)
+        plt.close(10)
         print(title)
 
         lowest_chi_ind = np.where((chi_sqs_collect == np.min(chi_sqs_collect)))[0][0]
