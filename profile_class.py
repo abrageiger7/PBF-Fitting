@@ -112,6 +112,7 @@ class Profile:
                 title = f"EXP|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
 
             plt.savefig(title)
+            print(title)
             plt.close(45)
 
         elif gwidth != -1:
