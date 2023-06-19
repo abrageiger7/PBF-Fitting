@@ -47,10 +47,10 @@ for i in range(56):
     dataret = p.fit(ii, dec_exp=True)
 
     high_freq_gwidth_test[i][0] = p.freq_suba #frequency
-    high_freq_gwidth_test[i][1] = dataret[5] #gaussian width
+    high_freq_gwidth_test[i][1] = dataret[1] #gaussian width
 
     print(f'Frequency = {p.freq_round} MHz')
-    print(fr'Gaussian Width = {dataret[5]} $\mu$s')
+    print(fr'Gaussian Width = {dataret[1]} $\mu$s')
 
 np.save('high_freq_gwidth_test', high_freq_gwidth_test)
 
