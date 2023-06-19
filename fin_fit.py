@@ -16,6 +16,8 @@ import math
 from profile_class import Profile
 import zeta_convolved_pbfs as zconv
 from scipy.stats import pearsonr
+import matplotlib.ticker as tick
+
 
 
 
