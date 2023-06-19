@@ -99,7 +99,7 @@ class Profile:
             pbf_ticks = np.zeros(10)
             for ii in range(10):
                 pbf_ticks[ii] = str(widths[ii*20])[:3]
-            plt.xticks(ticks = np.linspace(0,50,num=10), labels = gauss_ticks)
+            plt.xticks(ticks = np.linspace(0,200,num=10), labels = gauss_ticks)
             plt.yticks(ticks = np.linspace(0,200,num=10), labels = pbf_ticks)
 
             plt.imshow(chi_sq_arr, cmap=plt.cm.viridis_r, origin = 'lower', aspect = 0.25)
@@ -323,7 +323,7 @@ class Profile:
         #
         #         gwidth_set = v_0_gwifth_0_dece * np.power((self.freq_suba / v_0_dece), pwr_ind)
         #         gwidth_ind = find_nearest(gauss_fwhm, gwidth_set)[1][0][0]
-        # 
+        #
 
         #number of each parameter in the parameter grid
         num_beta = np.size(betaselect)

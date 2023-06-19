@@ -36,6 +36,8 @@ ii = 0
 
 high_freq_gwidth_test = np.zeros((56,2))
 
+print(gauss_fwhm)
+
 for i in range(56):
 
     num_chan = int(chan[i])
