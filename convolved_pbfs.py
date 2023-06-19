@@ -33,7 +33,7 @@ widths = np.linspace(0.01, 35.0, 400)
 
 
 #array of gaussian widths (phase bins)
-widths_gaussian = np.linspace((0.1/2048)*phase_bins, (250.0/2048)*phase_bins, 50)
+widths_gaussian = np.linspace((0.1/2048)*phase_bins, (150.0/2048)*phase_bins, 200)
 #gauss widths converted to fwhm microseconds
 gauss_fwhm = widths_gaussian * ((0.0021499/phase_bins) * 1e6 * (2.0*math.sqrt(2*math.log(2))))
 
