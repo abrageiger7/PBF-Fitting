@@ -526,6 +526,8 @@ class Profile:
 
             tau_fin = tau.tau_values[beta_ind][lsqs_pbf_index]
 
+            self.fit_plot(beta_ind, lsqs_pbf_index, lsqs_gauss_index, low_chi)
+
             return(low_chi, tau_fin, self.comp_fse(tau_fin), lsqs_gauss_val, lsqs_pbf_val, beta)
 
         #case where beta and gaussian width are set, but fitting for pbf width
