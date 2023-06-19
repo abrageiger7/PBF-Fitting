@@ -36,7 +36,7 @@ ii = 0
 
 high_freq_gwidth_test = np.zeros((56,2))
 
-print(gauss_fwhm)
+print(conv.gauss_fwhm)
 
 for i in range(56):
 
