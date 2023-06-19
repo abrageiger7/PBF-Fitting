@@ -372,6 +372,13 @@ class Profile:
         data_care = self.data_suba
         freq_care = self.freq_suba
 
+        if gwidth_pwr_law == True:
+
+            v_0 =
+
+            v_0_gwifth_0 =
+
+            g_width = v_0_gwifth_0 * np.power((self.freq_suba / v_0), pwr_ind)
 
         #case where beta, gaussian width, and pbf width are not set
         if beta_ind == -1 and gwidth_ind == -1 and pbfwidth_ind == -1 and dec_exp == False:
@@ -630,7 +637,7 @@ class Profile:
             lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
             lsqs_pbf_val = widths[lsqs_pbf_index]
             lsqs_gauss_index = find_nearest(chi_sqs_array, 0.0)[1][1][0]
-            lsqs_gauss_val = widths_gaussian[lsqs_gauss_index]
+            lsqs_gauss_val = gauss_fwhm[lsqs_gauss_index]
 
             tau_fin = tau_values_exp[lsqs_pbf_index]
 
