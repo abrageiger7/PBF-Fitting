@@ -41,86 +41,358 @@ dur = np.load("J1903_dur.npy")
 #Below are various calculations of fit parameters using the Profile class and
 #functions from fit_functions.py
 
+def power_laws_and_plots(beta_ind, beta_gwidth_ind, start_mjd, stop_mjd):
+    '''Calculates tau with error for each pulse for J1903 L-band data given the
+    specified beta_ind and gwidth_ind. Then calculates the best fit tau versus
+    frequency power law and plots. Does this for both dec exp pbfs and beta pbfs.
+
+    Other plots include:
+    - tau_0 versus mjd, alpha (index of tau versus freq power law) versus mjd
+    - histograms and summed likelihoods (essentially histograms with error)
+      of the tau_0 and alpha values
+    - autocorrelation plots of tau_0 and alpha over mjd
+    - tau_0 versus alpha with correlation coefficient'''
+
+    #set the tested slope and yint vals:
+    slope_test = np.linspace(-5.0, -0.5, num = 500)
+    yint_test = np.linspace(140.0, 190.0, num = 500)
+
+    #to collect the likelihood distributions for each mjd's fit
+    likelihood_slopeb = np.zeros((np.size(mjds),num_slope))
+    likelihood_yintb = np.zeros((np.size(mjds),num_yint))
+
+    likelihood_slopee = np.zeros((np.size(mjds),num_slope))
+    likelihood_yinte = np.zeros((np.size(mjds),num_yint))
+
+    #to collect the power law data - slopes and yints with error
+    plaw_datab = np.zeros((np.size(mjds),6)) #slope, low err, high err, yint, low err, high err
+    plaw_datae = np.zeros((np.size(mjds),6)) #slope, low err, high err, yint, low err, high err
+
+    figb, axsb = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
+    fige, axse = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
+
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize='x-small')
+    plt.rc('ytick', labelsize='x-small')
+
+    dece_gwidth_pwr_ind = 0.9 #WILL HAVE TO CHANGE
+
+    for i in range(start_mjd, stop_mjd):
+
+        '''First calculate and collect tau values with errors'''
+        print(f'MJD {i}')
+        num_chan0 = int(chan[i])
+        data0 = data[i][:num_chan0]
+        freq0 = freq[i][:num_chan0]
+        p = Profile(mjds[i], data0, freq0, dur[i])
+
+        mjd = mjds[i]
+        freq_list = np.zeros(p.num_sub)
+
+        tau_listb = np.zeros(p.num_sub)
+        tau_low_listb = np.zeros(p.num_sub)
+        tau_high_listb = np.zeros(p.num_sub)
+        fse_listb = np.zeros(p.num_sub)
+
+        for ii in range(p.num_sub):
+
+            print(f'Frequency {ii}')
+
+            dur_list.append(dur[i])
+            mjd_list.append(mjds[i])
+
+            datab = p.fit(ii, beta_ind = beta_ind, gwidth_ind = beta_gwidth_ind)
+            tau_listb[ii] = datab[1]
+            tau_low_listb[ii] = datab[2]
+            tau_high_listb[ii] = datab[3]
+            fse_listb[ii] = datab[4]
+
+            freq_list[i] = p.freq_suba
+
+        tau_low_listb = np.sqrt(np.array(tau_low_listb)**2+np.array(fse_listb)**2)
+        tau_high_listb = np.sqrt(np.array(tau_high_listb)**2+np.array(fse_listb)**2)
+
+        #convert errors to log space
+        total_low_erra = tau_low_listb / (np.array(tau_listb)*math.log(10.0))
+        total_high_erra = tau_high_listb / (np.array(tau_listb)*math.log(10.0))
+
+        #convert freqs and taus to log space
+        logfreqs = []
+        for d in freq_list:
+            logfreqs.append(math.log10(d/1000.0)) #convert freqs to GHz
+        print(len(logfreqs))
+        logtaus = []
+        for d in tau_listb:
+            logtaus.append(math.log10(d))
+        print(len(logtaus))
+        logfreqs = np.array(logfreqs)
+        logtaus = np.array(logtaus)
+
+        #calculate the chi-squared surface for the varying slopes and yints
+        chisqs = np.zeros((len(slope_test), len(yint_test)))
+        for ii, n in enumerate(yint_test):
+            for iz, w in enumerate(slope_test):
+                error_above_vs_below = np.zeros(np.size(logtaus))
+                for iii in np.arange(np.size(logtaus)):
+                    if logtaus[iii] > (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                        error_above_vs_below[iii] = total_low_erra[iii]
+                    elif logtaus[iii] < (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                        error_above_vs_below[iii] = total_high_erra[iii]
+                yphi = (logtaus - (w * (np.subtract(logfreqs,math.log10(1.5))) + math.log10(n))) /  error_above_vs_below # subtract so 1.5 GHz y-int
+                yphisq = yphi ** 2
+                yphisq2sum = sum(yphisq)
+                chisqs[iz,ii] = yphisq2sum
+
+        chisqs = chisqs - np.amin(chisqs)
+        chisqs = np.exp((-0.5)*chisqs)
+
+        probabilitiesx = np.sum(chisqs, axis=1)
+        probabilitiesy = np.sum(chisqs, axis=0)
+        likelihoodx = likelihood_evaluator(slope_test, probabilitiesx)
+        likelihoody = likelihood_evaluator(yint_test, probabilitiesy)
+
+        likelihood_slopeb[i] = probabilitiesx
+        likelihood_yintb[i] = probabilitiesy
+
+        slope = likelihoodx[0]
+        yint = likelihoody[0]
+
+        plaw_datab[i][0] = slope
+        plaw_datab[i][1] = likelihoodx[1]
+        plaw_datab[i][2] = likelihoodx[2]
+        plaw_datab[i][3] = yint
+        plaw_datab[i][4] = likelihoody[1]
+        plaw_datab[i][5] = likelihoody[2]
+
+        axsb.flat[i].loglog()
+        y = ((np.subtract(logfreqs,math.log10(1.5)))*likelihoodx[0]) + math.log10(likelihoody[0])
+        axsb.flat[i].errorbar(x = freqs/1000.0, y = tau_listb, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
+        textstr = '\n'.join((
+        r'$\mathrm{MJD}=%.0f$' % (int(mjds[iv]), ),
+        r'$\tau_0=%.1f$' % (yint, ),
+        r'$\alpha=%.2f$' % (slope, )))
+        axsb.flat[i].text(0.65, 0.95, textstr, fontsize=5, verticalalignment='top', transform=axsb.flat[i].transAxes)
+        axsb.flat[i].plot(freqs/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
+        axsb.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
+        axsb.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
+
+
+    ax = figb.add_subplot(111, frameon=False)
+    plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
+    ax.set_xlabel(r'$\nu$ (GHz)')
+    plt.ylabel(r'$\tau$ ($\mu$s)')
+    plt.title('Beta = 3.99999 J1903+0327 Scattering vs. Epoch')
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize='x-small')
+    plt.rc('ytick', labelsize='x-small')
+    if stop_mjd > 28:
+        title = f'timea_power_laws_beta=3_99999_gwidth=ind{beta_gwidth_ind}_2.pdf'
+    elif stop_mjd <= 28:
+        title = f'timea_power_laws_beta=3_99999_gwidth=ind{beta_gwidth_ind}_1.pdf'
+    plt.savefig(title)
+
+
+    #now do for the same range with dec exp
+
+    for i in range(start_index, stop_index):
+
+        '''First calculate and collect tau values with errors.'''
+        print(f'MJD {i}')
+        num_chan0 = int(chan[i])
+        data0 = data[i][:num_chan0]
+        freq0 = freq[i][:num_chan0]
+        p = Profile(mjds[i], data0, freq0, dur[i])
+
+        mjd = mjds[i]
+        freq_list = np.zeros(p.num_sub)
+
+        tau_liste = np.zeros(p.num_sub)
+        tau_low_liste = np.zeros(p.num_sub)
+        tau_high_liste = np.zeros(p.num_sub)
+        fse_liste = np.zeros(p.num_sub)
+
+        for ii in range(p.num_sub):
+
+            print(f'Frequency {ii}')
+
+            dur_list.append(dur[i])
+            mjd_list.append(mjds[i])
+
+            datae = p.fit(ii, dec_exp = True, gwidth_pwr_law = True)
+            tau_liste[i] = datae[1]
+            tau_low_liste[i] = datae[2]
+            tau_high_liste[i] = datae[3]
+            fse_liste[i] = datae[4]
+
+        tau_low_liste = np.sqrt(tau_low_liste**2+fse_liste**2)
+        tau_high_liste = np.sqrt(tau_high_liste**2+fse_liste**2)
+
+        #convert errors to log space
+        total_low_erra = tau_low_liste / (np.array(tau_liste)*math.log(10.0))
+        total_high_erra = tau_high_liste / (np.array(tau_liste)*math.log(10.0))
+
+        #convert freqs and taus to log space
+        logfreqs = []
+        for d in freq_list:
+            logfreqs.append(math.log10(d/1000.0)) #convert freqs to GHz
+        print(len(logfreqs))
+        logtaus = []
+        for d in tau_liste:
+            logtaus.append(math.log10(d))
+        print(len(logtaus))
+        logfreqs = np.array(logfreqs)
+        logtaus = np.array(logtaus)
+
+        #calculate the chi-squared surface for the varying slopes and yints
+        chisqs = np.zeros((len(slope_test), len(yint_test)))
+        for ii, n in enumerate(yint_test):
+            for iz, w in enumerate(slope_test):
+                error_above_vs_below = np.zeros(np.size(logtaus))
+                for iii in np.arange(np.size(logtaus)):
+                    if logtaus[iii] > (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                        error_above_vs_below[iii] = total_low_erra[iii]
+                    elif logtaus[iii] < (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                        error_above_vs_below[iii] = total_high_erra[iii]
+                yphi = (logtaus - (w * (np.subtract(logfreqs,math.log10(1.5))) + math.log10(n))) / error_above_vs_below # subtract so 1.5 GHz y-int
+                yphisq = yphi ** 2
+                yphisq2sum = sum(yphisq)
+                chisqs[iz,ii] = yphisq2sum
+
+        chisqs = chisqs - np.amin(chisqs)
+        chisqs = np.exp((-0.5)*chisqs)
+
+        probabilitiesx = np.sum(chisqs, axis=1)
+        probabilitiesy = np.sum(chisqs, axis=0)
+        likelihoodx = likelihood_evaluator(slope_test, probabilitiesx)
+        likelihoody = likelihood_evaluator(yint_test, probabilitiesy)
+
+        likelihood_slopee[i] = probabilitiesx
+        likelihood_yinte[i] = probabilitiesy
+
+        slope = likelihoodx[0]
+        yint = likelihoody[0]
+
+        plaw_datae[i][0] = slope
+        plaw_datae[i][1] = likelihoodx[1]
+        plaw_datae[i][2] = likelihoodx[2]
+        plaw_datae[i][3] = yint
+        plaw_datae[i][4] = likelihoody[1]
+        plaw_datae[i][5] = likelihoody[2]
+
+        axse.flat[i].loglog()
+        y = ((np.subtract(logfreqs,math.log10(1.5)))*likelihoodx[0]) + math.log10(likelihoody[0])
+        axse.flat[i].errorbar(x = freqs/1000.0, y = tau_liste, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
+        textstr = '\n'.join((
+        r'$\mathrm{MJD}=%.0f$' % (int(mjds[iv]), ),
+        r'$\tau_0=%.1f$' % (yint, ),
+        r'$\alpha=%.2f$' % (slope, )))
+        axse.flat[i].text(0.65, 0.95, textstr, fontsize=5, verticalalignment='top', transform=axse.flat[i].transAxes)
+        axse.flat[i].plot(freqs/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
+        axse.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
+        axse.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
+
+
+    ax = fige.add_subplot(111, frameon=False)
+    plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
+    plt.xlabel(r'$\nu$ (GHz)')
+    plt.ylabel(r'$\tau$ ($\mu$s)')
+    plt.title('Decaying Exponential J1903+0327 Scattering vs. Epoch')
+    plt.savefig('timea_power_laws_exponential_1_gwidth=ind7.pdf')
+    if stop_mjd > 28:
+        title = f'timea_power_laws_exponential_gwidth=pwrlaw_2.pdf'
+    elif stop_mjd <= 28:
+        title = f'timea_power_laws_exponential_gwidth=pwrlaw_1.pdf'
+    plt.savefig(title)
+
+
+power_laws_and_plots(11, 27, 0, 1)
+
+
+#===============================================================================
+# Above here, gaussian width range has been changed - gaussian width of 4 for
+# beta now corresponds to 27
+# ==============================================================================
 
 #=============================================================================
 # Fitting with Decaying Exponential PBFs with time averaged data (2048//8)
     # Setting gwidth to index 5 for decaying exponential pbfs (fwhm of about 63 microseconds)
+    # Then set to index 7 for dece gaussian width (fwhm of 88.5 microseconds)
     # Setting beta to index 11
     # Setting gwidth the index 4 for beta
 # =============================================================================
 
-mjd_list = []
-freq_list = []
-dur_list = []
-subavg_chan_list = []
-
-
-pbf_width_listb = []
-low_chi_listb = []
-tau_listb = []
-tau_low_listb = []
-tau_high_listb = []
-gauss_width_listb = []
-fse_listb = []
-
-pbf_width_liste = []
-low_chi_liste = []
-tau_liste = []
-tau_low_liste = []
-tau_high_liste = []
-gauss_width_liste = []
-fse_liste = []
-
-
-for i in range(56):
-    sub_int = True
-    ii = 0
-    print(f'MJD {i}')
-    num_chan0 = int(chan[i])
-    data0 = data[i][:num_chan0]
-    freq0 = freq[i][:num_chan0]
-    p = Profile(mjds[i], data0, freq0, dur[i])
-    subavg_chan_list.append(p.num_sub)
-
-    while sub_int == True:
-
-        print(f'Frequency {ii}')
-
-        dur_list.append(dur[i])
-        mjd_list.append(mjds[i])
-
-        datab = p.fit(ii, beta_ind = 11, gwidth_ind = 4)
-        gauss_width_listb.append(datab[5])
-        pbf_width_listb.append(datab[6])
-        low_chi_listb.append(datab[0])
-        tau_listb.append(datab[1])
-        tau_low_listb.append(datab[2])
-        tau_high_listb.append(datab[3])
-        fse_listb.append(datab[4])
-
-        datae = p.fit(ii, gwidth_ind = 7, dec_exp = True)
-        gauss_width_liste.append(datae[5])
-        pbf_width_liste.append(datae[6])
-        low_chi_liste.append(datae[0])
-        tau_liste.append(datae[1])
-        tau_low_liste.append(datae[2])
-        tau_high_liste.append(datae[3])
-        fse_liste.append(datae[4])
-
-        freq_list.append(p.freq_suba)
-
-        ii += 1
-        if ii > p.num_sub - 1:
-            sub_int = False
-
-
-setg4setb11_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listb, low_chi_listb, tau_listb, tau_low_listb, tau_high_listb, fse_listb, gauss_width_listb])
-
-np.save('timea_setg4setb11_data', setg4setb11_data)
-
-setg5dece_data = np.array([mjd_list, freq_list, dur_list, pbf_width_liste, low_chi_liste, tau_liste, tau_low_liste, tau_high_liste, fse_liste, gauss_width_liste])
-
-np.save('timea_setg7dece_data', setg5dece_data)
+# mjd_list = []
+# freq_list = []
+# dur_list = []
+# subavg_chan_list = []
+#
+#
+# pbf_width_listb = []
+# low_chi_listb = []
+# tau_listb = []
+# tau_low_listb = []
+# tau_high_listb = []
+# gauss_width_listb = []
+# fse_listb = []
+#
+# pbf_width_liste = []
+# low_chi_liste = []
+# tau_liste = []
+# tau_low_liste = []
+# tau_high_liste = []
+# gauss_width_liste = []
+# fse_liste = []
+#
+#
+# for i in range(56):
+#     sub_int = True
+#     ii = 0
+#     print(f'MJD {i}')
+#     num_chan0 = int(chan[i])
+#     data0 = data[i][:num_chan0]
+#     freq0 = freq[i][:num_chan0]
+#     p = Profile(mjds[i], data0, freq0, dur[i])
+#     subavg_chan_list.append(p.num_sub)
+#
+#     while sub_int == True:
+#
+#         print(f'Frequency {ii}')
+#
+#         dur_list.append(dur[i])
+#         mjd_list.append(mjds[i])
+#
+#         datab = p.fit(ii, beta_ind = 11, gwidth_ind = 4)
+#         gauss_width_listb.append(datab[5])
+#         pbf_width_listb.append(datab[6])
+#         low_chi_listb.append(datab[0])
+#         tau_listb.append(datab[1])
+#         tau_low_listb.append(datab[2])
+#         tau_high_listb.append(datab[3])
+#         fse_listb.append(datab[4])
+#
+#         datae = p.fit(ii, gwidth_ind = 7, dec_exp = True)
+#         gauss_width_liste.append(datae[5])
+#         pbf_width_liste.append(datae[6])
+#         low_chi_liste.append(datae[0])
+#         tau_liste.append(datae[1])
+#         tau_low_liste.append(datae[2])
+#         tau_high_liste.append(datae[3])
+#         fse_liste.append(datae[4])
+#
+#         freq_list.append(p.freq_suba)
+#
+#         ii += 1
+#         if ii > p.num_sub - 1:
+#             sub_int = False
+#
+#
+# setg4setb11_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listb, low_chi_listb, tau_listb, tau_low_listb, tau_high_listb, fse_listb, gauss_width_listb])
+#
+# np.save('timea_setg4setb11_data', setg4setb11_data)
+#
+# setg5dece_data = np.array([mjd_list, freq_list, dur_list, pbf_width_liste, low_chi_liste, tau_liste, tau_low_liste, tau_high_liste, fse_liste, gauss_width_liste])
+#
+# np.save('timea_setg7dece_data', setg5dece_data)
 
 
 #=============================================================================
