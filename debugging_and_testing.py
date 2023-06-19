@@ -32,29 +32,48 @@ mjds = np.load("J1903_mjds.npy")
 chan = np.load("J1903_numchan.npy")
 dur = np.load("J1903_dur.npy")
 
-ii = 0
+#===============================================================================
+# Testing the gwidth power law
+# ==============================================================================
 
-high_freq_gwidth_test = np.zeros((56,2))
+num_chan0 = int(chan[0])
+data0 = data[0][:num_chan0]
+freq0 = freq[0][:num_chan0]
 
-print(conv.gauss_fwhm)
+p = Profile(mjds[0], data0, freq0, dur[0])
+pwr_ind = p.fit_pwr_law_g()
 
-for i in range(56):
+print(pwr_ind)
 
-    num_chan = int(chan[i])
-    datas = data[i][:num_chan]
-    freqs = freq[i][:num_chan]
 
-    p = Profile(mjds[i], datas, freqs, dur[i])
+#===============================================================================
+# Collecting best fit gaussian widths for highest frequency pulse in order to
+# set a reference frequency and gaussian width for the gwidth pwr law
+# ==============================================================================
 
-    dataret = p.fit(ii, dec_exp=True)
-
-    high_freq_gwidth_test[i][0] = p.freq_suba #frequency
-    high_freq_gwidth_test[i][1] = dataret[1] #gaussian width
-
-    print(f'Frequency = {p.freq_round} MHz')
-    print(fr'Gaussian Width = {dataret[1]} \mu s')
-
-np.save('high_freq_gwidth_test', high_freq_gwidth_test)
+# ii = 0
+#
+# high_freq_gwidth_test = np.zeros((56,2))
+#
+# print(conv.gauss_fwhm)
+#
+# for i in range(56):
+#
+#     num_chan = int(chan[i])
+#     datas = data[i][:num_chan]
+#     freqs = freq[i][:num_chan]
+#
+#     p = Profile(mjds[i], datas, freqs, dur[i])
+#
+#     dataret = p.fit(ii, dec_exp=True)
+#
+#     high_freq_gwidth_test[i][0] = p.freq_suba #frequency
+#     high_freq_gwidth_test[i][1] = dataret[1] #gaussian width
+#
+#     print(f'Frequency = {p.freq_round} MHz')
+#     print(fr'Gaussian Width = {dataret[1]} \mu s')
+#
+# np.save('high_freq_gwidth_test', high_freq_gwidth_test)
 
 
 #===============================================================================

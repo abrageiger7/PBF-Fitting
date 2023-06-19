@@ -683,11 +683,11 @@ class Profile:
 
         if gwidth_pwr_law == True and dec_exp == True:
 
-            v_0_dece =
+            v_0_dece = 1742.0
 
-            v_0_gwifth_0_dece =
+            v_0_gwifth_0_dece = 70.0 # reference width in microseconds for v_0_dece freq
 
-            pwr_ind = np.arange(0,1,0.1)
+            pwr_ind = np.arange(0,1,0.1) # range of gaussian width power law indexes to choose from
 
             chi_sqs_collect = np.zeros(len(pwr_ind))
 
@@ -697,12 +697,18 @@ class Profile:
 
                     self.init_freq_subint(ii)
 
-                    gwidth_set = v_0_gwifth_0_dece * np.power((self.freq_suba / v_0_dece), pwr_ind[i])
+                    gwidth_set = v_0_gwifth_0_dece * np.power((self.freq_suba / v_0_dece), -pwr_ind[i])
                     gwidth_ind = find_nearest(gauss_fwhm, gwidth_set)[1][0][0]
 
                     dataret = self.fit(dec_exp = True, gwidth_ind = gwidth_ind)
 
                     chi_sqs_collect[i] += dataret[0]
+
+            plt.plot(pwr_ind, chi_sqs_collect, drawstyle = 'steps')
+            plt.xlabel('Gaussian Width Power Law Indices')
+            plt.ylabel('Summed Chi Squared')
+            plt.title('Chi-Squared for Gwidth Power Law Index (over all freqs)')
+            plt.show()
 
             lowest_chi_ind = np.where((chi_sqs_collect == np.min(chi_sqs_collect)))[0][0]
 
