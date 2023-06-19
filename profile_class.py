@@ -698,7 +698,7 @@ class Profile:
                 gwidth_set = v_0_gwifth_0_dece * np.power((self.freq_suba / v_0_dece), -pwr_ind[i])
                 gwidth_ind = find_nearest(gauss_fwhm, gwidth_set)[1][0][0]
 
-                dataret = self.fit(dec_exp = True, gwidth_ind = gwidth_ind)
+                dataret = self.fit(ii, dec_exp = True, gwidth_ind = gwidth_ind)
 
                 chi_sqs_collect[i] += dataret[0]
 
