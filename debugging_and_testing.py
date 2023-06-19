@@ -49,6 +49,9 @@ print(pwr_ind)
 #===============================================================================
 # Collecting best fit gaussian widths for highest frequency pulse in order to
 # set a reference frequency and gaussian width for the gwidth pwr law
+
+# **Results** Average best fit gaussian width for 1742 (highest freq) was about
+# 70 microseconds - starting the gwidth power laws from there now
 # ==============================================================================
 
 # ii = 0
