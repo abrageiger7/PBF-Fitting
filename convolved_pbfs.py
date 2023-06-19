@@ -38,7 +38,7 @@ widths_gaussian = np.linspace((0.1/2048)*phase_bins, (150.0/2048)*phase_bins, 20
 gauss_fwhm = widths_gaussian * ((0.0021499/phase_bins) * 1e6 * (2.0*math.sqrt(2*math.log(2))))
 
 #gaussian parameters in phase bins and arbitrary intensity comparitive to data
-parameters = np.zeros((50, 3))
+parameters = np.zeros((200, 3))
 parameters[:,0] = 0.3619 #general amplitude to be scaled
 parameters[:,1] = (1025.0/2048)*phase_bins #general mean
 parameters[:,2] = widths_gaussian #independent variable
