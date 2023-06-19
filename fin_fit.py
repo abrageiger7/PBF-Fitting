@@ -9,12 +9,14 @@ Time and Frequency Varying Calculations of Fit Parameters
 #imports
 import numpy as np
 import matplotlib.pyplot as plt
-import fit_functions as fittin
+from fit_functions import *
 import convolved_pbfs as conv
 #import intrinsic_pbfs as intrins
 import math
 from profile_class import Profile
 import zeta_convolved_pbfs as zconv
+from scipy.stats import pearsonr
+
 
 
 #import the parameter bank for reference, comparing, and plotting
@@ -41,7 +43,7 @@ dur = np.load("J1903_dur.npy")
 #Below are various calculations of fit parameters using the Profile class and
 #functions from fit_functions.py
 
-def power_laws_and_plots(beta_ind, beta_gwidth_ind, start_mjd, stop_mjd):
+def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     '''Calculates tau with error for each pulse for J1903 L-band data given the
     specified beta_ind and gwidth_ind. Then calculates the best fit tau versus
     frequency power law and plots. Does this for both dec exp pbfs and beta pbfs.
@@ -77,7 +79,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, start_mjd, stop_mjd):
 
     dece_gwidth_pwr_ind = 0.9 #WILL HAVE TO CHANGE
 
-    for i in range(start_mjd, stop_mjd):
+    for i in range(28):
 
         '''First calculate and collect tau values with errors'''
         print(f'MJD {i}')
@@ -98,16 +100,13 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, start_mjd, stop_mjd):
 
             print(f'Frequency {ii}')
 
-            dur_list.append(dur[i])
-            mjd_list.append(mjds[i])
-
             datab = p.fit(ii, beta_ind = beta_ind, gwidth_ind = beta_gwidth_ind)
             tau_listb[ii] = datab[1]
             tau_low_listb[ii] = datab[2]
             tau_high_listb[ii] = datab[3]
             fse_listb[ii] = datab[4]
 
-            freq_list[i] = p.freq_suba
+            freq_list[ii] = p.freq_suba
 
         tau_low_listb = np.sqrt(np.array(tau_low_listb)**2+np.array(fse_listb)**2)
         tau_high_listb = np.sqrt(np.array(tau_high_listb)**2+np.array(fse_listb)**2)
@@ -120,11 +119,9 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, start_mjd, stop_mjd):
         logfreqs = []
         for d in freq_list:
             logfreqs.append(math.log10(d/1000.0)) #convert freqs to GHz
-        print(len(logfreqs))
         logtaus = []
         for d in tau_listb:
             logtaus.append(math.log10(d))
-        print(len(logtaus))
         logfreqs = np.array(logfreqs)
         logtaus = np.array(logtaus)
 
@@ -166,13 +163,13 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, start_mjd, stop_mjd):
 
         axsb.flat[i].loglog()
         y = ((np.subtract(logfreqs,math.log10(1.5)))*likelihoodx[0]) + math.log10(likelihoody[0])
-        axsb.flat[i].errorbar(x = freqs/1000.0, y = tau_listb, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
+        axsb.flat[i].errorbar(x = freq_list/1000.0, y = tau_listb, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
         textstr = '\n'.join((
-        r'$\mathrm{MJD}=%.0f$' % (int(mjds[iv]), ),
+        r'$\mathrm{MJD}=%.0f$' % (int(mjd), ),
         r'$\tau_0=%.1f$' % (yint, ),
         r'$\alpha=%.2f$' % (slope, )))
         axsb.flat[i].text(0.65, 0.95, textstr, fontsize=5, verticalalignment='top', transform=axsb.flat[i].transAxes)
-        axsb.flat[i].plot(freqs/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
+        axsb.flat[i].plot(freq_list/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
         axsb.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
         axsb.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
 
@@ -185,16 +182,13 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, start_mjd, stop_mjd):
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
     plt.rc('ytick', labelsize='x-small')
-    if stop_mjd > 28:
-        title = f'timea_power_laws_beta=3_99999_gwidth=ind{beta_gwidth_ind}_2.pdf'
-    elif stop_mjd <= 28:
-        title = f'timea_power_laws_beta=3_99999_gwidth=ind{beta_gwidth_ind}_1.pdf'
+    title = f'timea_power_laws_beta=3_99999_gwidth=ind{beta_gwidth_ind}_1.pdf'
     plt.savefig(title)
 
 
     #now do for the same range with dec exp
 
-    for i in range(start_index, stop_index):
+    for i in range(28):
 
         '''First calculate and collect tau values with errors.'''
         print(f'MJD {i}')
@@ -204,7 +198,6 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, start_mjd, stop_mjd):
         p = Profile(mjds[i], data0, freq0, dur[i])
 
         mjd = mjds[i]
-        freq_list = np.zeros(p.num_sub)
 
         tau_liste = np.zeros(p.num_sub)
         tau_low_liste = np.zeros(p.num_sub)
@@ -215,14 +208,11 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, start_mjd, stop_mjd):
 
             print(f'Frequency {ii}')
 
-            dur_list.append(dur[i])
-            mjd_list.append(mjds[i])
-
             datae = p.fit(ii, dec_exp = True, gwidth_pwr_law = True)
-            tau_liste[i] = datae[1]
-            tau_low_liste[i] = datae[2]
-            tau_high_liste[i] = datae[3]
-            fse_liste[i] = datae[4]
+            tau_liste[ii] = datae[1]
+            tau_low_liste[ii] = datae[2]
+            tau_high_liste[ii] = datae[3]
+            fse_liste[ii] = datae[4]
 
         tau_low_liste = np.sqrt(tau_low_liste**2+fse_liste**2)
         tau_high_liste = np.sqrt(tau_high_liste**2+fse_liste**2)
@@ -231,16 +221,10 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, start_mjd, stop_mjd):
         total_low_erra = tau_low_liste / (np.array(tau_liste)*math.log(10.0))
         total_high_erra = tau_high_liste / (np.array(tau_liste)*math.log(10.0))
 
-        #convert freqs and taus to log space
-        logfreqs = []
-        for d in freq_list:
-            logfreqs.append(math.log10(d/1000.0)) #convert freqs to GHz
-        print(len(logfreqs))
+        #convert taus to logspace
         logtaus = []
         for d in tau_liste:
             logtaus.append(math.log10(d))
-        print(len(logtaus))
-        logfreqs = np.array(logfreqs)
         logtaus = np.array(logtaus)
 
         #calculate the chi-squared surface for the varying slopes and yints
@@ -281,13 +265,13 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, start_mjd, stop_mjd):
 
         axse.flat[i].loglog()
         y = ((np.subtract(logfreqs,math.log10(1.5)))*likelihoodx[0]) + math.log10(likelihoody[0])
-        axse.flat[i].errorbar(x = freqs/1000.0, y = tau_liste, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
+        axse.flat[i].errorbar(x = freq_list/1000.0, y = tau_liste, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
         textstr = '\n'.join((
-        r'$\mathrm{MJD}=%.0f$' % (int(mjds[iv]), ),
+        r'$\mathrm{MJD}=%.0f$' % (int(mjd), ),
         r'$\tau_0=%.1f$' % (yint, ),
         r'$\alpha=%.2f$' % (slope, )))
         axse.flat[i].text(0.65, 0.95, textstr, fontsize=5, verticalalignment='top', transform=axse.flat[i].transAxes)
-        axse.flat[i].plot(freqs/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
+        axse.flat[i].plot(freq_list/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
         axse.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
         axse.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
 
@@ -298,14 +282,437 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, start_mjd, stop_mjd):
     plt.ylabel(r'$\tau$ ($\mu$s)')
     plt.title('Decaying Exponential J1903+0327 Scattering vs. Epoch')
     plt.savefig('timea_power_laws_exponential_1_gwidth=ind7.pdf')
-    if stop_mjd > 28:
-        title = f'timea_power_laws_exponential_gwidth=pwrlaw_2.pdf'
-    elif stop_mjd <= 28:
-        title = f'timea_power_laws_exponential_gwidth=pwrlaw_1.pdf'
+    title = f'timea_power_laws_exponential_gwidth=pwrlaw_1.pdf'
     plt.savefig(title)
 
 
-power_laws_and_plots(11, 27, 0, 1)
+    #now do again for the remaining 28 mjds
+
+    figb, axsb = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
+    fige, axse = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
+
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize='x-small')
+    plt.rc('ytick', labelsize='x-small')
+
+    for i in range(28,56):
+
+        '''First calculate and collect tau values with errors'''
+        print(f'MJD {i}')
+        num_chan0 = int(chan[i])
+        data0 = data[i][:num_chan0]
+        freq0 = freq[i][:num_chan0]
+        p = Profile(mjds[i], data0, freq0, dur[i])
+
+        mjd = mjds[i]
+        freq_list = np.zeros(p.num_sub)
+
+        tau_listb = np.zeros(p.num_sub)
+        tau_low_listb = np.zeros(p.num_sub)
+        tau_high_listb = np.zeros(p.num_sub)
+        fse_listb = np.zeros(p.num_sub)
+
+        for ii in range(p.num_sub):
+
+            print(f'Frequency {ii}')
+
+            datab = p.fit(ii, beta_ind = beta_ind, gwidth_ind = beta_gwidth_ind)
+            tau_listb[ii] = datab[1]
+            tau_low_listb[ii] = datab[2]
+            tau_high_listb[ii] = datab[3]
+            fse_listb[ii] = datab[4]
+
+            freq_list[ii] = p.freq_suba
+
+        tau_low_listb = np.sqrt(np.array(tau_low_listb)**2+np.array(fse_listb)**2)
+        tau_high_listb = np.sqrt(np.array(tau_high_listb)**2+np.array(fse_listb)**2)
+
+        #convert errors to log space
+        total_low_erra = tau_low_listb / (np.array(tau_listb)*math.log(10.0))
+        total_high_erra = tau_high_listb / (np.array(tau_listb)*math.log(10.0))
+
+        #convert taus to log space
+        logtaus = []
+        for d in tau_listb:
+            logtaus.append(math.log10(d))
+        logtaus = np.array(logtaus)
+
+        #calculate the chi-squared surface for the varying slopes and yints
+        chisqs = np.zeros((len(slope_test), len(yint_test)))
+        for ii, n in enumerate(yint_test):
+            for iz, w in enumerate(slope_test):
+                error_above_vs_below = np.zeros(np.size(logtaus))
+                for iii in np.arange(np.size(logtaus)):
+                    if logtaus[iii] > (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                        error_above_vs_below[iii] = total_low_erra[iii]
+                    elif logtaus[iii] < (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                        error_above_vs_below[iii] = total_high_erra[iii]
+                yphi = (logtaus - (w * (np.subtract(logfreqs,math.log10(1.5))) + math.log10(n))) /  error_above_vs_below # subtract so 1.5 GHz y-int
+                yphisq = yphi ** 2
+                yphisq2sum = sum(yphisq)
+                chisqs[iz,ii] = yphisq2sum
+
+        chisqs = chisqs - np.amin(chisqs)
+        chisqs = np.exp((-0.5)*chisqs)
+
+        probabilitiesx = np.sum(chisqs, axis=1)
+        probabilitiesy = np.sum(chisqs, axis=0)
+        likelihoodx = likelihood_evaluator(slope_test, probabilitiesx)
+        likelihoody = likelihood_evaluator(yint_test, probabilitiesy)
+
+        likelihood_slopeb[i] = probabilitiesx
+        likelihood_yintb[i] = probabilitiesy
+
+        slope = likelihoodx[0]
+        yint = likelihoody[0]
+
+        plaw_datab[i][0] = slope
+        plaw_datab[i][1] = likelihoodx[1]
+        plaw_datab[i][2] = likelihoodx[2]
+        plaw_datab[i][3] = yint
+        plaw_datab[i][4] = likelihoody[1]
+        plaw_datab[i][5] = likelihoody[2]
+
+        i -= 28
+        axsb.flat[i].loglog()
+        y = ((np.subtract(logfreqs,math.log10(1.5)))*likelihoodx[0]) + math.log10(likelihoody[0])
+        axsb.flat[i].errorbar(x = freq_list/1000.0, y = tau_listb, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
+        textstr = '\n'.join((
+        r'$\mathrm{MJD}=%.0f$' % (int(mjd), ),
+        r'$\tau_0=%.1f$' % (yint, ),
+        r'$\alpha=%.2f$' % (slope, )))
+        axsb.flat[i].text(0.65, 0.95, textstr, fontsize=5, verticalalignment='top', transform=axsb.flat[i].transAxes)
+        axsb.flat[i].plot(freq_list/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
+        axsb.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
+        axsb.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
+
+
+    ax = figb.add_subplot(111, frameon=False)
+    plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
+    ax.set_xlabel(r'$\nu$ (GHz)')
+    plt.ylabel(r'$\tau$ ($\mu$s)')
+    plt.title('Beta = 3.99999 J1903+0327 Scattering vs. Epoch')
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize='x-small')
+    plt.rc('ytick', labelsize='x-small')
+    title = f'timea_power_laws_beta=3_99999_gwidth=ind{beta_gwidth_ind}_2.pdf'
+    plt.savefig(title)
+
+
+    #now do for the same range with dec exp
+
+    for i in range(28,56):
+
+        '''First calculate and collect tau values with errors.'''
+        print(f'MJD {i}')
+        num_chan0 = int(chan[i])
+        data0 = data[i][:num_chan0]
+        freq0 = freq[i][:num_chan0]
+        p = Profile(mjds[i], data0, freq0, dur[i])
+
+        mjd = mjds[i]
+
+        tau_liste = np.zeros(p.num_sub)
+        tau_low_liste = np.zeros(p.num_sub)
+        tau_high_liste = np.zeros(p.num_sub)
+        fse_liste = np.zeros(p.num_sub)
+
+        for ii in range(p.num_sub):
+
+            print(f'Frequency {ii}')
+
+            datae = p.fit(ii, dec_exp = True, gwidth_pwr_law = True)
+            tau_liste[ii] = datae[1]
+            tau_low_liste[ii] = datae[2]
+            tau_high_liste[ii] = datae[3]
+            fse_liste[ii] = datae[4]
+
+        tau_low_liste = np.sqrt(tau_low_liste**2+fse_liste**2)
+        tau_high_liste = np.sqrt(tau_high_liste**2+fse_liste**2)
+
+        #convert errors to log space
+        total_low_erra = tau_low_liste / (np.array(tau_liste)*math.log(10.0))
+        total_high_erra = tau_high_liste / (np.array(tau_liste)*math.log(10.0))
+
+        #convert taus to log space
+        logtaus = []
+        for d in tau_liste:
+            logtaus.append(math.log10(d))
+        logtaus = np.array(logtaus)
+
+        #calculate the chi-squared surface for the varying slopes and yints
+        chisqs = np.zeros((len(slope_test), len(yint_test)))
+        for ii, n in enumerate(yint_test):
+            for iz, w in enumerate(slope_test):
+                error_above_vs_below = np.zeros(np.size(logtaus))
+                for iii in np.arange(np.size(logtaus)):
+                    if logtaus[iii] > (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                        error_above_vs_below[iii] = total_low_erra[iii]
+                    elif logtaus[iii] < (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                        error_above_vs_below[iii] = total_high_erra[iii]
+                yphi = (logtaus - (w * (np.subtract(logfreqs,math.log10(1.5))) + math.log10(n))) / error_above_vs_below # subtract so 1.5 GHz y-int
+                yphisq = yphi ** 2
+                yphisq2sum = sum(yphisq)
+                chisqs[iz,ii] = yphisq2sum
+
+        chisqs = chisqs - np.amin(chisqs)
+        chisqs = np.exp((-0.5)*chisqs)
+
+        probabilitiesx = np.sum(chisqs, axis=1)
+        probabilitiesy = np.sum(chisqs, axis=0)
+        likelihoodx = likelihood_evaluator(slope_test, probabilitiesx)
+        likelihoody = likelihood_evaluator(yint_test, probabilitiesy)
+
+        likelihood_slopee[i] = probabilitiesx
+        likelihood_yinte[i] = probabilitiesy
+
+        slope = likelihoodx[0]
+        yint = likelihoody[0]
+
+        plaw_datae[i][0] = slope
+        plaw_datae[i][1] = likelihoodx[1]
+        plaw_datae[i][2] = likelihoodx[2]
+        plaw_datae[i][3] = yint
+        plaw_datae[i][4] = likelihoody[1]
+        plaw_datae[i][5] = likelihoody[2]
+
+        i -= 28
+        axse.flat[i].loglog()
+        y = ((np.subtract(logfreqs,math.log10(1.5)))*likelihoodx[0]) + math.log10(likelihoody[0])
+        axse.flat[i].errorbar(x = freq_list/1000.0, y = tau_liste, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
+        textstr = '\n'.join((
+        r'$\mathrm{MJD}=%.0f$' % (int(mjd), ),
+        r'$\tau_0=%.1f$' % (yint, ),
+        r'$\alpha=%.2f$' % (slope, )))
+        axse.flat[i].text(0.65, 0.95, textstr, fontsize=5, verticalalignment='top', transform=axse.flat[i].transAxes)
+        axse.flat[i].plot(freq_list/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
+        axse.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
+        axse.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
+
+
+    ax = fige.add_subplot(111, frameon=False)
+    plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
+    plt.xlabel(r'$\nu$ (GHz)')
+    plt.ylabel(r'$\tau$ ($\mu$s)')
+    plt.title('Decaying Exponential J1903+0327 Scattering vs. Epoch')
+    plt.savefig('timea_power_laws_exponential_1_gwidth=ind7.pdf')
+    title = f'timea_power_laws_exponential_gwidth=pwrlaw_2.pdf'
+    plt.savefig(title)
+
+    #now plot slopes and yints over time
+
+    fig, axs = plt.subplots(nrows=2, ncols=1, figsize = (11,5), sharex = True)
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize=16)
+    plt.rc('ytick', labelsize=15)
+
+    markers, caps, bars = axs.flat[0].errorbar(x = mjds, y = plaw_datae[:,0], yerr = [plaw_datae[:,1], plaw_datae[:,2]], fmt = 'o', ms = 5, color = 'g', capsize = 2, label = 'Exponential PBF')
+
+    [bar.set_alpha(0.3) for bar in bars]
+    [cap.set_alpha(0.3) for cap in caps]
+
+    markers, caps, bars = axs.flat[0].errorbar(x = mjds, y = plaw_datab[:,0], yerr = [plaw_datab[:,1], plaw_datab[:,2]], fmt = 's', color = 'dimgrey', capsize = 2, label = r'$\beta = 3.99999$ PBF')
+    axs.flat[0].set_ylabel(r'$\alpha$', fontsize = 14)
+
+    [bar.set_alpha(0.3) for bar in bars]
+    [cap.set_alpha(0.3) for cap in caps]
+
+    axs.flat[0].legend(loc = 'upper right', fontsize = 14, bbox_to_anchor = (1.2,1))
+    axis2 = axs.flat[0].twiny()
+    XLIM = axs.flat[0].get_xlim()
+    XLIM = list(map(lambda x: Time(x,format='mjd',scale='utc').decimalyear,XLIM))
+    axis2.set_xlim(XLIM)
+    axis2.set_xlabel('Years', fontsize = 14)
+    axis2.tick_params(axis='x')
+
+    axs.flat[1].set_ylabel(r'$\tau_0$ ($\mu$s)', fontsize = 14)
+    axs.flat[1].set_xlabel('MJD', fontsize = 14)
+    #axs.flat[1].set_title(r'$\tau_0$ vs. MJD')
+    markers, caps, bars = axs.flat[1].errorbar(x = mjds, y = plaw_datae[:,3], yerr = [plaw_datae[:,4], plaw_datae[:,5]], fmt = 'o', ms = 5, color = 'g', capsize = 2, label = 'Exponential PBF')
+
+    [bar.set_alpha(0.3) for bar in bars]
+    [cap.set_alpha(0.3) for cap in caps]
+
+    #axs.flat[1].legend(loc = 'upper right', fontsize = 8, bbox_to_anchor = (1.25,1))
+    markers, caps, bars = axs.flat[1].errorbar(x = mjds, y = plaw_datab[:,3], yerr = [plaw_datab[:,4], plaw_datab[:,5]], fmt = 's', color = 'dimgrey', capsize = 2, label = r'$\beta$ PBF')
+
+    [bar.set_alpha(0.3) for bar in bars]
+    [cap.set_alpha(0.3) for cap in caps]
+
+    fig.tight_layout()
+    plt.savefig('timea_time_scales.pdf')
+
+
+    #now plot seperate panels for dece and beta
+
+    fig, axs = plt.subplots(nrows=4, ncols=1, figsize = (12,6), sharex = True)
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize=12)
+    plt.rc('ytick', labelsize=10)
+
+    markers, caps, bars = axs.flat[0].errorbar(x = mjds, y = plaw_datae[:,0], yerr = [plaw_datae[:,1], plaw_datae[:,2]], fmt = 'o', ms = 5, color = 'g', capsize = 2, label = 'Exponential PBF')
+
+    [bar.set_alpha(0.3) for bar in bars]
+    [cap.set_alpha(0.3) for cap in caps]
+
+    axs.flat[0].set_ylabel(r'$\alpha$', fontsize = 14)
+
+    axs.flat[0].legend()
+
+    axis2 = axs.flat[0].twiny()
+    XLIM = axs.flat[0].get_xlim()
+    XLIM = list(map(lambda x: Time(x,format='mjd',scale='utc').decimalyear,XLIM))
+    axis2.set_xlim(XLIM)
+    axis2.set_xlabel('Years', fontsize = 14)
+    axis2.tick_params(axis='x')
+
+    axs.flat[2].set_ylabel(r'$\tau_0$ ($\mu$s)', fontsize = 14)
+
+    markers, caps, bars = axs.flat[2].errorbar(x = mjds, y = plaw_datae[:,3], yerr = [plaw_datae[:,4], plaw_datae[:,5]], fmt = 'o', ms = 5, color = 'g', capsize = 2, label = 'Exponential PBF')
+
+    [bar.set_alpha(0.3) for bar in bars]
+    [cap.set_alpha(0.3) for cap in caps]
+
+    markers, caps, bars = axs.flat[1].errorbar(x = mjds, y = plaw_datab[:,0], yerr = [plaw_datab[:,1], plaw_datab[:,2]], fmt = 's', color = 'dimgrey', capsize = 2, label = r'$\beta = 3.99999$ PBF')
+    axs.flat[1].set_ylabel(r'$\alpha$', fontsize = 14)
+
+    axs.flat[1].legend()
+
+    [bar.set_alpha(0.3) for bar in bars]
+    [cap.set_alpha(0.3) for cap in caps]
+
+    axs.flat[3].set_ylabel(r'$\tau_0$ ($\mu$s)', fontsize = 14)
+    markers, caps, bars = axs.flat[3].errorbar(x = mjds, y = plaw_datab[:,3], yerr = [plaw_datab[:,4], plaw_datab[:,5]], fmt = 's', color = 'dimgrey', capsize = 2, label = r'$\beta$ PBF')
+
+    [bar.set_alpha(0.3) for bar in bars]
+    [cap.set_alpha(0.3) for cap in caps]
+
+    axs.flat[3].set_xlabel('MJD', fontsize = 14)
+
+    fig.tight_layout()
+    plt.savefig('timea_time_scales_seperate_panels.pdf')
+
+    #ADD AUTOCORRELATION HERE
+
+    #now plot the histograms and summed likeihoods (essentially the histograms w error)
+    fig, axs = plt.subplots(nrows = 4, ncols = 2, figsize = (10, 14), sharex = 'col', sharey = 'row')
+
+
+    axs.flat[0].hist(plaw_datab[:,0], color = 'dimgrey', alpha = 0.8, bins = 10, label = 'Beta = 3.99999 PBF')
+    axs.flat[0].set_ylabel('Counts', fontsize=14)
+
+    axs.flat[2].hist(plaw_datae[:,0], color = 'green', bins = 10, label = 'Exponential PBF')
+    axs.flat[2].set_ylabel('Counts', fontsize=14)
+
+    axs.flat[1].hist(plaw_datab[:,3], color = 'dimgrey', alpha = 0.8, bins = 10, label = 'Beta = 3.99999 PBF')
+
+    axs.flat[3].hist(plaw_datae[:,3], color = 'green', bins = 10, label = 'Exponential PBF')
+    axs.flat[3].sharex(axs.flat[1])
+
+    fig.tight_layout()
+
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize=16)
+    plt.rc('ytick', labelsize=13)
+
+    axs.flat[4].plot(slope_test, np.sum(norm_likelihood_slopeb, axis = 0)/trapz(np.sum(norm_likelihood_slopeb, axis = 0)), color = 'dimgrey', alpha = 0.5, label = 'Beta = 3.99999 PBF')
+    axs.flat[4].set_ylabel(r'Normalized Integrated Likelihood', fontsize=14)
+
+    axs.flat[5].plot(yint_test, np.sum(norm_likelihood_yintb, axis = 0)/trapz(np.sum(norm_likelihood_yintb, axis = 0)), color = 'dimgrey', alpha = 0.5, label = 'Beta = 3.99999 PBF')
+
+    axs.flat[6].plot(slope_test, np.sum(norm_likelihood_slopee, axis = 0)/trapz(np.sum(norm_likelihood_slopee, axis = 0)), color = 'g', label = 'Exponential PBF')
+    axs.flat[6].set_xlabel(r'$\alpha$', fontsize=16)
+    axs.flat[6].set_ylabel(r'Normalized Integrated Likelihood', fontsize=14)
+
+
+    axs.flat[7].plot(yint_test, np.sum(norm_likelihood_yinte, axis = 0)/trapz(np.sum(norm_likelihood_yinte, axis = 0)), color = 'g', label = 'Exponential PBF')
+    axs.flat[7].set_xlabel(r'$\tau_0$ ($\mu$s)', fontsize=16)
+
+    axs.flat[0].set_yticks(np.linspace(0,12,5))
+    axs.flat[2].set_yticks(np.linspace(0,12,5))
+
+    axs.flat[4].ticklabel_format(axis='y', style='sci', scilimits=(0,0))
+    axs.flat[6].set_yticks(np.linspace(0,.015,4))
+    axs.flat[4].set_yticks(np.linspace(0,.015,4))
+    axs.flat[6].ticklabel_format(axis='y', style='sci', scilimits=(0,0))
+
+    axs.flat[6].sharey(axs.flat[4])
+    axs.flat[0].sharey(axs.flat[2])
+
+    axs.flat[0].legend(loc = 'upper left', fontsize = 8)
+    axs.flat[4].legend(loc = 'upper left', fontsize = 8)
+    axs.flat[2].legend(loc = 'upper left', fontsize = 8)
+    axs.flat[6].legend(loc = 'upper left', fontsize = 8)
+
+    fig.tight_layout()
+    plt.savefig('timea_alpha_tau_hist.pdf')
+
+    #now plot tau_0 versus alpha
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize=12)
+    plt.rc('ytick', labelsize=10)
+
+    plt.figure(5)
+
+    markers, caps, bars = plt.errorbar(x = plaw_datae[:,3], y = plaw_datae[:,0], xerr = [plaw_datae[:,4], plaw_datae[:,5]], yerr = [plaw_datae[:,1], plaw_datae[:,2]], fmt = 'o', ms = 5, color = 'g', capsize = 2, label = 'Exponential PBF')
+
+    [bar.set_alpha(0.2) for bar in bars]
+    [cap.set_alpha(0.2) for cap in caps]
+
+    markers, caps, bars = plt.errorbar(x = plaw_datab[:,3], y = plaw_datab[:,0], xerr = [plaw_datab[:,4], plaw_datab[:,5]], yerr = [plaw_datab[:,1], plaw_datab[:,2]], fmt = 's', ms = 5, color = 'dimgrey', capsize = 2, label = 'Beta = 3.99999 PBF')
+    plt.xlabel(r'$\tau_0$ ($\mu$s)', fontsize = 14)
+    plt.ylabel(r'$\alpha$', fontsize = 14)
+
+    corrb, _ = pearsonr(plaw_datab[:,3], plaw_datab[:,0])
+    corre, _ = pearsonr(plaw_datae[:,3], plaw_datae[:,0])
+
+    plt.text(155, -4.2, f'Decaying Exponential r = {np.round(corrb,2)} \nBeta r = {np.round(corre,2)}', bbox=dict(facecolor='none', edgecolor='black'))
+
+    [bar.set_alpha(0.2) for bar in bars]
+    [cap.set_alpha(0.2) for cap in caps]
+    plt.legend()
+    plt.savefig('timea_tau_vs_alpha.pdf')
+    plt.close(5)
+
+    #now plot dec exp versus beta data
+    fig, axs = plt.subplots(nrows = 2, ncols = 1, figsize = (5,7))
+
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize=12)
+    plt.rc('ytick', labelsize=10)
+
+    axs.flat[0].set_title(r'Exponential versus $\beta$ PBF Data')
+    markers, caps, bars = axs.flat[0].errorbar(x = plaw_datae[:,3], y = plaw_datab[:,3], xerr = [plaw_datae[:,4], plaw_datae[:,5]], yerr = [plaw_datab[:,4], plaw_datab[:,5]], fmt = 'o', ms = 5, color = 'dimgrey', capsize = 2, label = r'$\tau_0$')
+
+    axs.flat[0].set_xlabel(r'Exponential $\tau_0$ ($\mu$s)')
+    axs.flat[0].set_ylabel(r'$\beta$ $\tau_0$ ($\mu$s)')
+
+    [bar.set_alpha(0.2) for bar in bars]
+    [cap.set_alpha(0.2) for cap in caps]
+
+    axs.flat[0].legend()
+
+    markers, caps, bars = axs.flat[1].errorbar(x = plaw_datae[:,0], y = plaw_datab[:,0], xerr = [plaw_datae[:,1], plaw_datae[:,2]], yerr = [plaw_datab[:,1], plaw_datab[:,2]], fmt = 's', ms = 5, color = 'dimgrey', capsize = 2, label = r'$\alpha$')
+
+    axs.flat[1].set_xlabel(r'Exponential PBF $\alpha$')
+    axs.flat[1].set_ylabel(r'$\beta$ PBF $\alpha$')
+
+    [bar.set_alpha(0.2) for bar in bars]
+    [cap.set_alpha(0.2) for cap in caps]
+
+    axs.flat[1].legend()
+
+    corry, _ = pearsonr(plaw_datab[:,3], plaw_datae[:,3])
+    corrs, _ = pearsonr(plaw_datab[:,0], plaw_datae[:,0])
+
+    axs.flat[0].text(145, 165, f'r = {np.round(corry,2)}', bbox=dict(facecolor='none', edgecolor='black'))
+    axs.flat[1].text(-2.78, -3.1, f'r = {np.round(corrs,2)}', bbox=dict(facecolor='none', edgecolor='black'))
+
+    fig.tight_layout()
+    plt.savefig('timea_beta_versus_dece.pdf')
+
+
+power_laws_and_plots(11, 27)
 
 
 #===============================================================================
