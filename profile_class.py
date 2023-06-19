@@ -685,7 +685,7 @@ class Profile:
 
         v_0_gwifth_0_dece = 70.0 # reference width in microseconds for v_0_dece freq
 
-        pwr_ind = np.arange(0,1,0.1) # range of gaussian width power law indexes to choose from
+        pwr_ind = np.arange(0,2,0.1) # range of gaussian width power law indexes to choose from
 
         chi_sqs_collect = np.zeros(len(pwr_ind))
 
