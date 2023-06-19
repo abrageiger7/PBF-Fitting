@@ -36,14 +36,16 @@ dur = np.load("J1903_dur.npy")
 # Testing the gwidth power law
 # ==============================================================================
 
-num_chan0 = int(chan[0])
-data0 = data[0][:num_chan0]
-freq0 = freq[0][:num_chan0]
+for i in range(10):
 
-p = Profile(mjds[0], data0, freq0, dur[0])
-pwr_ind = p.fit_pwr_law_g()
+    num_chan = int(chan[i*5])
+    datas = data[i*5][:num_chan]
+    freqs = freq[i*5][:num_chan]
 
-print(pwr_ind)
+    p = Profile(mjds[i*5], datas, freqs, dur[i*5])
+    pwr_ind = p.fit_pwr_law_g()
+
+    print(pwr_ind)
 
 
 #===============================================================================
