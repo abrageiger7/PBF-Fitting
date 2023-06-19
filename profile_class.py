@@ -311,6 +311,20 @@ class Profile:
         No error calculations for varying more than one parameter
         '''
 
+        # if gwidth_pwr_law == True and dec_exp == True:
+        #
+        #     v_0_dece =
+        #
+        #     v_0_gwifth_0_dece =
+        #
+        #     pwr_ind =
+        #
+        #     for i in range(self.num_sub):
+        #
+        #         gwidth_set = v_0_gwifth_0_dece * np.power((self.freq_suba / v_0_dece), pwr_ind)
+        #         gwidth_ind = find_nearest(gauss_fwhm, gwidth_set)[1][0][0]
+        # 
+
         #number of each parameter in the parameter grid
         num_beta = np.size(betaselect)
         num_gwidth = np.size(gauss_widths)
@@ -372,13 +386,6 @@ class Profile:
         data_care = self.data_suba
         freq_care = self.freq_suba
 
-        if gwidth_pwr_law == True:
-
-            v_0 =
-
-            v_0_gwifth_0 =
-
-            g_width = v_0_gwifth_0 * np.power((self.freq_suba / v_0), pwr_ind)
 
         #case where beta, gaussian width, and pbf width are not set
         if beta_ind == -1 and gwidth_ind == -1 and pbfwidth_ind == -1 and dec_exp == False:
