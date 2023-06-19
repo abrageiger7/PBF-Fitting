@@ -298,7 +298,7 @@ class Profile:
         #print(error) -> seems to be a very small number of microseconds (order of 1)
         return(error)
 
-    def fit(self, freq_subint_index, beta_ind = -1, gwidth_ind = -1, pbfwidth_ind = -1, dec_exp = False, zind = -1):
+    def fit(self, freq_subint_index, beta_ind = -1, gwidth_ind = -1, pbfwidth_ind = -1, dec_exp = False, zind = -1, gwidth_pwr_law = False):
         '''Calculates the best broadening function and corresponding parameters
         for the Profile object.
 
@@ -402,7 +402,7 @@ class Profile:
                 low_chi = find_nearest(chi_sqs_array, 0.0)[0]
                 chi_sqs_collect[ind] = low_chi
 
-                if chi_sqs_array[0] < low_chi+1 and chi_sqs_array[-1] < low_chi+1:
+                if chi_sqs_array[0][0] < low_chi+1 and chi_sqs_array[-1][-1] < low_chi+1:
                     raise Exception('NOT CONVERGING ENOUGH') #stops code if not
                     #enough parameters to reach reduced low_chi + 1 before end
                     #of parameter space
@@ -443,9 +443,6 @@ class Profile:
 
                 #taus_err_collect[0][ind] = tau_low
                 #taus_err_collect[1][ind] = tau_up
-
-                if below <= 40:
-                    raise Exception('Different Tau Error Conversion May Be Needed')
 
                 self.fit_plot(ind, lsqs_pbf_index, lsqs_gauss_index, low_chi)
 
@@ -495,6 +492,41 @@ class Profile:
             self.fit_plot(chi_beta_ind, pbf_width_ind, gauss_width_ind, low_chi)
 
             return(low_chi, tau_fin, self.comp_fse(tau_fin), gauss_width_fin, pbf_width_fin, beta_fin)
+
+        elif beta_ind != -1 and gwidth_ind == -1 and dec_exp == False:
+
+            num_par = 4 #number of fitted parameters
+
+            beta = betaselect[beta_ind]
+
+            chi_sqs_array = np.zeros((num_pbfwidth, num_gwidth))
+            for i in itertools.product(pbfwidth_inds, gwidth_inds):
+
+                template = convolved_profiles[beta_ind][i[0]][i[1]]
+                chi_sq = self.fit_sing(template, num_par)
+                chi_sqs_array[i[0]][i[1]] = chi_sq
+
+            self.chi_plot(chi_sqs_array, beta = beta)
+
+            #least squares
+            low_chi = find_nearest(chi_sqs_array, 0.0)[0]
+
+            if chi_sqs_array[0][0] < low_chi+1 and chi_sqs_array[-1][-1] < low_chi+1:
+                raise Exception('NOT CONVERGING ENOUGH') #stops code if not
+                #enough parameters to reach reduced low_chi + 1 before end
+                #of parameter space
+
+            #lsqs pbf width
+            lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+            lsqs_pbf_val = widths[lsqs_pbf_index]
+
+            #lsqs gaussian width
+            lsqs_gauss_index = find_nearest(chi_sqs_array, 0.0)[1][1][0]
+            lsqs_gauss_val = gauss_fwhm[lsqs_gauss_index]
+
+            tau_fin = tau.tau_values[beta_ind][lsqs_pbf_index]
+
+            return(low_chi, tau_fin, self.comp_fse(tau_fin), lsqs_gauss_val, lsqs_pbf_val, beta)
 
         #case where beta and gaussian width are set, but fitting for pbf width
         elif beta_ind != -1 and gwidth_ind != -1 and dec_exp == False:
@@ -578,6 +610,10 @@ class Profile:
 
             num_par = 4 #number of fitted parameters
 
+            #if gwidth_pwr_law == True:
+            #
+            #
+
             chi_sqs_array = np.zeros((num_pbfwidth, num_gwidth))
             for i in itertools.product(pbfwidth_inds, gwidth_inds):
 
@@ -595,7 +631,7 @@ class Profile:
 
             tau_fin = tau_values_exp[lsqs_pbf_index]
 
-            self.fit_plot(0, lsqs_pbf_index, lsqs_gauss_index, low_chi, exp = True, low_pbf = below, high_pbf = above)
+            self.fit_plot(0, lsqs_pbf_index, lsqs_gauss_index, low_chi, exp = True)
 
             return(low_chi, lsqs_gauss_val, lsqs_pbf_val, tau_fin)
 
