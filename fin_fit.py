@@ -79,6 +79,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     figb, axsb = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
     fige, axse = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
 
+    plt.figure(1)
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
     plt.rc('ytick', labelsize='x-small')
@@ -190,9 +191,15 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     plt.rc('ytick', labelsize='x-small')
     title = f'timea_power_laws_beta=3_99999_gwidth=ind{beta_gwidth_ind}_1.pdf'
     plt.savefig(title)
+    plt.close(1)
 
 
     #now do for the same range with dec exp
+
+    plt.figure(2)
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize='x-small')
+    plt.rc('ytick', labelsize='x-small')
 
     for i in range(28):
 
@@ -294,13 +301,17 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     plt.xlabel(r'$\nu$ (GHz)')
     plt.ylabel(r'$\tau$ ($\mu$s)')
     plt.title('Decaying Exponential J1903+0327 Scattering vs. Epoch')
-    plt.savefig('timea_power_laws_exponential_1_gwidth=ind7.pdf')
     title = f'timea_power_laws_exponential_gwidth=pwrlaw_1.pdf'
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize='x-small')
+    plt.rc('ytick', labelsize='x-small')
     plt.savefig(title)
+    plt.close(2)
 
 
     #now do again for the remaining 28 mjds
 
+    plt.figure(3)
     figb, axsb = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
     fige, axse = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
 
@@ -414,9 +425,15 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     plt.rc('ytick', labelsize='x-small')
     title = f'timea_power_laws_beta=3_99999_gwidth=ind{beta_gwidth_ind}_2.pdf'
     plt.savefig(title)
+    plt.close(3)
 
 
     #now do for the same range with dec exp
+
+    plt.figure(4)
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize='x-small')
+    plt.rc('ytick', labelsize='x-small')
 
     for i in range(28,56):
 
@@ -519,11 +536,16 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     plt.xlabel(r'$\nu$ (GHz)')
     plt.ylabel(r'$\tau$ ($\mu$s)')
     plt.title('Decaying Exponential J1903+0327 Scattering vs. Epoch')
-    plt.savefig('timea_power_laws_exponential_1_gwidth=ind7.pdf')
     title = f'timea_power_laws_exponential_gwidth=pwrlaw_2.pdf'
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize='x-small')
+    plt.rc('ytick', labelsize='x-small')
     plt.savefig(title)
+    plt.close(4)
 
     #now plot slopes and yints over time
+
+    plt.figure(5)
 
     fig, axs = plt.subplots(nrows=2, ncols=1, figsize = (11,5), sharex = True)
     plt.rc('font', family = 'serif')
@@ -563,9 +585,11 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
     fig.tight_layout()
     plt.savefig('timea_time_scales.pdf')
+    plt.close(5)
 
 
     #now plot seperate panels for dece and beta
+    plt.figure(6)
 
     fig, axs = plt.subplots(nrows=4, ncols=1, figsize = (12,6), sharex = True)
     plt.rc('font', family = 'serif')
@@ -613,8 +637,15 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
     fig.tight_layout()
     plt.savefig('timea_time_scales_seperate_panels.pdf')
+    plt.close(6)
 
     #ADD AUTOCORRELATION HERE
+
+    plt.figure(7)
+
+    plt.rc('font', family = 'serif')
+    plt.rc('xtick', labelsize=16)
+    plt.rc('ytick', labelsize=13)
 
     #now plot the histograms and summed likeihoods (essentially the histograms w error)
     fig, axs = plt.subplots(nrows = 4, ncols = 2, figsize = (10, 14), sharex = 'col', sharey = 'row')
@@ -631,10 +662,6 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     axs.flat[3].sharex(axs.flat[1])
 
     fig.tight_layout()
-
-    plt.rc('font', family = 'serif')
-    plt.rc('xtick', labelsize=16)
-    plt.rc('ytick', labelsize=13)
 
     norm_likelihood_slopeb = np.zeros(np.shape(likelihood_slopeb))
     for i in range(np.size(likelihood_slopeb[:,0])):
@@ -682,13 +709,13 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
     fig.tight_layout()
     plt.savefig('timea_alpha_tau_hist.pdf')
+    plt.close(7)
 
     #now plot tau_0 versus alpha
+    plt.figure(8)
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize=12)
     plt.rc('ytick', labelsize=10)
-
-    plt.figure(5)
 
     markers, caps, bars = plt.errorbar(x = plaw_datae[:,3], y = plaw_datae[:,0], xerr = [plaw_datae[:,4], plaw_datae[:,5]], yerr = [plaw_datae[:,1], plaw_datae[:,2]], fmt = 'o', ms = 5, color = 'g', capsize = 2, label = 'Exponential PBF')
 
@@ -708,14 +735,16 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     [cap.set_alpha(0.2) for cap in caps]
     plt.legend()
     plt.savefig('timea_tau_vs_alpha.pdf')
-    plt.close(5)
+    plt.close(8)
 
     #now plot dec exp versus beta data
-    fig, axs = plt.subplots(nrows = 2, ncols = 1, figsize = (5,7))
+    plt.figure(9)
 
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize=12)
     plt.rc('ytick', labelsize=10)
+
+    fig, axs = plt.subplots(nrows = 2, ncols = 1, figsize = (5,7))
 
     axs.flat[0].set_title(r'Exponential versus $\beta$ PBF Data')
     markers, caps, bars = axs.flat[0].errorbar(x = plaw_datae[:,3], y = plaw_datab[:,3], xerr = [plaw_datae[:,4], plaw_datae[:,5]], yerr = [plaw_datab[:,4], plaw_datab[:,5]], fmt = 'o', ms = 5, color = 'dimgrey', capsize = 2, label = r'$\tau_0$')
@@ -746,6 +775,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
     fig.tight_layout()
     plt.savefig('timea_beta_versus_dece.pdf')
+    plt.close(9)
 
 
 power_laws_and_plots(11, 27)
