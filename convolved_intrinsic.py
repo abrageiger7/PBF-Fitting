@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import math
 import numpy as np
 from scipy.integrate import trapz
-#from scipy.interpolate import CubicSpline
+from scipy.interpolate import CubicSpline
 from scipy import special
 import itertools
 import convolved_pbfs as conv
