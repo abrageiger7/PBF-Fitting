@@ -168,7 +168,7 @@ class Profile:
 
         if not exp and not zeta:
             if intrins:
-                i = b_convolved_w_dataintrins[zbeta_ind][pbfwidth_ind]
+                i = b_convolved_w_dataintrins[zbeta_ind][pbfwidth_ind][gwidth_ind]
             else:
                 i = convolved_profiles[zbeta_ind][pbfwidth_ind][gwidth_ind]
             tau_val = tau.tau_values[zbeta_ind][pbfwidth_ind]
@@ -178,7 +178,7 @@ class Profile:
                 tau_val_high = tau.tau_values[zbeta_ind][high_pbf]
         elif exp:
             if intrins:
-                i = e_convolved_w_dataintrins[pbfwidth_ind]
+                i = e_convolved_w_dataintrins[pbfwidth_ind][gwidth_ind]
             else:
                 i = convolved_profiles_exp[pbfwidth_ind][gwidth_ind]
             tau_val = tau.tau_values_exp[pbfwidth_ind]
@@ -188,7 +188,7 @@ class Profile:
                 tau_val_high = tau.tau_values_exp[high_pbf]
         elif zeta:
             if intrins:
-                i = z_convolved_w_dataintrins[zbeta_ind][pbfwidth_ind]
+                i = z_convolved_w_dataintrins[zbeta_ind][pbfwidth_ind][gwidth_ind]
             else:
                 i = zeta_convolved_profiles[zbeta_ind][pbfwidth_ind][gwidth_ind]
             tau_val = tau.zeta_tau_values[zbeta_ind][pbfwidth_ind]
@@ -300,17 +300,17 @@ class Profile:
 
         if not exp and not zeta:
             if intrins:
-                title = f'FIT|INTRINS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[zbeta_ind]}|PBFW={pbfwidth_round}.pdf'
+                title = f'FIT|INTRINS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
             else:
                 title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
         elif exp:
             if intrins:
-                title = f'FIT|INTRINS|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}.pdf'
+                title = f'FIT|INTRINS|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
             else:
                 title = f'FIT|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
         elif zeta:
             if intrins:
-                title = f'FIT|INTRINS|ZETA|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zetaselect[zbeta_ind]}|PBFW={pbfwidth_round}.pdf'
+                title = f'FIT|INTRINS|ZETA|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zetaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
             else:
                 title = f'FIT|ZETA|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zetaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
 
@@ -426,9 +426,9 @@ class Profile:
             gwidth_set = v_0_gwifth_0_dece * np.power((freq_care / v_0_dece), -pwr_ind)
             gwidth_ind = find_nearest(gauss_fwhm, gwidth_set)[1][0][0]
 
-        elif intrins == True and pbfwidth_ind == -1:
+        elif intrins == True and pbfwidth_ind == -1 and gwidth_ind != -1:
 
-            gwidth = iconv.i_fwhm
+            gwidth = gauss_fwhm[gwidth_ind]
 
             if dec_exp:
 
@@ -438,7 +438,7 @@ class Profile:
 
                 for i in pbfwidth_inds:
 
-                    template = e_convolved_w_dataintrins[i]
+                    template = e_convolved_w_dataintrins[i][gwidth_ind]
                     chi_sq = self.fit_sing(template, num_par)
                     chi_sqs_array[i] = chi_sq
 
@@ -462,7 +462,7 @@ class Profile:
                 tau_low = tau_fin - tau_values_exp[below]
                 tau_up = tau_values_exp[above] - tau_fin
 
-                self.fit_plot(0, lsqs_pbf_index, 0, low_chi, exp = True, low_pbf = below, high_pbf = above, intrins = True)
+                self.fit_plot(0, lsqs_pbf_index, gwidth_ind, low_chi, exp = True, low_pbf = below, high_pbf = above, intrins = True)
 
                 return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
 
@@ -476,7 +476,7 @@ class Profile:
 
                 for i in pbfwidth_inds:
 
-                    template = b_convolved_w_dataintrins[beta_ind][i]
+                    template = b_convolved_w_dataintrins[beta_ind][i][gwidth_ind]
                     chi_sq = self.fit_sing(template, num_par)
                     chi_sqs_array[i] = chi_sq
 
@@ -500,7 +500,7 @@ class Profile:
                 tau_low = tau_fin - tau_values[beta_ind][below]
                 tau_up = tau_values[beta_ind][above] - tau_fin
 
-                self.fit_plot(beta_ind, lsqs_pbf_index, 0, low_chi, low_pbf = below, high_pbf = above, intrins = True)
+                self.fit_plot(beta_ind, lsqs_pbf_index, gwidth_ind, low_chi, low_pbf = below, high_pbf = above, intrins = True)
 
                 return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
 
@@ -514,7 +514,7 @@ class Profile:
 
                 for i in pbfwidth_inds:
 
-                    template = z_convolved_w_dataintrins[zind][i]
+                    template = z_convolved_w_dataintrins[zind][i][gwidth_ind]
                     chi_sq = self.fit_sing(template, num_par)
                     chi_sqs_array[i] = chi_sq
 
@@ -538,7 +538,7 @@ class Profile:
                 tau_low = tau_fin - zeta_tau_values[zind][below]
                 tau_up = zeta_tau_values[zind][above] - tau_fin
 
-                self.fit_plot(zind, lsqs_pbf_index, 0, low_chi, low_pbf = below, high_pbf = above, zeta = True, intrins = True)
+                self.fit_plot(zind, lsqs_pbf_index, gwidth_ind, low_chi, low_pbf = below, high_pbf = above, zeta = True, intrins = True)
 
                 return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
 
