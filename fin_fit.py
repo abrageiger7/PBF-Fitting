@@ -60,10 +60,10 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
     #set the tested slope and yint vals:
     num_slope = 500
-    num_yint = 500
+    num_yint = 700
 
     slope_test = np.linspace(-5.0, -0.5, num = num_slope)
-    yint_test = np.linspace(140.0, 190.0, num = num_yint)
+    yint_test = np.linspace(120.0, 190.0, num = num_yint)
 
     #to collect the likelihood distributions for each mjd's fit
     likelihood_slopeb = np.zeros((np.size(mjds),num_slope))
@@ -551,13 +551,11 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
     axs.flat[1].set_ylabel(r'$\tau_0$ ($\mu$s)', fontsize = 14)
     axs.flat[1].set_xlabel('MJD', fontsize = 14)
-    #axs.flat[1].set_title(r'$\tau_0$ vs. MJD')
     markers, caps, bars = axs.flat[1].errorbar(x = mjds, y = plaw_datae[:,3], yerr = [plaw_datae[:,4], plaw_datae[:,5]], fmt = 'o', ms = 5, color = 'g', capsize = 2, label = 'Exponential PBF')
 
     [bar.set_alpha(0.3) for bar in bars]
     [cap.set_alpha(0.3) for cap in caps]
 
-    #axs.flat[1].legend(loc = 'upper right', fontsize = 8, bbox_to_anchor = (1.25,1))
     markers, caps, bars = axs.flat[1].errorbar(x = mjds, y = plaw_datab[:,3], yerr = [plaw_datab[:,4], plaw_datab[:,5]], fmt = 's', color = 'dimgrey', capsize = 2, label = r'$\beta$ PBF')
 
     [bar.set_alpha(0.3) for bar in bars]
@@ -621,7 +619,6 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     #now plot the histograms and summed likeihoods (essentially the histograms w error)
     fig, axs = plt.subplots(nrows = 4, ncols = 2, figsize = (10, 14), sharex = 'col', sharey = 'row')
 
-
     axs.flat[0].hist(plaw_datab[:,0], color = 'dimgrey', alpha = 0.8, bins = 10, label = 'Beta = 3.99999 PBF')
     axs.flat[0].set_ylabel('Counts', fontsize=14)
 
@@ -639,6 +636,22 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     plt.rc('xtick', labelsize=16)
     plt.rc('ytick', labelsize=13)
 
+    norm_likelihood_slopeb = np.zeros(np.shape(likelihood_slopeb))
+    for i in range(np.size(likelihood_slopeb[:,0])):
+        norm_likelihood_slopeb[i] = likelihood_slopeb[i]/ trapz(likelihood_slopeb[i])
+
+    norm_likelihood_yintb = np.zeros(np.shape(likelihood_yintb))
+    for i in range(np.size(likelihood_yintb[:,0])):
+        norm_likelihood_yintb[i] = likelihood_yintb[i]/ trapz(likelihood_yintb[i])
+
+    norm_likelihood_yinte = np.zeros(np.shape(likelihood_yinte))
+    for i in range(np.size(likelihood_yinte[:,0])):
+        norm_likelihood_yinte[i] = likelihood_yinte[i]/ trapz(likelihood_yinte[i])
+
+    norm_likelihood_slopee = np.zeros(np.shape(likelihood_slopee))
+    for i in range(np.size(likelihood_slopee[:,0])):
+        norm_likelihood_slopee[i] = likelihood_slopee[i]/ trapz(likelihood_slopee[i])
+
     axs.flat[4].plot(slope_test, np.sum(norm_likelihood_slopeb, axis = 0)/trapz(np.sum(norm_likelihood_slopeb, axis = 0)), color = 'dimgrey', alpha = 0.5, label = 'Beta = 3.99999 PBF')
     axs.flat[4].set_ylabel(r'Normalized Integrated Likelihood', fontsize=14)
 
@@ -647,7 +660,6 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     axs.flat[6].plot(slope_test, np.sum(norm_likelihood_slopee, axis = 0)/trapz(np.sum(norm_likelihood_slopee, axis = 0)), color = 'g', label = 'Exponential PBF')
     axs.flat[6].set_xlabel(r'$\alpha$', fontsize=16)
     axs.flat[6].set_ylabel(r'Normalized Integrated Likelihood', fontsize=14)
-
 
     axs.flat[7].plot(yint_test, np.sum(norm_likelihood_yinte, axis = 0)/trapz(np.sum(norm_likelihood_yinte, axis = 0)), color = 'g', label = 'Exponential PBF')
     axs.flat[7].set_xlabel(r'$\tau_0$ ($\mu$s)', fontsize=16)
