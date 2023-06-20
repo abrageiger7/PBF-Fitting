@@ -12,16 +12,12 @@ Each with different stretch factors and corresponding taus
 
 from fit_functions import *
 
-import convolved_pbfs as conv
 betaselect = conv.betaselect
 widths = conv.widths
 gwidth_params_jump = 20
 parameters = conv.parameters[::gwidth_params_jump, :]
 phase_bins = conv.phase_bins
 t = conv.t
-import tau
-from scipy.integrate import trapz
-import itertools
 
 
 #intrinsic pulse shapes - guassians
@@ -40,20 +36,23 @@ doubleg_amp = np.arange(0,.32,num_opts)
 doubleg_mean = np.arange((200/2048)*phase_bins,(1500.0/2048)*phase_bins,num_opts)
 doubleg_widths = np.arange(0,(150/2048)*phase_bins,num_opts)
 
-iv = 0
+v = 0
 intrinsic_gaussians_dg = np.zeros((20,num_opts,num_opts,num_opts,phase_bins))
 for i in parameters:
     p = i
-    for ii in itertools.product(np.arange(num_opts), np.arange(num_opts), np.arange(num_opts)):
+    for ii in num_opts:
+        for iii in num_opts:
+            for iv in num_opts:
 
-        iii = np.array([doubleg_amp[ii[0]], doubleg_mean[ii[1]], doubleg_widths[ii[2]]])
+            ii = doubleg_amp[ii]
+            iii = doublg_mean[iii]
+            iv = doubleg_widths[iv]
+            double_gauss = (p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2])))) \
+            + (ii*np.exp((-1.0/2.0)*(((t-iii)/iv)*((t-iii)/iv))))
+            ua_double_gauss = double_gauss/trapz(double_gauss)
+            intrinsic_gaussians_dg[v][ii][iii][iv] = ua_double_gauss
 
-        double_gauss = (p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2])))) \
-        + (iii[0]*np.exp((-1.0/2.0)*(((t-iii[1])/iii[2])*((t-iii[1])/iii[2]))))
-        ua_double_gauss = double_gauss/trapz(double_gauss)
-        intrinsic_gaussians_dg[iv][ii[0]][ii[1]][ii[2]] = ua_double_gauss
-
-    iv+=1
+    v+=1
 
 toa_delays = np.zeros((np.size(betaselect), np.size(widths[:,20])))
 #for varying beta and pbf widths
