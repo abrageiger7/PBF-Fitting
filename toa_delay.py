@@ -4,6 +4,10 @@ Last Edited on Mon May 22 2023
 @author: Abra Geiger abrageiger7
 
 Calculate the time delay due to PBf for many different types of PBFs
+
+3 Overall PBF Cases - Beta, Zeta, DecE
+Each with different stretch factors and corresponding taus
+3 Overall Intrinsic Pulse Cases - Gaussian, Double Gaussian, Nanograv Templates
 """
 
 from fit_functions import *
