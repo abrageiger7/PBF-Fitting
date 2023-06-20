@@ -57,7 +57,7 @@ for ii in intrins_stretch_factors:
     if ii>1:
         times_adjusted = t*ii #1- widen the pulse
         #interpolate the pulse in its broadened state
-        interpolate_width = CubicSpline(times_adjusted, i) #2- interpolate to get section of the pulse (extrapolate = True?
+        interpolate_width = CubicSpline(times_adjusted, j1903_intrins) #2- interpolate to get section of the pulse (extrapolate = True?
         #-> probably don't need because should only be interpolating)
         width_intrins_data = np.zeros(phase_bins)
 
@@ -79,7 +79,7 @@ for ii in intrins_stretch_factors:
     elif ii<1:
         #lengthen the array of the pulse so the pulse is comparatively narrow, adding zeros to the end
         width_intrins_data = np.zeros(int((1/ii)*phase_bins))
-        width_intrins_data[:phase_bins] = i
+        width_intrins_data[:phase_bins] = j1903_intrins
         times_scaled = np.zeros(int((1/ii)*phase_bins))
         #scale back to an array of size 9549
         for iv in range(int((1/ii)*phase_bins)):
@@ -89,7 +89,7 @@ for ii in intrins_stretch_factors:
 
     #for width values of 1, no alteration necessary
     elif ii == 1:
-        width_intrins_data = i
+        width_intrins_data = j1903_intrins
 
     intrinsic_pulses[data_index] = width_intrins_data
 
