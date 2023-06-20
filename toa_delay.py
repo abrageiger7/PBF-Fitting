@@ -44,13 +44,13 @@ for i in parameters:
         for iii in num_opts:
             for iv in num_opts:
 
-            ii = doubleg_amp[ii]
-            iii = doublg_mean[iii]
-            iv = doubleg_widths[iv]
-            double_gauss = (p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2])))) \
-            + (ii*np.exp((-1.0/2.0)*(((t-iii)/iv)*((t-iii)/iv))))
-            ua_double_gauss = double_gauss/trapz(double_gauss)
-            intrinsic_gaussians_dg[v][ii][iii][iv] = ua_double_gauss
+                ii = doubleg_amp[ii]
+                iii = doublg_mean[iii]
+                iv = doubleg_widths[iv]
+                double_gauss = (p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2])))) \
+                + (ii*np.exp((-1.0/2.0)*(((t-iii)/iv)*((t-iii)/iv))))
+                ua_double_gauss = double_gauss/trapz(double_gauss)
+                intrinsic_gaussians_dg[v][ii][iii][iv] = ua_double_gauss
 
     v+=1
 
