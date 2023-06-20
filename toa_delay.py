@@ -10,7 +10,13 @@ Each with different stretch factors and corresponding taus
 3 Overall Intrinsic Pulse Cases - Gaussian, Double Gaussian, Nanograv Templates
 """
 
-from fit_functions import *
+from pypulse.singlepulse import SinglePulse
+from pypulse.singlepulse import SinglePulse
+import itertools
+import convolved_pbfs as conv
+import tau
+import convolved_exp as cexp
+import zeta_convolved_pbfs as zconv
 
 betaselect = conv.betaselect
 widths = conv.widths
@@ -44,11 +50,11 @@ for i in parameters:
         for iii in np.arange(num_opts):
             for iv in np.arange(num_opts):
 
-                ii = doubleg_amp[ii]
-                iii = doubleg_mean[iii]
-                iv = doubleg_widths[iv]
+                ii1 = doubleg_amp[ii]
+                iii1 = doubleg_mean[iii]
+                iv1 = doubleg_widths[iv]
                 double_gauss = (p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2])))) \
-                + (ii*np.exp((-1.0/2.0)*(((t-iii)/iv)*((t-iii)/iv))))
+                + (ii1*np.exp((-1.0/2.0)*(((t-iii1)/iv1)*((t-iii1)/iv1))))
                 ua_double_gauss = double_gauss/trapz(double_gauss)
                 intrinsic_gaussians_dg[v][ii][iii][iv] = ua_double_gauss
 
