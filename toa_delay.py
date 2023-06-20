@@ -81,4 +81,7 @@ for i in range(np.size(betaselect)):
         max2 = np.where((template == np.max(template)))[0][0]
         toa_delays[i][ii] = max2-max1 #in phase bins
 
+plt.imshow(toa_delays)
+plt.colorbar()
+plt.show()
 print(toa_delays)
