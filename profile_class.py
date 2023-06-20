@@ -106,7 +106,7 @@ class Profile:
             print(title)
             plt.close(45)
 
-    `   elif gwidth == -1 and pbfwidth == -1:
+        elif gwidth == -1 and pbfwidth == -1:
 
             plt.title("Fit Chi-sqs")
             plt.xlabel("Gaussian FWHM (microseconds)")
