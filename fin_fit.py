@@ -179,7 +179,9 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         axsb.flat[i].plot(freq_list/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
         axsb.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
         axsb.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
-
+        plt.rc('font', family = 'serif')
+        plt.rc('xtick', labelsize='x-small')
+        plt.rc('ytick', labelsize='x-small')
 
     ax = figb.add_subplot(111, frameon=False)
     plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
@@ -294,7 +296,9 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         axse.flat[i].plot(freq_list/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
         axse.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
         axse.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
-
+        plt.rc('font', family = 'serif')
+        plt.rc('xtick', labelsize='x-small')
+        plt.rc('ytick', labelsize='x-small')
 
     ax = fige.add_subplot(111, frameon=False)
     plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
@@ -413,7 +417,9 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         axsb.flat[i].plot(freq_list/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
         axsb.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
         axsb.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
-
+        plt.rc('font', family = 'serif')
+        plt.rc('xtick', labelsize='x-small')
+        plt.rc('ytick', labelsize='x-small')
 
     ax = figb.add_subplot(111, frameon=False)
     plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
@@ -529,6 +535,9 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         axse.flat[i].plot(freq_list/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
         axse.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
         axse.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
+        plt.rc('font', family = 'serif')
+        plt.rc('xtick', labelsize='x-small')
+        plt.rc('ytick', labelsize='x-small')
 
 
     ax = fige.add_subplot(111, frameon=False)
