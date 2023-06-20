@@ -31,6 +31,8 @@ parameters = conv.parameters[::gwidth_params_jump, :]
 phase_bins = conv.phase_bins
 t = conv.t
 bpbf_data_unitarea = conv.pbf_data_unitarea
+zpbf_data_unitarea = zconv.pbf_data_unitarea
+
 
 
 #intrinsic pulse shapes - guassians
@@ -100,6 +102,44 @@ for i in range(np.size(betaselect)):
 
 plt.imshow(toa_delays)
 plt.title('Beta')
+plt.colorbar()
+plt.show()
+print(toa_delays)
+
+
+toa_delays = np.zeros((np.size(zetaselect), np.size(widths[::20])))
+#for varying zeta and pbf widths
+for i in range(np.size(zetaselect)):
+    for ii in range(np.size(widths[::20])):
+        template = zpbf_data_unitarea[i][ii]
+        tau = tau.zeta_tau_values[i][ii]
+
+        intrinsic = intrinsic_gaussians_dg[5][4][3][4]
+        #Calculates mode of data profile to shift template to
+        x = np.max(template)
+        xind = np.where(template == x)[0][0]
+
+        profile = intrinsic / np.max(intrinsic) #fitPulse requires template height of one
+        z = np.max(profile)
+        zind = np.where(profile == z)[0][0]
+        ind_diff = xind-zind
+        profile = np.roll(profile, ind_diff)
+        sp = SinglePulse(template, opw = np.arange(0, (500//2048)*phase_bins))
+        fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template
+        #matching, scale factor, TOA error, scale factor error, signal to noise
+        #ratio, cross-correlation coefficient
+        #based on the fitPulse fitting, scale and shift the profile to best fit
+        #the inputted data
+        #fitPulse figures out the best amplitude itself
+        spt = SinglePulse(profile*fitting[2])
+        fitted_template = spt.shiftit(fitting[1])
+
+        max1 = np.where((fitted_template == np.max(fitted_template)))[0][0]
+        max2 = np.where((template == np.max(template)))[0][0]
+        toa_delays[i][ii] = max2-max1 #in phase bins
+
+plt.imshow(toa_delays)
+plt.title('Zeta')
 plt.colorbar()
 plt.show()
 print(toa_delays)
