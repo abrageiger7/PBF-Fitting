@@ -74,7 +74,7 @@ class Profile:
 
         return(chi_sq_measure)
 
-    def chi_plot(self, chi_sq_arr, beta = -1, exp = False, gwidth = -1, pbfwidth = -1, zeta = -1):
+    def chi_plot(self, chi_sq_arr, beta = -1, exp = False, gwidth = -1, pbfwidth = -1, zeta = -1, intrins = False):
 
         '''Plots the inputted chi_sq_arr against the given parameters.
 
@@ -86,7 +86,27 @@ class Profile:
 
         plt.figure(45)
 
-        if gwidth == -1 and pbfwidth == -1:
+        if intrins:
+
+            plt.title('Fit Chi-sqs')
+            plt.xlabel('PBF Width')
+            plt.ylabel('Reduced Chi-Sq')
+            plt.plot(widths, chi_sq_arr, drawstyle='steps-pre')
+
+            if beta != -1:
+                title = f"ONEBINTRINS|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}.pdf"
+
+            elif exp:
+                title = f"EXPINTRINS|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
+
+            elif zeta != -1:
+                title = f"ONEZINTRINS|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zeta}.pdf"
+
+            plt.savefig(title)
+            print(title)
+            plt.close(45)
+
+    `   elif gwidth == -1 and pbfwidth == -1:
 
             plt.title("Fit Chi-sqs")
             plt.xlabel("Gaussian FWHM (microseconds)")
@@ -138,7 +158,7 @@ class Profile:
             plt.close(45)
 
 
-    def fit_plot(self, zbeta_ind, pbfwidth_ind, gwidth_ind, low_chi, exp = False, zeta = False, low_pbf = -1, high_pbf = -1):
+    def fit_plot(self, zbeta_ind, pbfwidth_ind, gwidth_ind, low_chi, exp = False, zeta = False, low_pbf = -1, high_pbf = -1, intrins = False):
 
         '''Plots and saves the fit of the profile subaveraged data to the
         template indicated by the argument indexes and the bolean
@@ -147,21 +167,30 @@ class Profile:
         beta_ind, pbfwidth_ind, gwidth_ind are ints; exp is boolean'''
 
         if not exp and not zeta:
-            i = convolved_profiles[zbeta_ind][pbfwidth_ind][gwidth_ind]
+            if intrins:
+                i = b_convolved_w_dataintrins[zbeta_ind][pbfwidth_ind]
+            else:
+                i = convolved_profiles[zbeta_ind][pbfwidth_ind][gwidth_ind]
             tau_val = tau.tau_values[zbeta_ind][pbfwidth_ind]
             if low_pbf != -1:
                 tau_val_low = tau.tau_values[zbeta_ind][low_pbf]
             if high_pbf != -1:
                 tau_val_high = tau.tau_values[zbeta_ind][high_pbf]
         elif exp:
-            i = convolved_profiles_exp[pbfwidth_ind][gwidth_ind]
+            if intrins:
+                i = e_convolved_w_dataintrins[pbfwidth_ind]
+            else:
+                i = convolved_profiles_exp[pbfwidth_ind][gwidth_ind]
             tau_val = tau.tau_values_exp[pbfwidth_ind]
             if low_pbf != -1:
                 tau_val_low = tau.tau_values_exp[low_pbf]
             if high_pbf != -1:
                 tau_val_high = tau.tau_values_exp[high_pbf]
         elif zeta:
-            i = zeta_convolved_profiles[zbeta_ind][pbfwidth_ind][gwidth_ind]
+            if intrins:
+                i = z_convolved_w_dataintrins[zbeta_ind][pbfwidth_ind]
+            else:
+                i = zeta_convolved_profiles[zbeta_ind][pbfwidth_ind][gwidth_ind]
             tau_val = tau.zeta_tau_values[zbeta_ind][pbfwidth_ind]
             if low_pbf != -1:
                 tau_val_low = tau.zeta_tau_values[zbeta_ind][low_pbf]
@@ -270,11 +299,20 @@ class Profile:
 
 
         if not exp and not zeta:
-            title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
+            if intrins:
+                title = f'FIT|INTRINS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[zbeta_ind]}|PBFW={pbfwidth_round}.pdf'
+            else:
+                title = f'FIT|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={betaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
         elif exp:
-            title = f'FIT|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
+            if intrins:
+                title = f'FIT|INTRINS|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}.pdf'
+            else:
+                title = f'FIT|EXP|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
         elif zeta:
-            title = f'FIT|ZETA|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zetaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
+            if intrins:
+                title = f'FIT|INTRINS|ZETA|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zetaselect[zbeta_ind]}|PBFW={pbfwidth_round}.pdf'
+            else:
+                title = f'FIT|ZETA|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zetaselect[zbeta_ind]}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
 
         plt.savefig(title)
         print(title)
@@ -350,7 +388,7 @@ class Profile:
         self.rms_noise = rms
 
 
-    def fit(self, freq_subint_index, beta_ind = -1, gwidth_ind = -1, pbfwidth_ind = -1, dec_exp = False, zind = -1, gwidth_pwr_law = False):
+    def fit(self, freq_subint_index, beta_ind = -1, gwidth_ind = -1, pbfwidth_ind = -1, dec_exp = False, zind = -1, gwidth_pwr_law = False, intrins = False):
         '''Calculates the best broadening function and corresponding parameters
         for the Profile object.
 
@@ -686,6 +724,125 @@ class Profile:
             self.fit_plot(zind, lsqs_pbf_index, gwidth_ind, low_chi, zeta=True, low_pbf = below, high_pbf = above)
 
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin, zeta)
+
+        elif intrins == True and pbfwidth_ind == -1:
+
+            gwidth = iconv.i_fwhm
+
+            if dec_exp:
+
+                num_par = 3 #number of fitted parameters
+
+                chi_sqs_array = np.zeros(num_pbfwidth)
+
+                for i in pbfwidth_inds:
+
+                    template = e_convolved_w_dataintrins[i]
+                    chi_sq = self.fit_sing(template, num_par)
+                    chi_sqs_array[i] = chi_sq
+
+                self.chi_plot(chi_sqs_array, exp = True, intrins = True)
+
+                low_chi = find_nearest(chi_sqs_array, 0.0)[0]
+                lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+                pbf_width_fin = widths[lsqs_pbf_index]
+
+                if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
+                    raise Exception('NOT CONVERGING ENOUGH')
+
+                tau_fin = tau_values_exp[lsqs_pbf_index]
+
+                #ERROR TEST - one reduced chi-squared unit above and below and these
+                #chi-squared bins are for varying pbf width
+
+                below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
+                above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
+
+                tau_low = tau_fin - tau_values_exp[below]
+                tau_up = tau_values_exp[above] - tau_fin
+
+                self.fit_plot(0, lsqs_pbf_index, 0, low_chi, exp = True, low_pbf = below, high_pbf = above, intrins = True)
+
+                return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
+
+            elif beta_ind != -1:
+
+                num_par = 3 #number of fitted parameters
+
+                beta = betaselect[beta_ind]
+
+                chi_sqs_array = np.zeros(num_pbfwidth)
+
+                for i in pbfwidth_inds:
+
+                    template = b_convolved_w_dataintrins[beta_ind][i]
+                    chi_sq = self.fit_sing(template, num_par)
+                    chi_sqs_array[i] = chi_sq
+
+                self.chi_plot(chi_sqs_array, beta = beta, intrins = True)
+
+                low_chi = find_nearest(chi_sqs_array, 0.0)[0]
+                lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+                pbf_width_fin = widths[lsqs_pbf_index]
+
+                if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
+                    raise Exception('NOT CONVERGING ENOUGH')
+
+                tau_fin = tau_values[beta_ind][lsqs_pbf_index]
+
+                #ERROR TEST - one reduced chi-squared unit above and below and these
+                #chi-squared bins are for varying pbf width
+
+                below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
+                above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
+
+                tau_low = tau_fin - tau_values[below]
+                tau_up = tau_values[above] - tau_fin
+
+                self.fit_plot(beta_ind, lsqs_pbf_index, 0, low_chi, low_pbf = below, high_pbf = above, intrins = True)
+
+                return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
+
+            elif zind != -1:
+
+                num_par = 3 #number of fitted parameters
+
+                zeta = zetaselect[zind]
+
+                chi_sqs_array = np.zeros(num_pbfwidth)
+
+                for i in pbfwidth_inds:
+
+                    template = z_convolved_w_dataintrins[zind][i]
+                    chi_sq = self.fit_sing(template, num_par)
+                    chi_sqs_array[i] = chi_sq
+
+                self.chi_plot(chi_sqs_array, zeta = zeta, intrins = True)
+
+                low_chi = find_nearest(chi_sqs_array, 0.0)[0]
+                lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+                pbf_width_fin = widths[lsqs_pbf_index]
+
+                if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
+                    raise Exception('NOT CONVERGING ENOUGH')
+
+                tau_fin = zeta_tau_values[beta_ind][lsqs_pbf_index]
+
+                #ERROR TEST - one reduced chi-squared unit above and below and these
+                #chi-squared bins are for varying pbf width
+
+                below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
+                above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
+
+                tau_low = tau_fin - zeta_tau_values[below]
+                tau_up = zeta_tau_values[above] - tau_fin
+
+                self.fit_plot(zind, lsqs_pbf_index, 0, low_chi, low_pbf = below, high_pbf = above, intrins = True)
+
+                return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
+
+
+
 
     def fit_pwr_law_g(self):
         '''This method tests a number of different power law indices for the
