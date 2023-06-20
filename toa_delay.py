@@ -43,7 +43,7 @@ iv = 0
 intrinsic_gaussians_dg = np.zeros((20,num_opts,num_opts,num_opts,phase_bins))
 for i in parameters:
     p = i
-    for ii in itertools.product(num_opts, num_opts, num_opts):
+    for ii in itertools.product(np.arange(num_opts), np.arange(num_opts), np.arange(num_opts)):
 
         iii = [doubleg_amp[ii[0]], doubleg_mean[ii[1]], doubleg_widths[ii[2]]]
 
