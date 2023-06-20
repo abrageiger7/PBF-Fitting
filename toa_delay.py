@@ -30,6 +30,7 @@ gwidth_params_jump = 20
 parameters = conv.parameters[::gwidth_params_jump, :]
 phase_bins = conv.phase_bins
 t = conv.t
+bpbf_data_unitarea = conv.pbf_data_unitarea
 
 
 #intrinsic pulse shapes - guassians
@@ -70,7 +71,7 @@ toa_delays = np.zeros((np.size(betaselect), np.size(widths[::20])))
 #for varying beta and pbf widths
 for i in range(np.size(betaselect)):
     for ii in range(np.size(widths[::20])):
-        template = conv.convolved_profiles[i][ii]
+        template = bpbf_data_unitarea[i][ii]
         tau = tau.tau_values[i][ii]
 
         intrinsic = intrinsic_gaussians_dg[5][4][3][4]
