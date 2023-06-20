@@ -45,7 +45,7 @@ for i in parameters:
     p = i
     for ii in itertools.product(np.arange(num_opts), np.arange(num_opts), np.arange(num_opts)):
 
-        iii = [doubleg_amp[ii[0]], doubleg_mean[ii[1]], doubleg_widths[ii[2]]]
+        iii = np.array([doubleg_amp[ii[0]], doubleg_mean[ii[1]], doubleg_widths[ii[2]]])
 
         double_gauss = (p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2])))) \
         + (iii[0]*np.exp((-1.0/2.0)*(((t-iii[1])/iii[2])*((t-iii[1])/iii[2]))))
