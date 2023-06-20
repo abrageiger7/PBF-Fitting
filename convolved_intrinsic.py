@@ -32,6 +32,18 @@ exp_data_unitarea = cexp.exp_data_unitarea
 zpbf_data_unitarea = zconv.pbf_data_unitarea
 
 j1903_intrins = np.load('j1903_high_freq_temp.npy')
+
+# first want to rescale the j1903 template
+init_phase_bins = 2048
+times_scaled = np.zeros(init_phase_bins)
+for i in range(init_phase_bins):
+    times_scaled[i] = phase_bins/init_phase_bins*i
+
+#an array of the broadening functions scaled to number of phase bins data values
+interpolate_first = CubicSpline(times_scaled, j1903_intrins)
+intrinsdata = interpolate_first(np.arange(0,phase_bins,1))
+j1903_intrins = intrinsdata
+
 sp = SinglePulse(j1903_intrins)
 i_fwhm = sp.getFWHM()
 
