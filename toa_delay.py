@@ -66,7 +66,7 @@ for i in parameters:
 
     v+=1
 
-toa_delays = np.zeros((np.size(betaselect), np.size(widths[:,20])))
+toa_delays = np.zeros((np.size(betaselect), np.size(widths[::20])))
 #for varying beta and pbf widths
 for i in range(np.size(betaselect)):
     for ii in range(np.size(widths[:,20])):
