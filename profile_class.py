@@ -426,8 +426,124 @@ class Profile:
             gwidth_set = v_0_gwifth_0_dece * np.power((freq_care / v_0_dece), -pwr_ind)
             gwidth_ind = find_nearest(gauss_fwhm, gwidth_set)[1][0][0]
 
+        elif intrins == True and pbfwidth_ind == -1:
+
+            gwidth = iconv.i_fwhm
+
+            if dec_exp:
+
+                num_par = 3 #number of fitted parameters
+
+                chi_sqs_array = np.zeros(num_pbfwidth)
+
+                for i in pbfwidth_inds:
+
+                    template = e_convolved_w_dataintrins[i]
+                    chi_sq = self.fit_sing(template, num_par)
+                    chi_sqs_array[i] = chi_sq
+
+                self.chi_plot(chi_sqs_array, exp = True, intrins = True)
+
+                low_chi = find_nearest(chi_sqs_array, 0.0)[0]
+                lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+                pbf_width_fin = widths[lsqs_pbf_index]
+
+                if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
+                    raise Exception('NOT CONVERGING ENOUGH')
+
+                tau_fin = tau_values_exp[lsqs_pbf_index]
+
+                #ERROR TEST - one reduced chi-squared unit above and below and these
+                #chi-squared bins are for varying pbf width
+
+                below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
+                above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
+
+                tau_low = tau_fin - tau_values_exp[below]
+                tau_up = tau_values_exp[above] - tau_fin
+
+                self.fit_plot(0, lsqs_pbf_index, 0, low_chi, exp = True, low_pbf = below, high_pbf = above, intrins = True)
+
+                return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
+
+            elif beta_ind != -1:
+
+                num_par = 3 #number of fitted parameters
+
+                beta = betaselect[beta_ind]
+
+                chi_sqs_array = np.zeros(num_pbfwidth)
+
+                for i in pbfwidth_inds:
+
+                    template = b_convolved_w_dataintrins[beta_ind][i]
+                    chi_sq = self.fit_sing(template, num_par)
+                    chi_sqs_array[i] = chi_sq
+
+                self.chi_plot(chi_sqs_array, beta = beta, intrins = True)
+
+                low_chi = find_nearest(chi_sqs_array, 0.0)[0]
+                lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+                pbf_width_fin = widths[lsqs_pbf_index]
+
+                if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
+                    raise Exception('NOT CONVERGING ENOUGH')
+
+                tau_fin = tau_values[beta_ind][lsqs_pbf_index]
+
+                #ERROR TEST - one reduced chi-squared unit above and below and these
+                #chi-squared bins are for varying pbf width
+
+                below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
+                above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
+
+                tau_low = tau_fin - tau_values[below]
+                tau_up = tau_values[above] - tau_fin
+
+                self.fit_plot(beta_ind, lsqs_pbf_index, 0, low_chi, low_pbf = below, high_pbf = above, intrins = True)
+
+                return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
+
+            elif zind != -1:
+
+                num_par = 3 #number of fitted parameters
+
+                zeta = zetaselect[zind]
+
+                chi_sqs_array = np.zeros(num_pbfwidth)
+
+                for i in pbfwidth_inds:
+
+                    template = z_convolved_w_dataintrins[zind][i]
+                    chi_sq = self.fit_sing(template, num_par)
+                    chi_sqs_array[i] = chi_sq
+
+                self.chi_plot(chi_sqs_array, zeta = zeta, intrins = True)
+
+                low_chi = find_nearest(chi_sqs_array, 0.0)[0]
+                lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+                pbf_width_fin = widths[lsqs_pbf_index]
+
+                if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
+                    raise Exception('NOT CONVERGING ENOUGH')
+
+                tau_fin = zeta_tau_values[beta_ind][lsqs_pbf_index]
+
+                #ERROR TEST - one reduced chi-squared unit above and below and these
+                #chi-squared bins are for varying pbf width
+
+                below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
+                above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
+
+                tau_low = tau_fin - zeta_tau_values[below]
+                tau_up = zeta_tau_values[above] - tau_fin
+
+                self.fit_plot(zind, lsqs_pbf_index, 0, low_chi, low_pbf = below, high_pbf = above, zeta = True, intrins = True)
+
+                return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
+
         #case where beta, gaussian width, and pbf width are not set
-        if beta_ind == -1 and gwidth_ind == -1 and pbfwidth_ind == -1 and dec_exp == False:
+        elif beta_ind == -1 and gwidth_ind == -1 and pbfwidth_ind == -1 and dec_exp == False:
 
             num_par = 5 #number of fitted parameters
 
@@ -724,124 +840,6 @@ class Profile:
             self.fit_plot(zind, lsqs_pbf_index, gwidth_ind, low_chi, zeta=True, low_pbf = below, high_pbf = above)
 
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin, zeta)
-
-        elif intrins == True and pbfwidth_ind == -1:
-
-            gwidth = iconv.i_fwhm
-
-            if dec_exp:
-
-                num_par = 3 #number of fitted parameters
-
-                chi_sqs_array = np.zeros(num_pbfwidth)
-
-                for i in pbfwidth_inds:
-
-                    template = e_convolved_w_dataintrins[i]
-                    chi_sq = self.fit_sing(template, num_par)
-                    chi_sqs_array[i] = chi_sq
-
-                self.chi_plot(chi_sqs_array, exp = True, intrins = True)
-
-                low_chi = find_nearest(chi_sqs_array, 0.0)[0]
-                lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
-                pbf_width_fin = widths[lsqs_pbf_index]
-
-                if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
-                    raise Exception('NOT CONVERGING ENOUGH')
-
-                tau_fin = tau_values_exp[lsqs_pbf_index]
-
-                #ERROR TEST - one reduced chi-squared unit above and below and these
-                #chi-squared bins are for varying pbf width
-
-                below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
-                above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
-
-                tau_low = tau_fin - tau_values_exp[below]
-                tau_up = tau_values_exp[above] - tau_fin
-
-                self.fit_plot(0, lsqs_pbf_index, 0, low_chi, exp = True, low_pbf = below, high_pbf = above, intrins = True)
-
-                return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
-
-            elif beta_ind != -1:
-
-                num_par = 3 #number of fitted parameters
-
-                beta = betaselect[beta_ind]
-
-                chi_sqs_array = np.zeros(num_pbfwidth)
-
-                for i in pbfwidth_inds:
-
-                    template = b_convolved_w_dataintrins[beta_ind][i]
-                    chi_sq = self.fit_sing(template, num_par)
-                    chi_sqs_array[i] = chi_sq
-
-                self.chi_plot(chi_sqs_array, beta = beta, intrins = True)
-
-                low_chi = find_nearest(chi_sqs_array, 0.0)[0]
-                lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
-                pbf_width_fin = widths[lsqs_pbf_index]
-
-                if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
-                    raise Exception('NOT CONVERGING ENOUGH')
-
-                tau_fin = tau_values[beta_ind][lsqs_pbf_index]
-
-                #ERROR TEST - one reduced chi-squared unit above and below and these
-                #chi-squared bins are for varying pbf width
-
-                below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
-                above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
-
-                tau_low = tau_fin - tau_values[below]
-                tau_up = tau_values[above] - tau_fin
-
-                self.fit_plot(beta_ind, lsqs_pbf_index, 0, low_chi, low_pbf = below, high_pbf = above, intrins = True)
-
-                return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
-
-            elif zind != -1:
-
-                num_par = 3 #number of fitted parameters
-
-                zeta = zetaselect[zind]
-
-                chi_sqs_array = np.zeros(num_pbfwidth)
-
-                for i in pbfwidth_inds:
-
-                    template = z_convolved_w_dataintrins[zind][i]
-                    chi_sq = self.fit_sing(template, num_par)
-                    chi_sqs_array[i] = chi_sq
-
-                self.chi_plot(chi_sqs_array, zeta = zeta, intrins = True)
-
-                low_chi = find_nearest(chi_sqs_array, 0.0)[0]
-                lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
-                pbf_width_fin = widths[lsqs_pbf_index]
-
-                if chi_sqs_array[0] < low_chi+(1/self.bin_num_care) and chi_sqs_array[-1] < low_chi+(1/self.bin_num_care):
-                    raise Exception('NOT CONVERGING ENOUGH')
-
-                tau_fin = zeta_tau_values[beta_ind][lsqs_pbf_index]
-
-                #ERROR TEST - one reduced chi-squared unit above and below and these
-                #chi-squared bins are for varying pbf width
-
-                below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
-                above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
-
-                tau_low = tau_fin - zeta_tau_values[below]
-                tau_up = zeta_tau_values[above] - tau_fin
-
-                self.fit_plot(zind, lsqs_pbf_index, 0, low_chi, low_pbf = below, high_pbf = above, zeta = True, intrins = True)
-
-                return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
-
-
 
 
     def fit_pwr_law_g(self):
