@@ -44,9 +44,9 @@ for i in parameters:
 
 #intrinsic pulse shapes - double gaussians
 num_opts = 8
-doubleg_amp = np.arange(0,.32,num_opts)
-doubleg_mean = np.arange((200/2048)*phase_bins,(1500.0/2048)*phase_bins,num_opts)
-doubleg_widths = np.arange(0,(150/2048)*phase_bins,num_opts)
+doubleg_amp = np.linsapce(0,.32,num_opts)
+doubleg_mean = np.linspace((200/2048)*phase_bins,(1500.0/2048)*phase_bins,num_opts)
+doubleg_widths = np.linspace(0,(150/2048)*phase_bins,num_opts)
 
 v = 0
 intrinsic_gaussians_dg = np.zeros((20,num_opts,num_opts,num_opts,phase_bins))
