@@ -458,7 +458,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         for d in freq_list:
             logfreqs.append(math.log10(d/1000.0)) #convert freqs to GHz
         logtaus = []
-        for d in tau_listb:
+        for d in tau_liste:
             logtaus.append(math.log10(d))
         logfreqs = np.array(logfreqs)
         logtaus = np.array(logtaus)
