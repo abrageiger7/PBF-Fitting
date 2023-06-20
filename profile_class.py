@@ -837,7 +837,7 @@ class Profile:
                 tau_low = tau_fin - zeta_tau_values[below]
                 tau_up = zeta_tau_values[above] - tau_fin
 
-                self.fit_plot(zind, lsqs_pbf_index, 0, low_chi, low_pbf = below, high_pbf = above, intrins = True)
+                self.fit_plot(zind, lsqs_pbf_index, 0, low_chi, low_pbf = below, high_pbf = above, zeta = True, intrins = True)
 
                 return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin)
 
