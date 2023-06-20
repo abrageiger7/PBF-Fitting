@@ -203,6 +203,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         p = Profile(mjds[i], data0, freq0, dur[i])
 
         mjd = mjds[i]
+        freq_list = np.zeros(p.num_sub)
 
         tau_liste = np.zeros(p.num_sub)
         tau_low_liste = np.zeros(p.num_sub)
@@ -219,6 +220,8 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
             tau_high_liste[ii] = datae[3]
             fse_liste[ii] = datae[4]
 
+            freq_list[ii] = p.freq_suba
+
         tau_low_liste = np.sqrt(tau_low_liste**2+fse_liste**2)
         tau_high_liste = np.sqrt(tau_high_liste**2+fse_liste**2)
 
@@ -226,10 +229,14 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         total_low_erra = tau_low_liste / (np.array(tau_liste)*math.log(10.0))
         total_high_erra = tau_high_liste / (np.array(tau_liste)*math.log(10.0))
 
-        #convert taus to logspace
+        #convert freqs and taus to log space
+        logfreqs = []
+        for d in freq_list:
+            logfreqs.append(math.log10(d/1000.0)) #convert freqs to GHz
         logtaus = []
         for d in tau_liste:
             logtaus.append(math.log10(d))
+        logfreqs = np.array(logfreqs)
         logtaus = np.array(logtaus)
 
         #calculate the chi-squared surface for the varying slopes and yints
@@ -336,10 +343,14 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         total_low_erra = tau_low_listb / (np.array(tau_listb)*math.log(10.0))
         total_high_erra = tau_high_listb / (np.array(tau_listb)*math.log(10.0))
 
-        #convert taus to log space
+        #convert freqs and taus to log space
+        logfreqs = []
+        for d in freq_list:
+            logfreqs.append(math.log10(d/1000.0)) #convert freqs to GHz
         logtaus = []
         for d in tau_listb:
             logtaus.append(math.log10(d))
+        logfreqs = np.array(logfreqs)
         logtaus = np.array(logtaus)
 
         #calculate the chi-squared surface for the varying slopes and yints
@@ -416,6 +427,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         p = Profile(mjds[i], data0, freq0, dur[i])
 
         mjd = mjds[i]
+        freq_list = np.zeros(p.num_sub)
 
         tau_liste = np.zeros(p.num_sub)
         tau_low_liste = np.zeros(p.num_sub)
@@ -432,6 +444,8 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
             tau_high_liste[ii] = datae[3]
             fse_liste[ii] = datae[4]
 
+            freq_list[ii] = p.freq_suba
+
         tau_low_liste = np.sqrt(tau_low_liste**2+fse_liste**2)
         tau_high_liste = np.sqrt(tau_high_liste**2+fse_liste**2)
 
@@ -439,10 +453,14 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         total_low_erra = tau_low_liste / (np.array(tau_liste)*math.log(10.0))
         total_high_erra = tau_high_liste / (np.array(tau_liste)*math.log(10.0))
 
-        #convert taus to log space
+        #convert freqs and taus to log space
+        logfreqs = []
+        for d in freq_list:
+            logfreqs.append(math.log10(d/1000.0)) #convert freqs to GHz
         logtaus = []
-        for d in tau_liste:
+        for d in tau_listb:
             logtaus.append(math.log10(d))
+        logfreqs = np.array(logfreqs)
         logtaus = np.array(logtaus)
 
         #calculate the chi-squared surface for the varying slopes and yints
