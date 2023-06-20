@@ -81,7 +81,7 @@ for i in range(np.size(betaselect)):
 
         intrinsic = intrinsic_gaussians_dg[5][4][3][4]
 
-        conv_temp = np.ifft(np.fft(template)*np.fft(intrinsic))
+        conv_temp = np.ftt.ifft(np.fft.fft(template)*np.fft.fft(intrinsic))
 
         #Calculates mode of data profile to shift template to
         x = np.max(template)
@@ -122,7 +122,7 @@ for i in range(np.size(zetaselect)):
 
         intrinsic = intrinsic_gaussians_dg[5][4][3][4]
 
-        conv_temp = np.ifft(np.fft(template)*np.fft(intrinsic))
+        conv_temp = np.fft.ifft(np.fft.fft(template)*np.fft.fft(intrinsic))
 
         #Calculates mode of data profile to shift template to
         x = np.max(template)
@@ -162,7 +162,7 @@ for ii in range(np.size(widths[::20])):
 
     intrinsic = intrinsic_gaussians_dg[5][4][3][4]
 
-    conv_temp = np.ifft(np.fft(template)*np.fft(intrinsic))
+    conv_temp = np.fft.ifft(np.fft.fft(template)*np.fft.fft(intrinsic))
 
     #Calculates mode of data profile to shift template to
     x = np.max(template)
