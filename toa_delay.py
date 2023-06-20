@@ -16,7 +16,7 @@ parameters = conv.parameters[:,:,gwidth_params_jump]
 phase_bins = conv.phase_bins
 t = conv.t
 import tau
-for scipy.integrate import trapz
+from scipy.integrate import trapz
 
 
 #intrinsic pulse shapes - guassians
