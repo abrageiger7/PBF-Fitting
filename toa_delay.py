@@ -21,6 +21,7 @@ phase_bins = conv.phase_bins
 t = conv.t
 import tau
 from scipy.integrate import trapz
+import itertools
 
 
 #intrinsic pulse shapes - guassians
