@@ -35,6 +35,8 @@ dur = np.load("J1903_dur.npy")
 #===============================================================================
 # Testing the intrinsic profile fitting
 # ==============================================================================
+low_chig = 0
+low_chii = 0
 
 for i in range(10):
 
@@ -47,8 +49,21 @@ for i in range(10):
     for ii in range(p.num_sub):
 
         datafitb = p.fit(ii, beta_ind = 11, gwidth_ind = 27, intrins = True)
-        datafite = p.fit(ii, dec_exp = True, gwidth_pwr_law = True, intrins = True) #still need to add gwidth power law
+        datafite = p.fit(ii, dec_exp = True, gwidth_pwr_law = True, intrins = True)
         #datafitz = p.fit(ii, zind = 6, intrins = True)
+
+        low_chii += datafitb[0]
+        low_chii += datafite[0]
+
+        datafitb = p.fit(ii, beta_ind = 11, gwidth_ind = 27)
+        datafite = p.fit(ii, dec_exp = True, gwidth_pwr_law = True)
+
+        low_chig += datafitb[0]
+        low_chig += datafite[0]
+
+print(low_chig)
+print(low_chii)
+
 
 
 
