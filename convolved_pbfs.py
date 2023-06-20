@@ -29,11 +29,11 @@ betaselect = np.array([3.1, 3.5, 3.667, 3.8, 3.9, 3.95, 3.975, 3.99, 3.995, 3.99
 #widths = np.concatenate((np.linspace(0.1, 1.0, 40), np.linspace(1.1, 42.0, 160)))
 #widths = np.concatenate((np.linspace(0.1, 1.0, 98), np.linspace(1.1, 30.0, 294)))
 #widths = np.linspace(5.0, 35.0, 400)
-widths = np.linspace(0.01, 35.0, 400)
+widths = np.linspace(0.0001, 35.0, 400)
 
 
 #array of gaussian widths (phase bins)
-widths_gaussian = np.linspace((0.1/2048)*phase_bins, (150.0/2048)*phase_bins, 200)
+widths_gaussian = np.linspace((0.01/2048)*phase_bins, (150.0/2048)*phase_bins, 200)
 #gauss widths converted to fwhm microseconds
 gauss_fwhm = widths_gaussian * ((0.0021499/phase_bins) * 1e6 * (2.0*math.sqrt(2*math.log(2))))
 
