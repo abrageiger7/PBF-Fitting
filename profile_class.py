@@ -94,13 +94,13 @@ class Profile:
             plt.plot(widths, chi_sq_arr, drawstyle='steps-pre')
 
             if beta != -1:
-                title = f"ONEBINTRINS|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}.pdf"
+                title = f"ONEBINTRINS|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|BETA={beta}|GWIDTH={gwidth_round}.pdf"
 
             elif exp:
-                title = f"EXPINTRINS|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
+                title = f"EXPINTRINS|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|GWIDTH={gwidth_round}.pdf"
 
             elif zeta != -1:
-                title = f"ONEZINTRINS|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zeta}.pdf"
+                title = f"ONEZINTRINS|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}|ZETA={zeta}|GWIDTH={gwidth_round}.pdf"
 
             plt.savefig(title)
             print(title)
