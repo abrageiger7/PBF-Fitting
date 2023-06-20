@@ -165,7 +165,7 @@ for ii in range(np.size(widths[::20])):
     ind_diff = xind-zind
     profile = np.roll(profile, ind_diff)
     sp = SinglePulse(template, opw = np.arange(0, (500//2048)*phase_bins))
-        fitting = sp.fitPulse(profile, rms_baseline = 0.0) #TOA cross-correlation, TOA template
+    fitting = sp.fitPulse(profile, rms_baseline = 0.0) #TOA cross-correlation, TOA template
     #matching, scale factor, TOA error, scale factor error, signal to noise
     #ratio, cross-correlation coefficient
     #based on the fitPulse fitting, scale and shift the profile to best fit
