@@ -69,7 +69,7 @@ for i in parameters:
 toa_delays = np.zeros((np.size(betaselect), np.size(widths[::20])))
 #for varying beta and pbf widths
 for i in range(np.size(betaselect)):
-    for ii in range(np.size(widths[:,20])):
+    for ii in range(np.size(widths[::20])):
         template = conv.convolved_profiles[i][ii]
         tau = tau.tau_values[i][ii]
 
@@ -98,6 +98,7 @@ for i in range(np.size(betaselect)):
         toa_delays[i][ii] = max2-max1 #in phase bins
 
 plt.imshow(toa_delays)
+plt.title('Beta')
 plt.colorbar()
 plt.show()
 print(toa_delays)
