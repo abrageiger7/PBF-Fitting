@@ -12,7 +12,7 @@ import convolved_pbfs as conv
 betaselect = conv.betaselect
 widths = conv.widths
 gwidth_params_jump = 20
-parameters = conv.parameters[:,:,gwidth_params_jump]
+parameters = conv.parameters[::gwidth_params_jump, :]
 phase_bins = conv.phase_bins
 t = conv.t
 import tau
