@@ -33,7 +33,7 @@ chan = np.load("J1903_numchan.npy")
 dur = np.load("J1903_dur.npy")
 
 #===============================================================================
-# Testing the gwidth power law
+# Testing the intrinsic profile fitting
 # ==============================================================================
 
 for i in range(10):
@@ -43,9 +43,29 @@ for i in range(10):
     freqs = freq[i*5][:num_chan]
 
     p = Profile(mjds[i*5], datas, freqs, dur[i*5])
-    pwr_ind = p.fit_pwr_law_g()
 
-    print(pwr_ind)
+    for ii in range(p.num_sub):
+
+        datafitb = p.fit(ii, beta_ind = 11, intrins = True)
+        datafite = p.fit(ii, dec_exp = True, intrins = True) #still need to add gwidth power law
+        datafitz = p.fit(ii, zind = 6, intrins = True)
+
+
+
+#===============================================================================
+# Testing the gwidth power law
+# ==============================================================================
+#
+# for i in range(10):
+#
+#     num_chan = int(chan[i*5])
+#     datas = data[i*5][:num_chan]
+#     freqs = freq[i*5][:num_chan]
+#
+#     p = Profile(mjds[i*5], datas, freqs, dur[i*5])
+#     pwr_ind = p.fit_pwr_law_g()
+#
+#     print(pwr_ind)
 
 
 #===============================================================================

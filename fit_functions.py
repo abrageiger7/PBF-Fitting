@@ -30,6 +30,7 @@ import convolved_pbfs as conv
 import tau
 import convolved_exp as cexp
 import zeta_convolved_pbfs as zconv
+import convolved_intrinsic as iconv
 
 #imports
 convolved_profiles = conv.convolved_profiles
@@ -50,6 +51,11 @@ zeta_tau_values = tau.zeta_tau_values
 
 phase_bins = conv.phase_bins
 t = conv.t
+
+z_convolved_w_dataintrins = iconv.z_convolved_w_dataintrins
+e_convolved_w_dataintrins = iconv.e_convolved_w_dataintrins
+b_convolved_w_dataintrins = iconv.b_convolved_w_dataintrins 
+
 
 def find_nearest(a, a0):
     '''Element in nd array `a` closest to the scalar value `a0`
