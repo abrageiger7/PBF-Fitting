@@ -12,6 +12,12 @@ Each with different stretch factors and corresponding taus
 
 from pypulse.singlepulse import SinglePulse
 from pypulse.singlepulse import SinglePulse
+import matplotlib.pyplot as plt
+import math
+import numpy as np
+from scipy.integrate import trapz
+from scipy.interpolate import CubicSpline
+from scipy import special
 import itertools
 import convolved_pbfs as conv
 import tau
