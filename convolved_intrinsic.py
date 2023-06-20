@@ -60,6 +60,8 @@ for i in bpbf_data_unitarea:
         data_index1 = data_index1+1
     data_index0 = data_index0+1
 
+np.save('beta_convolved_intris', b_convolved_w_dataintrins)
+
 e_convolved_w_dataintrins = np.zeros((np.size(widths), phase_bins))
 
 data_index0 = 0
@@ -69,6 +71,8 @@ for ii in exp_data_unitarea:
     new_profile = new_profile.real #take real component of convolution
     e_convolved_w_dataintrins[data_index0] = new_profile
     data_index0 = data_index0+1
+
+np.save('exp_convolved_intris', e_convolved_w_dataintrins)
 
 z_convolved_w_dataintrins = np.zeros((np.size(zetaselect), np.size(widths), phase_bins))
 
@@ -82,3 +86,5 @@ for i in zpbf_data_unitarea:
         z_convolved_w_dataintrins[data_index0][data_index1] = new_profile
         data_index1 = data_index1+1
     data_index0 = data_index0+1
+    
+np.save('zeta_convolved_intris', z_convolved_w_dataintrins)
