@@ -21,7 +21,7 @@ from scipy.integrate import trapz
 
 #intrinsic pulse shapes - guassians
 ii = 0
-intrinsic_gaussians = np.zeros(20)
+intrinsic_gaussians = np.zeros((20,phase_bins))
 for i in parameters:
     p = i
     ua_intrinsic_gauss = (p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2]))))\
@@ -36,7 +36,7 @@ doubleg_mean = np.arange((200/2048)*phase_bins,(1500.0/2048)*phase_bins,num_opts
 doubleg_widths = np.arange(0,(150/2048)*phase_bins,num_opts)
 
 iv = 0
-intrinsic_gaussians_dg = np.zeros((num_opts,num_opts,num_opts))
+intrinsic_gaussians_dg = np.zeros((20,num_opts,num_opts,num_opts,phase_bins))
 for i in parameters:
     p = i
     for ii in itertools.product(num_opts, num_opts, num_opts):
