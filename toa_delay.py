@@ -80,6 +80,9 @@ for i in range(np.size(betaselect)):
         tau = tau.tau_values[i][ii]
 
         intrinsic = intrinsic_gaussians_dg[5][4][3][4]
+
+        conv_temp = np.ifft(np.fft(template)*np.fft(intrinsic))
+
         #Calculates mode of data profile to shift template to
         x = np.max(template)
         xind = np.where(template == x)[0][0]
@@ -89,7 +92,7 @@ for i in range(np.size(betaselect)):
         zind = np.where(profile == z)[0][0]
         ind_diff = xind-zind
         profile = np.roll(profile, ind_diff)
-        sp = SinglePulse(template, opw = np.arange(0, (500//2048)*phase_bins))
+        sp = SinglePulse(conv_temp)
         fitting = sp.fitPulse(profile, rms_baseline = 0.1) #TOA cross-correlation, TOA template
         #matching, scale factor, TOA error, scale factor error, signal to noise
         #ratio, cross-correlation coefficient
@@ -100,7 +103,7 @@ for i in range(np.size(betaselect)):
         fitted_template = spt.shiftit(fitting[1])
 
         max1 = np.where((fitted_template == np.max(fitted_template)))[0][0]
-        max2 = np.where((template == np.max(template)))[0][0]
+        max2 = np.where((conv_temp == np.max(conv_temp)))[0][0]
         toa_delays[i][ii] = max2-max1 #in phase bins
 
 plt.imshow(toa_delays)
@@ -118,6 +121,9 @@ for i in range(np.size(zetaselect)):
         tau = tau.zeta_tau_values[i][ii]
 
         intrinsic = intrinsic_gaussians_dg[5][4][3][4]
+
+        conv_temp = np.ifft(np.fft(template)*np.fft(intrinsic))
+
         #Calculates mode of data profile to shift template to
         x = np.max(template)
         xind = np.where(template == x)[0][0]
@@ -127,7 +133,7 @@ for i in range(np.size(zetaselect)):
         zind = np.where(profile == z)[0][0]
         ind_diff = xind-zind
         profile = np.roll(profile, ind_diff)
-        sp = SinglePulse(template, opw = np.arange(0, (500//2048)*phase_bins))
+        sp = SinglePulse(conv_temp)
         fitting = sp.fitPulse(profile, rms_baseline = 0.1) #TOA cross-correlation, TOA template
         #matching, scale factor, TOA error, scale factor error, signal to noise
         #ratio, cross-correlation coefficient
@@ -138,7 +144,7 @@ for i in range(np.size(zetaselect)):
         fitted_template = spt.shiftit(fitting[1])
 
         max1 = np.where((fitted_template == np.max(fitted_template)))[0][0]
-        max2 = np.where((template == np.max(template)))[0][0]
+        max2 = np.where((conv_temp == np.max(conv_temp)))[0][0]
         toa_delays[i][ii] = max2-max1 #in phase bins
 
 plt.imshow(toa_delays)
@@ -155,6 +161,9 @@ for ii in range(np.size(widths[::20])):
     tau = tau.tau_values_exp[i][ii]
 
     intrinsic = intrinsic_gaussians_dg[5][4][3][4]
+
+    conv_temp = np.ifft(np.fft(template)*np.fft(intrinsic))
+
     #Calculates mode of data profile to shift template to
     x = np.max(template)
     xind = np.where(template == x)[0][0]
@@ -164,7 +173,7 @@ for ii in range(np.size(widths[::20])):
     zind = np.where(profile == z)[0][0]
     ind_diff = xind-zind
     profile = np.roll(profile, ind_diff)
-    sp = SinglePulse(template, opw = np.arange(0, (500//2048)*phase_bins))
+    sp = SinglePulse(conv_temp)
     fitting = sp.fitPulse(profile, rms_baseline = 0.1) #TOA cross-correlation, TOA template
     #matching, scale factor, TOA error, scale factor error, signal to noise
     #ratio, cross-correlation coefficient
@@ -175,7 +184,7 @@ for ii in range(np.size(widths[::20])):
     fitted_template = spt.shiftit(fitting[1])
 
     max1 = np.where((fitted_template == np.max(fitted_template)))[0][0]
-    max2 = np.where((template == np.max(template)))[0][0]
+    max2 = np.where((conv_temp == np.max(conv_temp)))[0][0]
     toa_delays[ii] = max2-max1 #in phase bins
 
 plt.imshow(toa_delays)
