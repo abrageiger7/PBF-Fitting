@@ -318,10 +318,10 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
 
     #now do again for the remaining 28 mjds
-
-    plt.figure(3)
     figb, axsb = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
     fige, axse = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
+
+    plt.figure(3)
 
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
@@ -429,7 +429,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
     ax = figb.add_subplot(111, frameon=False)
     plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
-    ax.set_xlabel(r'$\nu$ (GHz)')
+    plt.xlabel(r'$\nu$ (GHz)')
     plt.ylabel(r'$\tau$ ($\mu$s)')
     plt.title('Beta = 3.99999 J1903+0327 Scattering vs. Epoch')
     plt.rc('font', family = 'serif')
