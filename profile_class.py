@@ -497,8 +497,8 @@ class Profile:
                 below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
                 above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
 
-                tau_low = tau_fin - tau_values[below]
-                tau_up = tau_values[above] - tau_fin
+                tau_low = tau_fin - tau_values[beta_ind][below]
+                tau_up = tau_values[beta_ind][above] - tau_fin
 
                 self.fit_plot(beta_ind, lsqs_pbf_index, 0, low_chi, low_pbf = below, high_pbf = above, intrins = True)
 
@@ -535,8 +535,8 @@ class Profile:
                 below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
                 above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
 
-                tau_low = tau_fin - zeta_tau_values[below]
-                tau_up = zeta_tau_values[above] - tau_fin
+                tau_low = tau_fin - zeta_tau_values[zind][below]
+                tau_up = zeta_tau_values[zind][above] - tau_fin
 
                 self.fit_plot(zind, lsqs_pbf_index, 0, low_chi, low_pbf = below, high_pbf = above, zeta = True, intrins = True)
 
