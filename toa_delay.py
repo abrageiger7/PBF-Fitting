@@ -84,7 +84,7 @@ for i in range(np.size(betaselect)):
         zind = np.where(profile == z)[0][0]
         ind_diff = xind-zind
         profile = np.roll(profile, ind_diff)
-        sp = SinglePulse(template, opw = np.arange(0, 500))
+        sp = SinglePulse(template, opw = np.arange(0, (500//2048)*phase_bins))
         fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template
         #matching, scale factor, TOA error, scale factor error, signal to noise
         #ratio, cross-correlation coefficient
