@@ -45,7 +45,7 @@ for i in parameters:
             for iv in np.arange(num_opts):
 
                 ii = doubleg_amp[ii]
-                iii = doublg_mean[iii]
+                iii = doubleg_mean[iii]
                 iv = doubleg_widths[iv]
                 double_gauss = (p[0]*np.exp((-1.0/2.0)*(((t-p[1])/p[2])*((t-p[1])/p[2])))) \
                 + (ii*np.exp((-1.0/2.0)*(((t-iii)/iv)*((t-iii)/iv))))
