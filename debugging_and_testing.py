@@ -33,8 +33,41 @@ chan = np.load("J1903_numchan.npy")
 dur = np.load("J1903_dur.npy")
 
 #===============================================================================
+# Testing the intrinsic profile fitting again
+# Set non intrins beta gwidth to index 27 - about 50 microseconds
+# Set intirnsic widths based on best fit below -
+# ==============================================================================
+low_chig = 0
+low_chii = 0
+
+for i in range(10):
+
+    num_chan = int(chan[i*5])
+    datas = data[i*5][:num_chan]
+    freqs = freq[i*5][:num_chan]
+
+    p = Profile(mjds[i*5], datas, freqs, dur[i*5])
+
+    for ii in range(p.num_sub):
+
+        datafitb = p.fit(ii, beta_ind = 11, gwidth_ind = 1, intrins = True)
+        datafite = p.fit(ii, dec_exp = True, gwidth_pwr_law = True, intrins = True)
+
+        low_chii += datafitb[0]
+        low_chii += datafite[0]
+
+        datafitb = p.fit(ii, beta_ind = 11, gwidth_ind = 27)
+        datafite = p.fit(ii, dec_exp = True, gwidth_pwr_law = True)
+
+        low_chig += datafitb[0]
+        low_chig += datafite[0]
+
+print(low_chig)
+print(low_chii)
+
+#===============================================================================
 # Testing the intrinsic profile fitting
-# Results - Intrins does a bit better - 501.5 versus 459.3
+# Results - Intrins does a bit better - 501.5 versus 459.3, but also wrong pbf width for beta set...
 # ==============================================================================
 # low_chig = 0
 # low_chii = 0
@@ -67,7 +100,7 @@ dur = np.load("J1903_dur.npy")
 
 #===============================================================================
 # Testing the best fit beta gwidth for intrinsic s-band fitting
-# Seems to favor index 1 which is about 2 microseconds
+# Ran with more narrow gwidth range up to 30 and index ___ was favored at ___ microseconds
 # ==============================================================================
 #
 best_fit_widths = np.zeros((10,7,20,2))
