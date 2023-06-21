@@ -428,7 +428,7 @@ class Profile:
             v_0_dece = 1742.0
 
             if intrins:
-                v_0_gwifth_0_dece = 11.0
+                v_0_gwifth_0_dece = 11.7 # reference width in microseconds for v_0_dece freq
             else:
                 v_0_gwifth_0_dece = 70.0 # reference width in microseconds for v_0_dece freq
 
@@ -918,7 +918,7 @@ class Profile:
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin, zeta)
 
 
-    def fit_pwr_law_g(self, intrins = False):
+    def fit_pwr_law_g(self, intrins = False, beta_ind = -1):
         '''This method tests a number of different power law indices for the
         varaition of gaussian width over frequency.
 
@@ -929,8 +929,10 @@ class Profile:
 
         v_0_dece = 1742.0
 
-        if intrins:
-            v_0_gwifth_0_dece = 11.0
+        if beta_ind != -1 and intrins:
+            v_0_gwifth_0_dece = 11.7
+        elif intrins:
+            v_0_gwifth_0_dece = 11.7
         else:
             v_0_gwifth_0_dece = 70.0 # reference width in microseconds for v_0_dece freq
 
@@ -947,7 +949,9 @@ class Profile:
                 gwidth_set = v_0_gwifth_0_dece * np.power((self.freq_suba / v_0_dece), -pwr_ind[i])
                 gwidth_ind = find_nearest(gauss_fwhm, gwidth_set)[1][0][0]
 
-                if intrins:
+                if beta_ind != -1 and intrins:
+                    dataret = self.fit(ii, beta_ind = beta_ind, gwidth_ind = gwidth_ind, intrins = True)
+                elif intrins:
                     dataret = self.fit(ii, dec_exp = True, gwidth_ind = gwidth_ind, intrins = True)
                 else:
                     dataret = self.fit(ii, dec_exp = True, gwidth_ind = gwidth_ind)
@@ -960,7 +964,9 @@ class Profile:
         plt.ylabel('Summed Chi Squared')
         plt.title('Chi-Squared for Gwidth Power Law Index (over all freqs)')
         title = f'EXP||gwidth_pwrlaw|chisq_plot|MJD={self.mjd_round}.pdf'
-        if intrins:
+        if beta_ind != -1 and intrins:
+            title = f'BETA={betaselect[beta_ind]}|INTRINS|gwidth_pwrlaw|chisq_plot|MJD={self.mjd_round}.pdf'
+        elif intrins:
             title = f'EXP|INTRINS|gwidth_pwrlaw|chisq_plot|MJD={self.mjd_round}.pdf'
         plt.savefig(title)
         plt.close(10)
