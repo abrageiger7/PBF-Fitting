@@ -70,8 +70,6 @@ for i in parameters:
 
     v+=1
 
-plt.plot(intrinsic_gaussians_dg[5][4][3][4])
-
 toa_delays = np.zeros((np.size(betaselect), np.size(widths[::20])))
 #for varying beta and pbf widths
 for i in range(np.size(betaselect)):
@@ -155,7 +153,7 @@ print(toa_delays)
 
 
 toa_delays = np.zeros(np.size(widths[::20]))
-#for varying zeta and pbf widths
+#for exp and varying pbf widths
 for ii in range(np.size(widths[::20])):
     template = exp_data_unitarea[i][ii]
     tau = tau.tau_values_exp[i][ii]
@@ -187,8 +185,8 @@ for ii in range(np.size(widths[::20])):
     max2 = np.where((conv_temp == np.max(conv_temp)))[0][0]
     toa_delays[ii] = max2-max1 #in phase bins
 
-plt.imshow(toa_delays)
-plt.title('Zeta')
+plt.plot(toa_delays)
+plt.title('Exp')
 plt.colorbar()
 plt.show()
 print(toa_delays)
