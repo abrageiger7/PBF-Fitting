@@ -64,6 +64,31 @@ for i in range(10):
 print(low_chig)
 print(low_chii)
 
+#===============================================================================
+# Testing the best fit beta gwidth for intrinsic s-band fitting
+# ==============================================================================
+
+best_fit_widths = np.zeros((10,7,10,2))
+
+for i in range(10):
+
+    num_chan = int(chan[i*5])
+    datas = data[i*5][:num_chan]
+    freqs = freq[i*5][:num_chan]
+
+    p = Profile(mjds[i*5], datas, freqs, dur[i*5])
+
+    for ii in range(p.num_sub//2):
+
+        for iii in range(10):
+
+            datafitb = p.fit(ii*2, beta_ind = 11, gwidth_ind = iii, intrins = True)
+
+            best_fit_widths[i][ii][iii][0] = datafitb[0]
+            best_fit_widths[i][ii][iii][1] = datafitb[5]
+
+print(best_fit_widths)
+np.save('test_of_best_beta_gwidth_intrins', best_fit_widths)
 
 
 
