@@ -62,6 +62,8 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     num_slope = 500
     num_yint = 700
 
+    ref_freq = 1.46
+
     slope_test = np.linspace(-5.0, -0.5, num = num_slope)
     yint_test = np.linspace(120.0, 190.0, num = num_yint)
 
@@ -137,11 +139,11 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
             for iz, w in enumerate(slope_test):
                 error_above_vs_below = np.zeros(np.size(logtaus))
                 for iii in np.arange(np.size(logtaus)):
-                    if logtaus[iii] > (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                    if logtaus[iii] > (w * (np.subtract(logfreqs[iii],math.log10(ref_freq))) + math.log10(n)):
                         error_above_vs_below[iii] = total_low_erra[iii]
-                    elif logtaus[iii] < (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                    elif logtaus[iii] < (w * (np.subtract(logfreqs[iii],math.log10(ref_freq))) + math.log10(n)):
                         error_above_vs_below[iii] = total_high_erra[iii]
-                yphi = (logtaus - (w * (np.subtract(logfreqs,math.log10(1.5))) + math.log10(n))) /  error_above_vs_below # subtract so 1.5 GHz y-int
+                yphi = (logtaus - (w * (np.subtract(logfreqs,math.log10(ref_freq))) + math.log10(n))) /  error_above_vs_below # subtract so ref freq GHz y-int
                 yphisq = yphi ** 2
                 yphisq2sum = sum(yphisq)
                 chisqs[iz,ii] = yphisq2sum
@@ -168,7 +170,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         plaw_datab[i][5] = likelihoody[2]
 
         axsb.flat[i].loglog()
-        y = ((np.subtract(logfreqs,math.log10(1.5)))*likelihoodx[0]) + math.log10(likelihoody[0])
+        y = ((np.subtract(logfreqs,math.log10(ref_freq)))*likelihoodx[0]) + math.log10(likelihoody[0])
         axsb.flat[i].errorbar(x = freq_list/1000.0, y = tau_listb, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
         textstr = '\n'.join((
         r'$\mathrm{MJD}=%.0f$' % (int(mjd), ),
@@ -257,11 +259,11 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
             for iz, w in enumerate(slope_test):
                 error_above_vs_below = np.zeros(np.size(logtaus))
                 for iii in np.arange(np.size(logtaus)):
-                    if logtaus[iii] > (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                    if logtaus[iii] > (w * (np.subtract(logfreqs[iii],math.log10(ref_freq))) + math.log10(n)):
                         error_above_vs_below[iii] = total_low_erra[iii]
-                    elif logtaus[iii] < (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                    elif logtaus[iii] < (w * (np.subtract(logfreqs[iii],math.log10(ref_freq))) + math.log10(n)):
                         error_above_vs_below[iii] = total_high_erra[iii]
-                yphi = (logtaus - (w * (np.subtract(logfreqs,math.log10(1.5))) + math.log10(n))) / error_above_vs_below # subtract so 1.5 GHz y-int
+                yphi = (logtaus - (w * (np.subtract(logfreqs,math.log10(ref_freq))) + math.log10(n))) / error_above_vs_below # subtract so ref_freq GHz y-int
                 yphisq = yphi ** 2
                 yphisq2sum = sum(yphisq)
                 chisqs[iz,ii] = yphisq2sum
@@ -288,7 +290,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         plaw_datae[i][5] = likelihoody[2]
 
         axse.flat[i].loglog()
-        y = ((np.subtract(logfreqs,math.log10(1.5)))*likelihoodx[0]) + math.log10(likelihoody[0])
+        y = ((np.subtract(logfreqs,math.log10(ref_freq)))*likelihoodx[0]) + math.log10(likelihoody[0])
         axse.flat[i].errorbar(x = freq_list/1000.0, y = tau_liste, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
         textstr = '\n'.join((
         r'$\mathrm{MJD}=%.0f$' % (int(mjd), ),
@@ -377,11 +379,11 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
             for iz, w in enumerate(slope_test):
                 error_above_vs_below = np.zeros(np.size(logtaus))
                 for iii in np.arange(np.size(logtaus)):
-                    if logtaus[iii] > (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                    if logtaus[iii] > (w * (np.subtract(logfreqs[iii],math.log10(ref_freq))) + math.log10(n)):
                         error_above_vs_below[iii] = total_low_erra[iii]
-                    elif logtaus[iii] < (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                    elif logtaus[iii] < (w * (np.subtract(logfreqs[iii],math.log10(ref_freq))) + math.log10(n)):
                         error_above_vs_below[iii] = total_high_erra[iii]
-                yphi = (logtaus - (w * (np.subtract(logfreqs,math.log10(1.5))) + math.log10(n))) /  error_above_vs_below # subtract so 1.5 GHz y-int
+                yphi = (logtaus - (w * (np.subtract(logfreqs,math.log10(ref_freq))) + math.log10(n))) /  error_above_vs_below # subtract so ref_freq GHz y-int
                 yphisq = yphi ** 2
                 yphisq2sum = sum(yphisq)
                 chisqs[iz,ii] = yphisq2sum
@@ -409,7 +411,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
         i -= 28
         axsb2.flat[i].loglog()
-        y = ((np.subtract(logfreqs,math.log10(1.5)))*likelihoodx[0]) + math.log10(likelihoody[0])
+        y = ((np.subtract(logfreqs,math.log10(ref_freq)))*likelihoodx[0]) + math.log10(likelihoody[0])
         axsb2.flat[i].errorbar(x = freq_list/1000.0, y = tau_listb, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
         textstr = '\n'.join((
         r'$\mathrm{MJD}=%.0f$' % (int(mjd), ),
@@ -499,11 +501,11 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
             for iz, w in enumerate(slope_test):
                 error_above_vs_below = np.zeros(np.size(logtaus))
                 for iii in np.arange(np.size(logtaus)):
-                    if logtaus[iii] > (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                    if logtaus[iii] > (w * (np.subtract(logfreqs[iii],math.log10(ref_freq))) + math.log10(n)):
                         error_above_vs_below[iii] = total_low_erra[iii]
-                    elif logtaus[iii] < (w * (np.subtract(logfreqs[iii],math.log10(1.5))) + math.log10(n)):
+                    elif logtaus[iii] < (w * (np.subtract(logfreqs[iii],math.log10(ref_freq))) + math.log10(n)):
                         error_above_vs_below[iii] = total_high_erra[iii]
-                yphi = (logtaus - (w * (np.subtract(logfreqs,math.log10(1.5))) + math.log10(n))) / error_above_vs_below # subtract so 1.5 GHz y-int
+                yphi = (logtaus - (w * (np.subtract(logfreqs,math.log10(ref_freq))) + math.log10(n))) / error_above_vs_below # subtract so ref_freq GHz y-int
                 yphisq = yphi ** 2
                 yphisq2sum = sum(yphisq)
                 chisqs[iz,ii] = yphisq2sum
@@ -531,7 +533,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
         i -= 28
         axse2.flat[i].loglog()
-        y = ((np.subtract(logfreqs,math.log10(1.5)))*likelihoodx[0]) + math.log10(likelihoody[0])
+        y = ((np.subtract(logfreqs,math.log10(ref_freq)))*likelihoodx[0]) + math.log10(likelihoody[0])
         axse2.flat[i].errorbar(x = freq_list/1000.0, y = tau_liste, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
         textstr = '\n'.join((
         r'$\mathrm{MJD}=%.0f$' % (int(mjd), ),
