@@ -798,6 +798,9 @@ dur = np.load("J1903_dur.npy")
 # power_laws_and_plots(11, 27)
 
 #===============================================================================
+# Corrected errors on taus and power law for dec exp gwidth
+# beta gauss width index of 27
+# ==============================================================================
 
 mjd_list = []
 freq_list = []
