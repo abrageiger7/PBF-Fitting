@@ -318,8 +318,8 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
 
     #now do again for the remaining 28 mjds
-    figb, axsb = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
-    fige, axse = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
+    figb2, axsb2 = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
+    fige2, axse2 = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
 
     plt.figure(3)
 
@@ -410,24 +410,24 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         plaw_datab[i][5] = likelihoody[2]
 
         i -= 28
-        axsb.flat[i].loglog()
+        axsb2.flat[i].loglog()
         y = ((np.subtract(logfreqs,math.log10(1.5)))*likelihoodx[0]) + math.log10(likelihoody[0])
-        axsb.flat[i].errorbar(x = freq_list/1000.0, y = tau_listb, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
+        axsb2.flat[i].errorbar(x = freq_list/1000.0, y = tau_listb, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
         textstr = '\n'.join((
         r'$\mathrm{MJD}=%.0f$' % (int(mjd), ),
         r'$\tau_0=%.1f$' % (yint, ),
         r'$\alpha=%.2f$' % (slope, )))
-        axsb.flat[i].text(0.65, 0.95, textstr, fontsize=5, verticalalignment='top', transform=axsb.flat[i].transAxes)
-        axsb.flat[i].plot(freq_list/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
-        axsb.flat[i].tick_params(axis='x', labelsize='x-small')
-        axsb.flat[i].tick_params(axis='y', labelsize='x-small')
-        axsb.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
-        axsb.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
+        axsb2.flat[i].text(0.65, 0.95, textstr, fontsize=5, verticalalignment='top', transform=axsb2.flat[i].transAxes)
+        axsb2.flat[i].plot(freq_list/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
+        axsb2.flat[i].tick_params(axis='x', labelsize='x-small')
+        axsb2.flat[i].tick_params(axis='y', labelsize='x-small')
+        axsb2.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
+        axsb2.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
         plt.rc('font', family = 'serif')
         plt.rc('xtick', labelsize='x-small')
         plt.rc('ytick', labelsize='x-small')
 
-    ax = figb.add_subplot(111, frameon=False)
+    ax = figb2.add_subplot(111, frameon=False)
     plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
     plt.xlabel(r'$\nu$ (GHz)')
     plt.ylabel(r'$\tau$ ($\mu$s)')
@@ -530,25 +530,25 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         plaw_datae[i][5] = likelihoody[2]
 
         i -= 28
-        axse.flat[i].loglog()
+        axse2.flat[i].loglog()
         y = ((np.subtract(logfreqs,math.log10(1.5)))*likelihoodx[0]) + math.log10(likelihoody[0])
-        axse.flat[i].errorbar(x = freq_list/1000.0, y = tau_liste, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
+        axse2.flat[i].errorbar(x = freq_list/1000.0, y = tau_liste, yerr = [total_low_erra, total_high_erra], fmt = '.', color = '0.50', elinewidth = 0.78, ms = 4.5)
         textstr = '\n'.join((
         r'$\mathrm{MJD}=%.0f$' % (int(mjd), ),
         r'$\tau_0=%.1f$' % (yint, ),
         r'$\alpha=%.2f$' % (slope, )))
-        axse.flat[i].text(0.65, 0.95, textstr, fontsize=5, verticalalignment='top', transform=axse.flat[i].transAxes)
-        axse.flat[i].plot(freq_list/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
-        axse.flat[i].tick_params(axis='x', labelsize='x-small')
-        axse.flat[i].tick_params(axis='y', labelsize='x-small')
-        axse.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
-        axse.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
+        axse2.flat[i].text(0.65, 0.95, textstr, fontsize=5, verticalalignment='top', transform=axse2.flat[i].transAxes)
+        axse2.flat[i].plot(freq_list/1000.0, 10**y, color = 'dimgrey', linewidth = .8)
+        axse2.flat[i].tick_params(axis='x', labelsize='x-small')
+        axse2.flat[i].tick_params(axis='y', labelsize='x-small')
+        axse2.flat[i].xaxis.set_minor_formatter(tick.ScalarFormatter())
+        axse2.flat[i].yaxis.set_minor_formatter(tick.ScalarFormatter())
         plt.rc('font', family = 'serif')
         plt.rc('xtick', labelsize='x-small')
         plt.rc('ytick', labelsize='x-small')
 
 
-    ax = fige.add_subplot(111, frameon=False)
+    ax = fige2.add_subplot(111, frameon=False)
     plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
     plt.xlabel(r'$\nu$ (GHz)')
     plt.ylabel(r'$\tau$ ($\mu$s)')
@@ -559,6 +559,8 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     plt.rc('ytick', labelsize='x-small')
     plt.savefig(title)
     plt.close(4)
+
+    np.save('timea_powerlaw_data', [plaw_datab,plaw_datae])
 
     #now plot slopes and yints over time
 
