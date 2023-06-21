@@ -866,7 +866,7 @@ for i in range(56):
 
 setg4setb11_data = np.array([mjd_list, freq_list, dur_list, pbf_width_listb, low_chi_listb, tau_listb, tau_low_listb, tau_high_listb, fse_listb, gauss_width_listb])
 
-np.save('timea_setg4setb27_data', setg4setb11_data)
+np.save('timea_setg27setb11_data', setg4setb11_data)
 
 setg5dece_data = np.array([mjd_list, freq_list, dur_list, pbf_width_liste, low_chi_liste, tau_liste, tau_low_liste, tau_high_liste, fse_liste, gauss_width_liste])
 
