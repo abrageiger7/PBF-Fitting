@@ -62,7 +62,7 @@ for i in range(56):
     print(f'Frequency = {p.freq_round} MHz')
     print(fr'Gaussian Width = {dataret[3]} \mu s')
 
-np.save('high_freq_gwidth_test_intrins', high_freq_gwidth_test)
+np.save('high_freq_gwidth_test_intrins_beta', high_freq_gwidth_test)
 
 #===============================================================================
 # Testing the intrinsic profile fitting again
