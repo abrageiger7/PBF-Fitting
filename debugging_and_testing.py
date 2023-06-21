@@ -80,7 +80,7 @@ for i in range(10):
     p = Profile(mjds[i*5], datas, freqs, dur[i*5])
     pwr_ind = p.fit(0, dec_exp = True, intrins = True)
 
-    print(f'Best Fit Gauss Width = {pwr_ind[3]}'')
+    print(f'Best Fit Gauss Width = {pwr_ind[3]}')
 
     pwr_ind = p.fit_pwr_law_g(intrins = True)
 
