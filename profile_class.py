@@ -890,7 +890,10 @@ class Profile:
         '''This method tests a number of different power law indices for the
         varaition of gaussian width over frequency.
 
-        Tested this over several MJDs and the best fit power law is about 0.9.'''
+        Tested this over several MJDs and the best fit power law is about 0.9.
+
+        Did the same thing but with intrinsic pulse from s-band and best fit
+        power law is about 0.0.'''
 
         v_0_dece = 1742.0
 
