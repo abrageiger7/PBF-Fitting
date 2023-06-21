@@ -76,10 +76,9 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     plaw_datab = np.zeros((np.size(mjds),6)) #slope, low err, high err, yint, low err, high err
     plaw_datae = np.zeros((np.size(mjds),6)) #slope, low err, high err, yint, low err, high err
 
-    figb, axsb = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
-    fige, axse = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
-
     plt.figure(1)
+    figb, axsb = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
+
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
     plt.rc('ytick', labelsize='x-small')
@@ -186,21 +185,22 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         plt.rc('ytick', labelsize='x-small')
 
     ax = figb.add_subplot(111, frameon=False)
-    plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
+    ax.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
     ax.set_xlabel(r'$\nu$ (GHz)')
-    plt.ylabel(r'$\tau$ ($\mu$s)')
-    plt.title('Beta = 3.99999 J1903+0327 Scattering vs. Epoch')
+    ax.set_ylabel(r'$\tau$ ($\mu$s)')
+    ax.set_title('Beta = 3.99999 J1903+0327 Scattering vs. Epoch')
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
     plt.rc('ytick', labelsize='x-small')
     title = f'timea_power_laws_beta=3_99999_gwidth=ind{beta_gwidth_ind}_1.pdf'
-    plt.savefig(title)
-    plt.close(1)
-
+    figb.savefig(title)
+    figb.show()
+    plt.close('all')
 
     #now do for the same range with dec exp
-
     plt.figure(2)
+    fige, axse = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
+
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
     plt.rc('ytick', labelsize='x-small')
@@ -305,23 +305,21 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         plt.rc('ytick', labelsize='x-small')
 
     ax = fige.add_subplot(111, frameon=False)
-    plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
-    plt.xlabel(r'$\nu$ (GHz)')
-    plt.ylabel(r'$\tau$ ($\mu$s)')
-    plt.title('Decaying Exponential J1903+0327 Scattering vs. Epoch')
+    ax.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
+    ax.set_xlabel(r'$\nu$ (GHz)')
+    ax.set_ylabel(r'$\tau$ ($\mu$s)')
+    ax.set_title('Decaying Exponential J1903+0327 Scattering vs. Epoch')
     title = f'timea_power_laws_exponential_gwidth=pwrlaw_1.pdf'
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
     plt.rc('ytick', labelsize='x-small')
-    plt.savefig(title)
-    plt.close(2)
+    fige.savefig(title)
+    plt.close('all')
 
 
     #now do again for the remaining 28 mjds
-    figb2, axsb2 = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
-    fige2, axse2 = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
-
     plt.figure(3)
+    figb2, axsb2 = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
 
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
@@ -427,25 +425,24 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         plt.rc('xtick', labelsize='x-small')
         plt.rc('ytick', labelsize='x-small')
 
-    plt.plot()
-    plt.show()
 
     ax = figb2.add_subplot(111, frameon=False)
-    plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
-    plt.xlabel(r'$\nu$ (GHz)')
-    plt.ylabel(r'$\tau$ ($\mu$s)')
-    plt.title('Beta = 3.99999 J1903+0327 Scattering vs. Epoch')
+    ax.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
+    ax.set_xlabel(r'$\nu$ (GHz)')
+    ax.set_ylabel(r'$\tau$ ($\mu$s)')
+    ax.set_title('Beta = 3.99999 J1903+0327 Scattering vs. Epoch')
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
     plt.rc('ytick', labelsize='x-small')
     title = f'timea_power_laws_beta=3_99999_gwidth=ind{beta_gwidth_ind}_2.pdf'
-    plt.savefig(title)
-    plt.close(3)
+    figb2.savefig(title)
+    plt.close('all')
 
 
     #now do for the same range with dec exp
-
     plt.figure(4)
+    fige2, axse2 = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
+
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
     plt.rc('ytick', labelsize='x-small')
@@ -552,16 +549,16 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
 
     ax = fige2.add_subplot(111, frameon=False)
-    plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
-    plt.xlabel(r'$\nu$ (GHz)')
-    plt.ylabel(r'$\tau$ ($\mu$s)')
-    plt.title('Decaying Exponential J1903+0327 Scattering vs. Epoch')
+    ax.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
+    ax.set_xlabel(r'$\nu$ (GHz)')
+    ax.set_ylabel(r'$\tau$ ($\mu$s)')
+    ax.set_title('Decaying Exponential J1903+0327 Scattering vs. Epoch')
     title = f'timea_power_laws_exponential_gwidth=pwrlaw_2.pdf'
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
     plt.rc('ytick', labelsize='x-small')
-    plt.savefig(title)
-    plt.close(4)
+    fige2.savefig(title)
+    plt.close('all')
 
     np.save('timea_powerlaw_data', [plaw_datab,plaw_datae])
 
