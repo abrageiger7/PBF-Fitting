@@ -427,6 +427,9 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
         plt.rc('xtick', labelsize='x-small')
         plt.rc('ytick', labelsize='x-small')
 
+    plt.plot()
+    plt.show()
+
     ax = figb2.add_subplot(111, frameon=False)
     plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
     plt.xlabel(r'$\nu$ (GHz)')
