@@ -437,7 +437,7 @@ class Profile:
             gwidth_set = v_0_gwifth_0_dece * np.power((freq_care / v_0_dece), -pwr_ind)
             gwidth_ind = find_nearest(gauss_fwhm, gwidth_set)[1][0][0]
 
-        elif intrins == True and pbfwidth_ind == -1 and gwidth_ind == -1 and dec_exp:
+        if intrins == True and pbfwidth_ind == -1 and gwidth_ind == -1 and dec_exp:
 
             num_par = 4 #number of fitted parameters
 
