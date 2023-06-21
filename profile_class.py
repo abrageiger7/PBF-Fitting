@@ -86,7 +86,9 @@ class Profile:
 
         plt.figure(45)
 
-        if intrins:
+        if intrins and gwidth != -1:
+
+            gwidth_round = str(gwidth)[:3]
 
             plt.title('Fit Chi-sqs')
             plt.xlabel('PBF Width')
