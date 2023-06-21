@@ -33,10 +33,13 @@ chan = np.load("J1903_numchan.npy")
 dur = np.load("J1903_dur.npy")
 
 #===============================================================================
+# Testing the best fit
+
+#===============================================================================
 # Testing the intrinsic profile fitting again
 # Set non intrins beta gwidth to index 27 - about 50 microseconds
 # Set intirnsic widths based on best fit below -
-# ==============================================================================
+#==============================================================================
 low_chig = 0
 low_chii = 0
 
@@ -64,6 +67,37 @@ for i in range(10):
 
 print(low_chig)
 print(low_chii)
+
+
+#===============================================================================
+# Collecting best fit gaussian widths for highest frequency pulse in order to
+# set a reference frequency and gaussian width for the gwidth pwr law; this is for
+# the intrinsic this time
+# ==============================================================================
+
+# ii = 0
+#
+# high_freq_gwidth_test = np.zeros((56,2))
+#
+# print(conv.gauss_fwhm)
+#
+# for i in range(56):
+#
+#     num_chan = int(chan[i])
+#     datas = data[i][:num_chan]
+#     freqs = freq[i][:num_chan]
+#
+#     p = Profile(mjds[i], datas, freqs, dur[i])
+#
+#     dataret = p.fit(ii, dec_exp=True)
+#
+#     high_freq_gwidth_test[i][0] = p.freq_suba #frequency
+#     high_freq_gwidth_test[i][1] = dataret[1] #gaussian width
+#
+#     print(f'Frequency = {p.freq_round} MHz')
+#     print(fr'Gaussian Width = {dataret[1]} \mu s')
+#
+# np.save('high_freq_gwidth_test', high_freq_gwidth_test)
 
 #===============================================================================
 # Testing the intrinsic profile fitting
@@ -100,30 +134,30 @@ print(low_chii)
 
 #===============================================================================
 # Testing the best fit beta gwidth for intrinsic s-band fitting
-# Ran with more narrow gwidth range up to 30 and index ___ was favored at ___ microseconds
+# Ran with more narrow gwidth range up to 30 and was favored at about 2 microseconds
 # ==============================================================================
 #
-best_fit_widths = np.zeros((10,7,20,2))
-
-for i in range(10):
-
-    num_chan = int(chan[i*5])
-    datas = data[i*5][:num_chan]
-    freqs = freq[i*5][:num_chan]
-
-    p = Profile(mjds[i*5], datas, freqs, dur[i*5])
-
-    for ii in range(p.num_sub//2):
-
-        for iii in range(20):
-
-            datafitb = p.fit(ii*2, beta_ind = 11, gwidth_ind = iii, intrins = True)
-
-            best_fit_widths[i][ii][iii][0] = datafitb[0]
-            best_fit_widths[i][ii][iii][1] = datafitb[5]
-
-print(best_fit_widths)
-np.save('test_of_best_beta_gwidth_intrins', best_fit_widths)
+# best_fit_widths = np.zeros((10,7,20,2))
+#
+# for i in range(10):
+#
+#     num_chan = int(chan[i*5])
+#     datas = data[i*5][:num_chan]
+#     freqs = freq[i*5][:num_chan]
+#
+#     p = Profile(mjds[i*5], datas, freqs, dur[i*5])
+#
+#     for ii in range(p.num_sub//2):
+#
+#         for iii in range(20):
+#
+#             datafitb = p.fit(ii*2, beta_ind = 11, gwidth_ind = iii, intrins = True)
+#
+#             best_fit_widths[i][ii][iii][0] = datafitb[0]
+#             best_fit_widths[i][ii][iii][1] = datafitb[5]
+#
+# print(best_fit_widths)
+# np.save('test_of_best_beta_gwidth_intrins', best_fit_widths)
 
 #===============================================================================
 # Testing the gwidth power law
