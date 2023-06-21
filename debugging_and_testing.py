@@ -34,6 +34,7 @@ dur = np.load("J1903_dur.npy")
 
 #===============================================================================
 # Testing the intrinsic profile fitting
+# Results - Intrins does a bit better - 501.5 versus 459.3
 # ==============================================================================
 # low_chig = 0
 # low_chii = 0
