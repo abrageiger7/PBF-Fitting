@@ -660,17 +660,21 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     plt.savefig('timea_time_scales_seperate_panels.pdf')
     plt.close(6)
 
-    #ADD AUTOCORRELATION HERE
+    #autocorrelation
     plt.figure(11)
+
+    #must make sure data is sorted by mjd for autocorrelation
+    arr1inds = mjds.argsort()
+
     fig, axs = plt.subplots(nrows=4, ncols=1, figsize = (12,6), sharex = True)
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize=12)
     plt.rc('ytick', labelsize=10)
 
-    acor0 = axs.flat[0].acorr(plaw_datae[:,0], label = r'Exponential PBF $\alpha$', maxlags = 55)
-    acor1 = axs.flat[1].acorr(plaw_datae[:,3], label = r'Exponential PBF $\tau_0$', maxlags = 55)
-    acor2 = axs.flat[2].acorr(plaw_datab[:,0], label = r'Beta = 3.99999 PBF $\alpha$', maxlags = 55)
-    acor3 = axs.flat[3].acorr(plaw_datab[:,3], label = r'Beta = 3.99999 PBF $\tau_0$', maxlags = 55)
+    acor0 = axs.flat[0].acorr(plaw_datae[:,0][arr1inds], label = r'Exponential PBF $\alpha$', maxlags = 55)
+    acor1 = axs.flat[1].acorr(plaw_datae[:,3][arr1inds], label = r'Exponential PBF $\tau_0$', maxlags = 55)
+    acor2 = axs.flat[2].acorr(plaw_datab[:,0][arr1inds], label = r'Beta = 3.99999 PBF $\alpha$', maxlags = 55)
+    acor3 = axs.flat[3].acorr(plaw_datab[:,3][arr1inds], label = r'Beta = 3.99999 PBF $\tau_0$', maxlags = 55)
 
     fig.tight_layout()
     plt.savefig('timea_autocorrelation.pdf')
