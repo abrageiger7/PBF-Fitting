@@ -469,6 +469,38 @@ class Profile:
 
             return(low_chi, tau_fin, self.comp_fse(tau_fin), gauss_width_fin, pbf_width_fin)
 
+        elif intrins == True and pbfwidth_ind == -1 and gwidth_ind == -1 and beta_ind != -1:
+
+            num_par = 4 #number of fitted parameters
+
+            beta = betaselect[beta_ind]
+
+            chi_sqs_array = np.zeros((num_pbfwidth,num_gwidth))
+
+            for i in itertools.product(pbfwidth_inds,gwidth_inds):
+
+                template = b_convolved_w_dataintrins[beta_ind][i[0]][i[1]]
+                chi_sq = self.fit_sing(template, num_par)
+                chi_sqs_array[i[0]][i[1]] = chi_sq
+
+            self.chi_plot(chi_sqs_array, beta = beta, intrins = True)
+
+            low_chi = find_nearest(chi_sqs_array, 0.0)[0]
+            lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+            pbf_width_fin = widths[lsqs_pbf_index]
+            lsqs_gwidth_index = find_nearest(chi_sqs_array, 0.0)[1][1][0]
+            gauss_width_fin = gauss_fwhm[lsqs_gwidth_index]
+
+            if chi_sqs_array[0][0] < low_chi+(1/self.bin_num_care) or chi_sqs_array[-1][-1] < low_chi+(1/self.bin_num_care):
+                raise Exception('NOT CONVERGING ENOUGH')
+
+            tau_fin = tau_values[beta_ind][lsqs_pbf_index]
+
+            self.fit_plot(beta_ind, lsqs_pbf_index, lsqs_gwidth_index, low_chi, intrins = True)
+
+            return(low_chi, tau_fin, self.comp_fse(tau_fin), gauss_width_fin, pbf_width_fin)
+
+
 
         elif intrins == True and pbfwidth_ind == -1 and gwidth_ind != -1:
 
