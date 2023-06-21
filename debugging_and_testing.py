@@ -73,13 +73,12 @@ dur = np.load("J1903_dur.npy")
 # Collecting best fit gaussian widths for highest frequency pulse in order to
 # set a reference frequency and gaussian width for the gwidth pwr law; this is for
 # the intrinsic this time
+# results:
 # ==============================================================================
 
 ii = 0
 
 high_freq_gwidth_test = np.zeros((56,2))
-
-print(conv.gauss_fwhm)
 
 for i in range(56):
 
@@ -92,10 +91,10 @@ for i in range(56):
     dataret = p.fit(ii, dec_exp=True, intrins=True)
 
     high_freq_gwidth_test[i][0] = p.freq_suba #frequency
-    high_freq_gwidth_test[i][1] = dataret[1] #gaussian width
+    high_freq_gwidth_test[i][1] = dataret[3] #gaussian width
 
     print(f'Frequency = {p.freq_round} MHz')
-    print(fr'Gaussian Width = {dataret[1]} \mu s')
+    print(fr'Gaussian Width = {dataret[3]} \mu s')
 
 np.save('high_freq_gwidth_test_intrins', high_freq_gwidth_test)
 
@@ -162,7 +161,8 @@ np.save('high_freq_gwidth_test_intrins', high_freq_gwidth_test)
 #===============================================================================
 # Testing the gwidth power law
 # ==============================================================================
-
+#
+#NEXT
 # for i in range(10):
 #
 #     num_chan = int(chan[i*5])
