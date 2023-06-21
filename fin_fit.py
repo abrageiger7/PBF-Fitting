@@ -832,7 +832,7 @@ for i in range(56):
     p = Profile(mjds[i], data0, freq0, dur[i])
     subavg_chan_list.append(p.num_sub)
 
-    for ii in range(p.num_sub)
+    for ii in range(p.num_sub):
 
         print(f'Frequency {ii}')
 
