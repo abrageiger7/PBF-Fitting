@@ -427,7 +427,10 @@ class Profile:
 
             v_0_dece = 1742.0
 
-            v_0_gwifth_0_dece = 70.0 # reference width in microseconds for v_0_dece freq
+            if intrins:
+                v_0_gwifth_0_dece = ...
+            else:
+                v_0_gwifth_0_dece = 70.0 # reference width in microseconds for v_0_dece freq
 
             pwr_ind = 0.9 #the tested best fit - reference function below
 
@@ -918,7 +921,9 @@ class Profile:
         plt.xlabel('Gaussian Width Power Law Indices')
         plt.ylabel('Summed Chi Squared')
         plt.title('Chi-Squared for Gwidth Power Law Index (over all freqs)')
-        title = f'EXP|gwidth_pwrlaw|chisq_plot|MJD={self.mjd_round}.pdf'
+        title = f'EXP||gwidth_pwrlaw|chisq_plot|MJD={self.mjd_round}.pdf'
+        if intrins:
+            title = f'EXP|INTRINS|gwidth_pwrlaw|chisq_plot|MJD={self.mjd_round}.pdf'
         plt.savefig(title)
         plt.close(10)
         print(title)
