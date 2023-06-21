@@ -39,6 +39,7 @@ dur = np.load("J1903_dur.npy")
 # Testing the intrinsic profile fitting again
 # Set non intrins beta gwidth to index 27 - about 50 microseconds
 # Set intirnsic widths based on best fit below -
+# Results of 458.88256969082136 versus 466.9777182135979
 #==============================================================================
 # low_chig = 0
 # low_chii = 0
@@ -73,30 +74,30 @@ dur = np.load("J1903_dur.npy")
 # Collecting best fit gaussian widths for highest frequency pulse in order to
 # set a reference frequency and gaussian width for the gwidth pwr law; this is for
 # the intrinsic this time
-# results:
+# results: favors highest freq intrinsic width of about 11
 # ==============================================================================
 
-ii = 0
-
-high_freq_gwidth_test = np.zeros((56,2))
-
-for i in range(56):
-
-    num_chan = int(chan[i])
-    datas = data[i][:num_chan]
-    freqs = freq[i][:num_chan]
-
-    p = Profile(mjds[i], datas, freqs, dur[i])
-
-    dataret = p.fit(ii, dec_exp=True, intrins=True)
-
-    high_freq_gwidth_test[i][0] = p.freq_suba #frequency
-    high_freq_gwidth_test[i][1] = dataret[3] #gaussian width
-
-    print(f'Frequency = {p.freq_round} MHz')
-    print(fr'Gaussian Width = {dataret[3]} \mu s')
-
-np.save('high_freq_gwidth_test_intrins', high_freq_gwidth_test)
+# ii = 0
+#
+# high_freq_gwidth_test = np.zeros((56,2))
+#
+# for i in range(56):
+#
+#     num_chan = int(chan[i])
+#     datas = data[i][:num_chan]
+#     freqs = freq[i][:num_chan]
+#
+#     p = Profile(mjds[i], datas, freqs, dur[i])
+#
+#     dataret = p.fit(ii, dec_exp=True, intrins=True)
+#
+#     high_freq_gwidth_test[i][0] = p.freq_suba #frequency
+#     high_freq_gwidth_test[i][1] = dataret[3] #gaussian width
+#
+#     print(f'Frequency = {p.freq_round} MHz')
+#     print(fr'Gaussian Width = {dataret[3]} \mu s')
+#
+# np.save('high_freq_gwidth_test_intrins', high_freq_gwidth_test)
 
 #===============================================================================
 # Testing the intrinsic profile fitting
@@ -161,22 +162,21 @@ np.save('high_freq_gwidth_test_intrins', high_freq_gwidth_test)
 #===============================================================================
 # Testing the gwidth power law
 # ==============================================================================
-#
-#NEXT
-# for i in range(10):
-#
-#     num_chan = int(chan[i*5])
-#     datas = data[i*5][:num_chan]
-#     freqs = freq[i*5][:num_chan]
-#
-#     p = Profile(mjds[i*5], datas, freqs, dur[i*5])
-#     pwr_ind = p.fit(0, dec_exp = True, intrins = True)
-#
-#     print(f'Best Fit Gauss Width = {pwr_ind[3]}')
-#
-#     pwr_ind = p.fit_pwr_law_g(intrins = True)
-#
-#     print(pwr_ind)
+
+for i in range(10):
+
+    num_chan = int(chan[i*5])
+    datas = data[i*5][:num_chan]
+    freqs = freq[i*5][:num_chan]
+
+    p = Profile(mjds[i*5], datas, freqs, dur[i*5])
+    pwr_ind = p.fit(0, dec_exp = True, intrins = True)
+
+    print(f'Best Fit Gauss Width = {pwr_ind[3]}')
+
+    pwr_ind = p.fit_pwr_law_g(intrins = True)
+
+    print(pwr_ind)
 
 #===============================================================================
 # Collecting best fit gaussian widths for highest frequency pulse in order to
