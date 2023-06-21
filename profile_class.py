@@ -461,7 +461,7 @@ class Profile:
 
             self.fit_plot(0, lsqs_pbf_index, lsqs_gwidth_index, low_chi, exp = True, intrins = True)
 
-            return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gauss_width_fin, pbf_width_fin)
+            return(low_chi, tau_fin, self.comp_fse(tau_fin), gauss_width_fin, pbf_width_fin)
 
 
         elif intrins == True and pbfwidth_ind == -1 and gwidth_ind != -1:
@@ -880,7 +880,7 @@ class Profile:
             return(low_chi, tau_fin, tau_low, tau_up, self.comp_fse(tau_fin), gwidth, pbf_width_fin, zeta)
 
 
-    def fit_pwr_law_g(self):
+    def fit_pwr_law_g(self, intrins = False):
         '''This method tests a number of different power law indices for the
         varaition of gaussian width over frequency.
 
@@ -888,7 +888,10 @@ class Profile:
 
         v_0_dece = 1742.0
 
-        v_0_gwifth_0_dece = 70.0 # reference width in microseconds for v_0_dece freq
+        if intrins:
+            v_0_gwifth_0_dece = ...
+        else:
+            v_0_gwifth_0_dece = 70.0 # reference width in microseconds for v_0_dece freq
 
         pwr_ind = np.arange(0,2,0.1) # range of gaussian width power law indexes to choose from
 
@@ -903,7 +906,10 @@ class Profile:
                 gwidth_set = v_0_gwifth_0_dece * np.power((self.freq_suba / v_0_dece), -pwr_ind[i])
                 gwidth_ind = find_nearest(gauss_fwhm, gwidth_set)[1][0][0]
 
-                dataret = self.fit(ii, dec_exp = True, gwidth_ind = gwidth_ind)
+                if intrins:
+                    dataret = self.fit(ii, dec_exp = True, gwidth_ind = gwidth_ind, intrins = True)
+                else:
+                    dataret = self.fit(ii, dec_exp = True, gwidth_ind = gwidth_ind)
 
                 chi_sqs_collect[i] += dataret[0]
 
