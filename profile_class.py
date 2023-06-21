@@ -432,7 +432,10 @@ class Profile:
             else:
                 v_0_gwifth_0_dece = 70.0 # reference width in microseconds for v_0_dece freq
 
-            pwr_ind = 0.9 #the tested best fit - reference function below
+            if intrins:
+                pwr_ind = 0.0 #need to fill in with correct power law index
+            else:
+                pwr_ind = 0.9 #the tested best fit - reference function below
 
             gwidth_set = v_0_gwifth_0_dece * np.power((freq_care / v_0_dece), -pwr_ind)
             gwidth_ind = find_nearest(gauss_fwhm, gwidth_set)[1][0][0]
