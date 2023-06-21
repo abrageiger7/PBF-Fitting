@@ -892,7 +892,7 @@ class Profile:
         v_0_dece = 1742.0
 
         if intrins:
-            v_0_gwifth_0_dece = ...
+            v_0_gwifth_0_dece = 0.0
         else:
             v_0_gwifth_0_dece = 70.0 # reference width in microseconds for v_0_dece freq
 
