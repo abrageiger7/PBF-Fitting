@@ -444,7 +444,7 @@ class Profile:
                     chi_sq = self.fit_sing(template, num_par)
                     chi_sqs_array[i] = chi_sq
 
-                self.chi_plot(chi_sqs_array, exp = True, intrins = True)
+                self.chi_plot(chi_sqs_array, gwidth = gwidth, exp = True, intrins = True)
 
                 low_chi = find_nearest(chi_sqs_array, 0.0)[0]
                 lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
@@ -482,7 +482,7 @@ class Profile:
                     chi_sq = self.fit_sing(template, num_par)
                     chi_sqs_array[i] = chi_sq
 
-                self.chi_plot(chi_sqs_array, beta = beta, intrins = True)
+                self.chi_plot(chi_sqs_array, gwidth = gwidth, beta = beta, intrins = True)
 
                 low_chi = find_nearest(chi_sqs_array, 0.0)[0]
                 lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
@@ -520,7 +520,7 @@ class Profile:
                     chi_sq = self.fit_sing(template, num_par)
                     chi_sqs_array[i] = chi_sq
 
-                self.chi_plot(chi_sqs_array, zeta = zeta, intrins = True)
+                self.chi_plot(chi_sqs_array, gwidth = gwidth, zeta = zeta, intrins = True)
 
                 low_chi = find_nearest(chi_sqs_array, 0.0)[0]
                 lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
