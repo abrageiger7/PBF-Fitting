@@ -40,33 +40,33 @@ dur = np.load("J1903_dur.npy")
 # Set non intrins beta gwidth to index 27 - about 50 microseconds
 # Set intirnsic widths based on best fit below -
 #==============================================================================
-low_chig = 0
-low_chii = 0
-
-for i in range(10):
-
-    num_chan = int(chan[i*5])
-    datas = data[i*5][:num_chan]
-    freqs = freq[i*5][:num_chan]
-
-    p = Profile(mjds[i*5], datas, freqs, dur[i*5])
-
-    for ii in range(p.num_sub):
-
-        datafitb = p.fit(ii, beta_ind = 11, gwidth_ind = 1, intrins = True)
-        datafite = p.fit(ii, dec_exp = True, gwidth_pwr_law = True, intrins = True)
-
-        low_chii += datafitb[0]
-        low_chii += datafite[0]
-
-        datafitb = p.fit(ii, beta_ind = 11, gwidth_ind = 27)
-        datafite = p.fit(ii, dec_exp = True, gwidth_pwr_law = True)
-
-        low_chig += datafitb[0]
-        low_chig += datafite[0]
-
-print(low_chig)
-print(low_chii)
+# low_chig = 0
+# low_chii = 0
+#
+# for i in range(10):
+#
+#     num_chan = int(chan[i*5])
+#     datas = data[i*5][:num_chan]
+#     freqs = freq[i*5][:num_chan]
+#
+#     p = Profile(mjds[i*5], datas, freqs, dur[i*5])
+#
+#     for ii in range(p.num_sub):
+#
+#         datafitb = p.fit(ii, beta_ind = 11, gwidth_ind = 1, intrins = True)
+#         datafite = p.fit(ii, dec_exp = True, gwidth_pwr_law = True, intrins = True)
+#
+#         low_chii += datafitb[0]
+#         low_chii += datafite[0]
+#
+#         datafitb = p.fit(ii, beta_ind = 11, gwidth_ind = 27)
+#         datafite = p.fit(ii, dec_exp = True, gwidth_pwr_law = True)
+#
+#         low_chig += datafitb[0]
+#         low_chig += datafite[0]
+#
+# print(low_chig)
+# print(low_chii)
 
 
 #===============================================================================
@@ -75,29 +75,29 @@ print(low_chii)
 # the intrinsic this time
 # ==============================================================================
 
-# ii = 0
-#
-# high_freq_gwidth_test = np.zeros((56,2))
-#
-# print(conv.gauss_fwhm)
-#
-# for i in range(56):
-#
-#     num_chan = int(chan[i])
-#     datas = data[i][:num_chan]
-#     freqs = freq[i][:num_chan]
-#
-#     p = Profile(mjds[i], datas, freqs, dur[i])
-#
-#     dataret = p.fit(ii, dec_exp=True)
-#
-#     high_freq_gwidth_test[i][0] = p.freq_suba #frequency
-#     high_freq_gwidth_test[i][1] = dataret[1] #gaussian width
-#
-#     print(f'Frequency = {p.freq_round} MHz')
-#     print(fr'Gaussian Width = {dataret[1]} \mu s')
-#
-# np.save('high_freq_gwidth_test', high_freq_gwidth_test)
+ii = 0
+
+high_freq_gwidth_test = np.zeros((56,2))
+
+print(conv.gauss_fwhm)
+
+for i in range(56):
+
+    num_chan = int(chan[i])
+    datas = data[i][:num_chan]
+    freqs = freq[i][:num_chan]
+
+    p = Profile(mjds[i], datas, freqs, dur[i])
+
+    dataret = p.fit(ii, dec_exp=True, intrins=True)
+
+    high_freq_gwidth_test[i][0] = p.freq_suba #frequency
+    high_freq_gwidth_test[i][1] = dataret[1] #gaussian width
+
+    print(f'Frequency = {p.freq_round} MHz')
+    print(fr'Gaussian Width = {dataret[1]} \mu s')
+
+np.save('high_freq_gwidth_test_intrins', high_freq_gwidth_test)
 
 #===============================================================================
 # Testing the intrinsic profile fitting
