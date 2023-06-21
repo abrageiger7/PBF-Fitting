@@ -68,7 +68,7 @@ print(low_chii)
 # Testing the best fit beta gwidth for intrinsic s-band fitting
 # ==============================================================================
 
-best_fit_widths = np.zeros((10,7,10,2))
+best_fit_widths = np.zeros((10,7,6,2))
 
 for i in range(10):
 
@@ -80,7 +80,7 @@ for i in range(10):
 
     for ii in range(p.num_sub//2):
 
-        for iii in range(10):
+        for iii in range(6):
 
             datafitb = p.fit(ii*2, beta_ind = 11, gwidth_ind = iii, intrins = True)
 
