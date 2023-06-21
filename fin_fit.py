@@ -62,7 +62,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     num_slope = 500
     num_yint = 700
 
-    ref_freq = 1.46
+    ref_freq = 1.5
 
     slope_test = np.linspace(-5.0, -0.5, num = num_slope)
     yint_test = np.linspace(120.0, 190.0, num = num_yint)
