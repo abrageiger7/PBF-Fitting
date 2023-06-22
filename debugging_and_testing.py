@@ -36,43 +36,8 @@ dur = np.load("J1903_dur.npy")
 # Test of best intrinsic pulse shape - gaussian or s-band for beta
 # ==============================================================================
 
-# chi_tests_b = np.zeros((10,7,7)) #for each mjd and frequency, record frequency, low_chi, and gwidth
-# mjder = np.zeros(10)
-#
-# for i in range(10):
-#
-#     num_chan = int(chan[i*5])
-#     datas = data[i*5][:num_chan]
-#     freqs = freq[i*5][:num_chan]
-#
-#     mjder[i] = mjds[i*5]
-#
-#     p = Profile(mjds[i*5], datas, freqs, dur[i*5])
-#
-#     for ii in range(p.num_sub//2):
-#
-#         ii = ii*2
-#
-#         datafitbi = p.fit(ii, beta_ind = 11, intrins = True)
-#         chi_tests_b[i][ii//2][1] = datafitbi[0]
-#         chi_tests_b[i][ii//2][2] = datafitbi[3]
-#         chi_tests_b[i][ii//2][3] = datafitbi[4]
-#
-#         chi_tests_b[i][ii//2][0] = p.freq_suba
-#
-#         datafitb = p.fit(ii, beta_ind = 11)
-#         chi_tests_b[i][ii//2][4] = datafitb[0]
-#         chi_tests_b[i][ii//2][5] = datafitb[3]
-#         chi_tests_b[i][ii//2][6] = datafitb[4]
-#
-# np.save('mjds_intrinss_vs_gauss', mjder)
-# np.save('intrinss_vs_gauss_b', chi_tests_b)
-
-#===============================================================================
-# Test of best intrinsic pulse shape - gaussian or s-band for dec exp
-# ==============================================================================
-
-chi_tests_e = np.zeros((10,7,7)) #for each mjd and frequency, record frequency, low_chi, and gwidth
+chi_tests_b = np.zeros((10,7,7)) #for each mjd and frequency, record frequency, low_chi, and gwidth
+mjder = np.zeros(10)
 
 for i in range(10):
 
@@ -80,25 +45,60 @@ for i in range(10):
     datas = data[i*5][:num_chan]
     freqs = freq[i*5][:num_chan]
 
+    mjder[i] = mjds[i*5]
+
     p = Profile(mjds[i*5], datas, freqs, dur[i*5])
 
     for ii in range(p.num_sub//2):
 
         ii = ii*2
 
-        datafitei = p.fit(ii, dec_exp = True, intrins = True)
-        chi_tests_e[i][ii//2][1] = datafitei[0]
-        chi_tests_e[i][ii//2][2] = datafitei[3]
-        chi_tests_e[i][ii//2][3] = datafitei[4]
+        datafitbi = p.fit(ii, beta_ind = 11, intrins = True)
+        chi_tests_b[i][ii//2][1] = datafitbi[0]
+        chi_tests_b[i][ii//2][2] = datafitbi[3]
+        chi_tests_b[i][ii//2][3] = datafitbi[4]
 
-        chi_tests_e[i][ii//2][0] = p.freq_suba
+        chi_tests_b[i][ii//2][0] = p.freq_suba
 
-        datafite = p.fit(ii, dec_exp = True)
-        chi_tests_e[i][ii//2][4] = datafitb[0]
-        chi_tests_e[i][ii//2][5] = datafite[3]
-        chi_tests_e[i][ii//2][6] = datafite[4]
+        datafitb = p.fit(ii, beta_ind = 11)
+        chi_tests_b[i][ii//2][4] = datafitb[0]
+        chi_tests_b[i][ii//2][5] = datafitb[3]
+        chi_tests_b[i][ii//2][6] = datafitb[4]
 
-np.save('intrinss_vs_gauss_e', chi_tests_e)
+np.save('mjds_intrinss_vs_gauss', mjder)
+np.save('intrinss_vs_gauss_b', chi_tests_b)
+
+#===============================================================================
+# Test of best intrinsic pulse shape - gaussian or s-band for dec exp
+# ==============================================================================
+#
+# chi_tests_e = np.zeros((10,7,7)) #for each mjd and frequency, record frequency, low_chi, and gwidth
+#
+# for i in range(10):
+#
+#     num_chan = int(chan[i*5])
+#     datas = data[i*5][:num_chan]
+#     freqs = freq[i*5][:num_chan]
+#
+#     p = Profile(mjds[i*5], datas, freqs, dur[i*5])
+#
+#     for ii in range(p.num_sub//2):
+#
+#         ii = ii*2
+#
+#         datafitei = p.fit(ii, dec_exp = True, intrins = True)
+#         chi_tests_e[i][ii//2][1] = datafitei[0]
+#         chi_tests_e[i][ii//2][2] = datafitei[3]
+#         chi_tests_e[i][ii//2][3] = datafitei[4]
+#
+#         chi_tests_e[i][ii//2][0] = p.freq_suba
+#
+#         datafite = p.fit(ii, dec_exp = True)
+#         chi_tests_e[i][ii//2][4] = datafitb[0]
+#         chi_tests_e[i][ii//2][5] = datafite[3]
+#         chi_tests_e[i][ii//2][6] = datafite[4]
+#
+# np.save('intrinss_vs_gauss_e', chi_tests_e)
 
 #===============================================================================
 # Testing the intrinsic profile fitting again
