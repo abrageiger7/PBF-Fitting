@@ -731,8 +731,8 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     axs.flat[7].plot(yint_test, np.sum(norm_likelihood_yinte, axis = 0)/trapz(np.sum(norm_likelihood_yinte, axis = 0)), color = 'g', label = 'Exponential PBF')
     axs.flat[7].set_xlabel(r'$\tau_0$ ($\mu$s)', fontsize=16)
 
-    axs.flat[0].set_yticks(np.linspace(0,12,5))
-    axs.flat[2].set_yticks(np.linspace(0,12,5))
+    axs.flat[0].set_yticks(np.linspace(0,14,5))
+    axs.flat[2].set_yticks(np.linspace(0,14,5))
 
     axs.flat[4].ticklabel_format(axis='y', style='sci', scilimits=(0,0))
     axs.flat[6].set_yticks(np.linspace(0,.015,4))
