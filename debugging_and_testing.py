@@ -33,7 +33,55 @@ chan = np.load("J1903_numchan.npy")
 dur = np.load("J1903_dur.npy")
 
 #===============================================================================
-# Testing the best fit
+# Test of best intrinsic pulse shape - gaussian or s-band
+# ==============================================================================
+
+chi_tests_b = np.zeros((10,7,7)) #for each mjd and frequency, record frequency, low_chi, and gwidth
+chi_tests_e = np.zeros((10,7,7)) #for each mjd and frequency, record frequency, low_chi, and gwidth
+mjder = np.zeros(10)
+
+for i in range(10):
+
+    num_chan = int(chan[i*5])
+    datas = data[i*5][:num_chan]
+    freqs = freq[i*5][:num_chan]
+
+    mjder[i] = mjds[i*5]
+
+    p = Profile(mjds[i*5], datas, freqs, dur[i*5])
+
+    for ii in range(p.num_sub//2):
+
+        ii = ii*2
+
+        datafitbi = p.fit(ii, beta_ind = 11, intrins = True)
+        chi_tests_b[i][ii/2][1] = datafitbi[0]
+        chi_tests_b[i][ii/2][2] = datafitbi[3]
+        chi_tests_b[i][ii/2][3] = datafitbi[4]
+
+        chi_tests_b[i][ii][0] = p.freq_suba
+
+        datafitei = p.fit(ii, dec_exp = True, intrins = True)
+        chi_tests_e[i][ii/2][1] = datafitei[0]
+        chi_tests_e[i][ii/2][2] = datafitei[3]
+        chi_tests_e[i][ii/2][3] = datafitei[4]
+
+        chi_tests_e[i][ii/2][0] = p.freq_suba
+
+
+        datafitb = p.fit(ii, beta_ind = 11)
+        chi_tests_b[i][ii/2][4] = datafitb[0]
+        chi_tests_b[i][ii/2][5] = datafitb[3]
+        chi_tests_b[i][ii/2][6] = datafitb[4]
+
+
+        datafite = p.fit(ii, dec_exp = True)
+        chi_tests_b[i][ii/2][4] = datafitb[0]
+        chi_tests_b[i][ii/2][5] = datafite[3]
+        chi_tests_b[i][ii/2][6] = datafite[4]
+
+np.save('mjds_intrinss_vs_gauss', mjder)
+np.save('intrinss_vs_gauss', [chi_tests_e, chi_tests_b])
 
 #===============================================================================
 # Testing the intrinsic profile fitting again
@@ -41,6 +89,8 @@ dur = np.load("J1903_dur.npy")
 # Set intirnsic widths based on best fits below -
 # Results ******
 #==============================================================================
+# 6/22/23 have not run yet with new parameters and beta
+#
 # low_chig = 0
 # low_chii = 0
 #
@@ -71,7 +121,7 @@ dur = np.load("J1903_dur.npy")
 
 #===============================================================================
 # BETA: Testing the gwidth power law for intrinsic
-# results: ********
+# results: Mostly zeros, but a couple of mjds favored between 1 and 2 for power law
 # ==============================================================================
 
 # for i in range(10):
@@ -156,27 +206,27 @@ dur = np.load("J1903_dur.npy")
 # results: favors highest freq intrinsic width of about 11
 # ==============================================================================
 
-ii = 0
-
-high_freq_gwidth_test = np.zeros((56,2))
-
-for i in range(56):
-
-    num_chan = int(chan[i])
-    datas = data[i][:num_chan]
-    freqs = freq[i][:num_chan]
-
-    p = Profile(mjds[i], datas, freqs, dur[i])
-
-    dataret = p.fit(ii, dec_exp=True, intrins=True)
-
-    high_freq_gwidth_test[i][0] = p.freq_suba #frequency
-    high_freq_gwidth_test[i][1] = dataret[3] #gaussian width
-
-    print(f'Frequency = {p.freq_round} MHz')
-    print(fr'Gaussian Width = {dataret[3]} \mu s')
-
-np.save('high_freq_gwidth_test_intrins', high_freq_gwidth_test)
+# ii = 0
+#
+# high_freq_gwidth_test = np.zeros((56,2))
+#
+# for i in range(56):
+#
+#     num_chan = int(chan[i])
+#     datas = data[i][:num_chan]
+#     freqs = freq[i][:num_chan]
+#
+#     p = Profile(mjds[i], datas, freqs, dur[i])
+#
+#     dataret = p.fit(ii, dec_exp=True, intrins=True)
+#
+#     high_freq_gwidth_test[i][0] = p.freq_suba #frequency
+#     high_freq_gwidth_test[i][1] = dataret[3] #gaussian width
+#
+#     print(f'Frequency = {p.freq_round} MHz')
+#     print(fr'Gaussian Width = {dataret[3]} \mu s')
+#
+# np.save('high_freq_gwidth_test_intrins', high_freq_gwidth_test)
 
 #===============================================================================
 # Testing the intrinsic profile fitting

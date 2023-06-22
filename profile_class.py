@@ -428,7 +428,7 @@ class Profile:
             v_0_dece = 1742.0
 
             if intrins:
-                v_0_gwifth_0_dece = 11.7 # reference width in microseconds for v_0_dece freq
+                v_0_gwifth_0_dece = 11.8 # reference width in microseconds for v_0_dece freq
             else:
                 v_0_gwifth_0_dece = 70.0 # reference width in microseconds for v_0_dece freq
 
@@ -444,7 +444,7 @@ class Profile:
 
             v_0_dece = 1742.0
 
-            v_0_gwifth_0_dece = 11.7 # reference width in microseconds for v_0_dece freq
+            v_0_gwifth_0_dece = 11.8 # reference width in microseconds for v_0_dece freq
 
             pwr_ind = 0.0 #need to fill in with correct power law index
 
@@ -510,8 +510,6 @@ class Profile:
             self.fit_plot(beta_ind, lsqs_pbf_index, lsqs_gwidth_index, low_chi, intrins = True)
 
             return(low_chi, tau_fin, self.comp_fse(tau_fin), gauss_width_fin, pbf_width_fin)
-
-
 
         elif intrins == True and pbfwidth_ind == -1 and gwidth_ind != -1:
 
@@ -750,7 +748,7 @@ class Profile:
 
             return(low_chi, tau_fin, self.comp_fse(tau_fin), gauss_width_fin, pbf_width_fin, beta_fin)
 
-        elif beta_ind != -1 and gwidth_ind == -1 and dec_exp == False:
+        elif beta_ind != -1 and gwidth_ind == -1 and pbf_width_ind == -1 and dec_exp == False and zind == -1:
 
             num_par = 4 #number of fitted parameters
 
@@ -888,7 +886,7 @@ class Profile:
 
             self.fit_plot(0, lsqs_pbf_index, lsqs_gauss_index, low_chi, exp = True)
 
-            return(low_chi, lsqs_gauss_val, lsqs_pbf_val, tau_fin)
+            return(low_chi, tau_fin, self.comp_fse(tau_fin), lsqs_gauss_val, lsqs_pbf_val)
 
         elif zind != -1 and gwidth_ind != -1 and dec_exp == False:
 
