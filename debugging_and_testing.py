@@ -55,30 +55,30 @@ for i in range(10):
         ii = ii*2
 
         datafitbi = p.fit(ii, beta_ind = 11, intrins = True)
-        chi_tests_b[i][ii/2][1] = datafitbi[0]
-        chi_tests_b[i][ii/2][2] = datafitbi[3]
-        chi_tests_b[i][ii/2][3] = datafitbi[4]
+        chi_tests_b[i][ii//2][1] = datafitbi[0]
+        chi_tests_b[i][ii//2][2] = datafitbi[3]
+        chi_tests_b[i][ii//2][3] = datafitbi[4]
 
-        chi_tests_b[i][ii][0] = p.freq_suba
+        chi_tests_b[i][ii//2][0] = p.freq_suba
 
         datafitei = p.fit(ii, dec_exp = True, intrins = True)
-        chi_tests_e[i][ii/2][1] = datafitei[0]
-        chi_tests_e[i][ii/2][2] = datafitei[3]
-        chi_tests_e[i][ii/2][3] = datafitei[4]
+        chi_tests_e[i][ii//2][1] = datafitei[0]
+        chi_tests_e[i][ii//2][2] = datafitei[3]
+        chi_tests_e[i][ii//2][3] = datafitei[4]
 
-        chi_tests_e[i][ii/2][0] = p.freq_suba
+        chi_tests_e[i][ii//2][0] = p.freq_suba
 
 
         datafitb = p.fit(ii, beta_ind = 11)
-        chi_tests_b[i][ii/2][4] = datafitb[0]
-        chi_tests_b[i][ii/2][5] = datafitb[3]
-        chi_tests_b[i][ii/2][6] = datafitb[4]
+        chi_tests_b[i][ii//2][4] = datafitb[0]
+        chi_tests_b[i][ii//2][5] = datafitb[3]
+        chi_tests_b[i][ii//2][6] = datafitb[4]
 
 
         datafite = p.fit(ii, dec_exp = True)
-        chi_tests_b[i][ii/2][4] = datafitb[0]
-        chi_tests_b[i][ii/2][5] = datafite[3]
-        chi_tests_b[i][ii/2][6] = datafite[4]
+        chi_tests_b[i][ii//2][4] = datafitb[0]
+        chi_tests_b[i][ii//2][5] = datafite[3]
+        chi_tests_b[i][ii//2][6] = datafite[4]
 
 np.save('mjds_intrinss_vs_gauss', mjder)
 np.save('intrinss_vs_gauss', [chi_tests_e, chi_tests_b])
