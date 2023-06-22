@@ -748,7 +748,7 @@ class Profile:
 
             return(low_chi, tau_fin, self.comp_fse(tau_fin), gauss_width_fin, pbf_width_fin, beta_fin)
 
-        elif beta_ind != -1 and gwidth_ind == -1 and pbf_width_ind == -1 and dec_exp == False and zind == -1:
+        elif beta_ind != -1 and gwidth_ind == -1 and pbfwidth_ind == -1 and dec_exp == False and zind == -1:
 
             num_par = 4 #number of fitted parameters
 
