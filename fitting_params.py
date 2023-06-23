@@ -31,7 +31,7 @@ s_to_ms_conv = 1e3
 #time phase bins in milliseconds
 time = np.arange(0,phase_bins,1) * (sec_pulse_per/phase_bins) * s_to_ms_conv #milliseconds
 
-opr_size = int((600/2048)*num_phase_bins) #number of phase bins for offpulse noise calculation
+opr_size = int((600/2048)*phase_bins) #number of phase bins for offpulse noise calculation
 
 #===============================================================================
 # Fitting Parameters
