@@ -6,6 +6,8 @@ File that contains all the parameters necessary to fitting so that everything is
 consistent across files.
 """
 
+import numpy as np
+
 #===============================================================================
 # Phase bins and timing
 # ==============================================================================
