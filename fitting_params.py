@@ -7,6 +7,7 @@ consistent across files.
 """
 
 import numpy as np
+import math
 
 #===============================================================================
 # Phase bins and timing
