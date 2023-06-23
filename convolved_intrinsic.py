@@ -95,7 +95,16 @@ for ii in intrins_stretch_factors:
 
     data_index += 1
 
+fwhms = np.zeros(np.size(intrins_stretch_factors))
+ii = 0
+for i in intrinsic_pulses:
 
+    sp = SinglePulse(i)
+    fwhms[ii] = sp.getFWHM()
+    ii += 1
+
+print(fwhms)
+print(gauss_fwhm)
 
 
 b_convolved_w_dataintrins = np.zeros((np.size(betaselect), np.size(widths), np.size(gauss_fwhm), phase_bins))
