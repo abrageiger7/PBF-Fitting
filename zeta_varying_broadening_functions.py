@@ -74,9 +74,6 @@ tvec_sort = tvecarray[zeta_inds]
 
 tvecplotmax = 30
 
-fig = plt.figure()
-ax = fig.add_subplot(111)
-
 z_ind = 0
 
 for n, tvec in enumerate(tvec_sort):
