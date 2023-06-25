@@ -23,15 +23,15 @@ beta_pbf_data_unitarea = conv.beta_pbf_data_unitarea
 exp_data_unitarea = conv.exp_data_unitarea
 zeta_pbf_data_unitarea = conv.zeta_pbf_data_unitarea
 
-j1903_intrins = np.load('j1903_high_freq_temp.npy')
+j1903_intrins = np.load('j1903_high_freq_temp.npy') #2048//8 phase bins
 
 #===============================================================================
 # First rescale J1903 template to varying widths
 #===============================================================================
 
-times_scaled = np.zeros(init_data_phase_bins)
-for i in range(init_data_phase_bins):
-    times_scaled[i] = phase_bins/init_data_phase_bins*i
+times_scaled = np.zeros(np.size(j1903_intrins))
+for i in range(np.size(j1903_intrins)):
+    times_scaled[i] = phase_bins/np.size(j1903_intrins)*i
 
 #an array of the broadening functions scaled to number of phase bins data values
 interpolate_first = CubicSpline(times_scaled, j1903_intrins)

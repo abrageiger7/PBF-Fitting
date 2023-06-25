@@ -13,6 +13,7 @@ import math
 # Phase bins and timing
 # ==============================================================================
 
+#number of phase bins that j1903 data comes with
 init_data_phase_bins = 2048
 
 #number of phase bins for a profile - time average every 8 of the original data
