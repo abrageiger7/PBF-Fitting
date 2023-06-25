@@ -1,6 +1,5 @@
 """
 Created Jun 2023
-Last Edited on Mon May 22 2023
 @author: Abra Geiger abrageiger7
 
 Debugging and testing profile fitting
@@ -16,6 +15,8 @@ import math
 from profile_class import Profile
 import zeta_convolved_pbfs as zconv
 
+from profile_class_gaussian import Profile_Gauss as pcg
+from profile_class_sband_intrinsic import Profile_Intrinss as pcs
 
 #import the parameter bank for reference, comparing, and plotting
 convolved_profiles = conv.convolved_profiles
@@ -33,40 +34,46 @@ chan = np.load("J1903_numchan.npy")
 dur = np.load("J1903_dur.npy")
 
 #===============================================================================
-# Test of best intrinsic pulse shape - gaussian or s-band for beta
+# Testing power law for s-band intrinsic shape
 # ==============================================================================
 
-chi_tests_b = np.zeros((10,7,7)) #for each mjd and frequency, record frequency, low_chi, and gwidth
-mjder = np.zeros(10)
 
-for i in range(10):
+#===============================================================================
+# Test of best intrinsic pulse shape - gaussian or s-band for beta
+# It seems that the s-band profile is overall a better fitting intrinsic pulse shape
+# ==============================================================================
 
-    num_chan = int(chan[i*5])
-    datas = data[i*5][:num_chan]
-    freqs = freq[i*5][:num_chan]
-
-    mjder[i] = mjds[i*5]
-
-    p = Profile(mjds[i*5], datas, freqs, dur[i*5])
-
-    for ii in range(p.num_sub//2):
-
-        ii = ii*2
-
-        datafitbi = p.fit(ii, beta_ind = 11, intrins = True)
-        chi_tests_b[i][ii//2][1] = datafitbi[0]
-        chi_tests_b[i][ii//2][2] = datafitbi[3]
-        chi_tests_b[i][ii//2][3] = datafitbi[4]
-
-        chi_tests_b[i][ii//2][0] = p.freq_suba
-
-        datafitb = p.fit(ii, beta_ind = 11, gwidth_ind = 27)
-        chi_tests_b[i][ii//2][4] = datafitb[0]
-        chi_tests_b[i][ii//2][5] = datafitb[3]
-        chi_tests_b[i][ii//2][6] = datafitb[4]
-
-np.save('mjds_intrinss_vs_gauss', mjder)
-np.save('intrinss_vs_gauss_b', chi_tests_b)
+# chi_tests_b = np.zeros((10,7,7)) #for each mjd and frequency, record frequency, low_chi, and gwidth
+# mjder = np.zeros(10)
+#
+# for i in range(10):
+#
+#     num_chan = int(chan[i*5])
+#     datas = data[i*5][:num_chan]
+#     freqs = freq[i*5][:num_chan]
+#
+#     mjder[i] = mjds[i*5]
+#
+#     p = Profile(mjds[i*5], datas, freqs, dur[i*5])
+#
+#     for ii in range(p.num_sub//2):
+#
+#         ii = ii*2
+#
+#         datafitbi = p.fit(ii, beta_ind = 11, intrins = True)
+#         chi_tests_b[i][ii//2][1] = datafitbi[0]
+#         chi_tests_b[i][ii//2][2] = datafitbi[3]
+#         chi_tests_b[i][ii//2][3] = datafitbi[4]
+#
+#         chi_tests_b[i][ii//2][0] = p.freq_suba
+#
+#         datafitb = p.fit(ii, beta_ind = 11, gwidth_ind = 27)
+#         chi_tests_b[i][ii//2][4] = datafitb[0]
+#         chi_tests_b[i][ii//2][5] = datafitb[3]
+#         chi_tests_b[i][ii//2][6] = datafitb[4]
+#
+# np.save('mjds_intrinss_vs_gauss', mjder)
+# np.save('intrinss_vs_gauss_b', chi_tests_b)
 
 #===============================================================================
 # Test of best intrinsic pulse shape - gaussian or s-band for dec exp

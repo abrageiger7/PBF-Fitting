@@ -1,6 +1,5 @@
 """
 Created June 2023
-Last Edited on Mon May 22 2023
 @author: Abra Geiger abrageiger7
 
 Calculate the time delay due to PBf for many different types of PBFs

@@ -1,34 +1,19 @@
 """
 Created April 2023
-Last Edited on Mon May 22 2023
 @author: Abra Geiger abrageiger7
 
 Time and Frequency Varying Calculations of Fit Parameters
 """
 
-#imports
 import numpy as np
 import matplotlib.pyplot as plt
-from fit_functions import *
-import convolved_pbfs as conv
-#import intrinsic_pbfs as intrins
 import math
-from profile_class import Profile
-import zeta_convolved_pbfs as zconv
 from scipy.stats import pearsonr
 import matplotlib.ticker as tick
 from astropy.time import Time
 
-
-
-
-#import the parameter bank for reference, comparing, and plotting
-convolved_profiles = conv.convolved_profiles
-widths = conv.widths
-gauss_widths = conv.widths_gaussian
-betaselect = conv.betaselect
-time = conv.time
-zetaselect = zconv.zetaselect
+from profile_class_gaussian import Profile_Gauss as pcg
+from profile_class_sband_intrinsic import Profile_Intrinss as pcs
 
 
 #import data
@@ -672,8 +657,8 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     plt.rc('ytick', labelsize=10)
 
     acor0 = axs.flat[0].acorr(plaw_datae[:,0][arr1inds], label = r'Exponential PBF $\alpha$', maxlags = 55)
-    acor1 = axs.flat[1].acorr(plaw_datae[:,3][arr1inds], label = r'Exponential PBF $\tau_0$', maxlags = 55)
-    acor2 = axs.flat[2].acorr(plaw_datab[:,0][arr1inds], label = r'Beta = 3.99999 PBF $\alpha$', maxlags = 55)
+    acor1 = axs.flat[1].acorr(plaw_datab[:,0][arr1inds], label = r'Exponential PBF $\tau_0$', maxlags = 55)
+    acor2 = axs.flat[2].acorr(plaw_datae[:,3][arr1inds], label = r'Beta = 3.99999 PBF $\alpha$', maxlags = 55)
     acor3 = axs.flat[3].acorr(plaw_datab[:,3][arr1inds], label = r'Beta = 3.99999 PBF $\tau_0$', maxlags = 55)
 
     fig.tight_layout()
@@ -896,8 +881,8 @@ power_laws_and_plots(11, 27)
 # np.save('timea_g_pwr_law_dece_data', setg5dece_data)
 
 #===============================================================================
-# Above here, gaussian width range has been changed - gaussian width of 4 for
-# beta now corresponds to 27
+# Above here, gaussian width range has been changed - gaussian width of ind 4 for
+# beta now corresponds to 27 w new range
 # ==============================================================================
 
 #=============================================================================
@@ -1372,14 +1357,13 @@ power_laws_and_plots(11, 27)
 #===============================================================================
 # BEFORE PROFILE CLASS
 # =============================================================================
-# Using fit_functions
+# Using old deleted fit_functions
 #=============================================================================
 
 
 #===============================================================================
 # Fitting Instrinsic Pulse
 # =============================================================================
-
 # fittin.fit_cons_beta_ipfd(mjds[0], data0, freq0, 0, 11)
 
 #=============================================================================
