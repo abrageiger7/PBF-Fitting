@@ -13,9 +13,11 @@ import math
 # Phase bins and timing
 # ==============================================================================
 
+init_data_phase_bins = 2048
+
 #number of phase bins for a profile - time average every 8 of the original data
 #2048
-phase_bins = 2048//8
+phase_bins = init_data_phase_bins//8
 
 # number of time bins for original cordes pbfs
 cordes_phase_bins = 9549
@@ -33,6 +35,8 @@ s_to_ms_conv = 1e3
 time = np.arange(0,phase_bins,1) * (sec_pulse_per/phase_bins) * s_to_ms_conv #milliseconds
 
 opr_size = int((600/2048)*phase_bins) #number of phase bins for offpulse noise calculation
+
+j1903_period = 0.0021499 * 1e6 #microseconds
 
 #===============================================================================
 # Fitting Parameters
