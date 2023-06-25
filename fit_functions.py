@@ -5,56 +5,20 @@ Created April 2023
 File of Functions for Fitting Broadening Functions
 """
 
-#Functions contained: find_nearest(tau helper function), ecdf and pdf_to_cdf
-#(likelihood helper functions), likelihood_evaluator, chi2_distance
-#(helper function), subaverages4, fit_sing(fitting helper function),
-#fit_all_profile (for fitting for best beta), fit_all_profile_set_gwidth
-#(for fitting for best best for constant gauss width), fit_cons_beta_ipfd
-#(for fitting with constant beta with no gaussian convolution, but estimated
-#intrinsic pulse convolution), fit_cons_beta_profile (for fitting with constant beta),
-#fit_dec_exp (for fitting decaying exponential)
+# Functions contained:
+# find_nearest(tau helper function)
+# ecdf and pdf_to_cdf (likelihood helper functions), likelihood_evaluator
+# chi2_distance (helper function)
+# subaverages4
+# calculate_tau
 
 #imports
-from pypulse.archive import Archive
-from pypulse.singlepulse import SinglePulse
 import matplotlib.pyplot as plt
-import math
 import numpy as np
 from scipy.integrate import trapz
-from scipy.interpolate import CubicSpline
 from scipy import special
-import itertools
-import convolved_pbfs as conv
-#import intrinsic_pbfs as intrins
-import tau
-import convolved_exp as cexp
-import zeta_convolved_pbfs as zconv
-import convolved_intrinsic as iconv
 
-from fitting_parameters import *
-
-#imports
-convolved_profiles = conv.convolved_profiles
-widths = conv.widths
-gauss_widths = conv.widths_gaussian
-widths_gaussian = conv.widths_gaussian
-betaselect = conv.betaselect
-gauss_fwhm = conv.gauss_fwhm
-parameters = conv.parameters
-#convolved_w_dataintrins = intrins.convolved_w_dataintrins
-convolved_profiles_exp = cexp.convolved_profiles_exp
-tau_values_exp = tau.tau_values_exp
-tau_values = tau.tau_values
-zetaselect = zconv.zetaselect
-zeta_convolved_profiles = zconv.convolved_profiles
-zeta_tau_values = tau.zeta_tau_values
-
-phase_bins = conv.phase_bins
-
-z_convolved_w_dataintrins = iconv.z_convolved_w_dataintrins
-e_convolved_w_dataintrins = iconv.e_convolved_w_dataintrins
-b_convolved_w_dataintrins = iconv.b_convolved_w_dataintrins
-
+from fitting_params import *
 
 def find_nearest(a, a0):
     '''Element in nd array `a` closest to the scalar value `a0`
@@ -160,7 +124,8 @@ def subaverages4(mjdi, data, freqsm, plot = False):
     four highest frequency channels
 
     Returns the subaveraged data (numpy array), the average frequencies for
-    this subaveraged data (list), and mjdi (float)'''
+    this subaveraged data (list), and mjdi (float). Also subaverages in time if
+    phase bins is different from 2048 as in the data.'''
 
     if plot == True:
         #plots the pulse over time and frequency
@@ -180,16 +145,6 @@ def subaverages4(mjdi, data, freqsm, plot = False):
         plt.yticks(ticks = np.linspace(0,len(freqsm),10), labels = ylabels)
         plt.colorbar().set_label('Pulse Intensity')
         plt.show()
-        #print("The number of subintegrations for this data file initially \
-        #      is" + str(ar.getNsubint()))
-
-    #see if the number of frequency channels is evenly divisible by 4
-    # if len(freqsm)%4 == 0:
-    #     subs = np.zeros((len(freqsm)//4,phase_bins))
-    #     center_freqs = np.zeros(len(freqsm)//4)
-    # else:
-    #     subs = np.zeros((len(freqsm)//4+1,phase_bins))
-    #     center_freqs = np.zeros((len(freqsm)//4)+1)
 
     subs = np.zeros((len(freqsm)//4,2048))
     center_freqs = np.zeros(len(freqsm)//4)
@@ -202,6 +157,8 @@ def subaverages4(mjdi, data, freqsm, plot = False):
         subs[i] = np.average(datad, axis = 0)
         center_freqs[i] = np.average(dataf)
 
+    #ignores any excess beyond the highest multiple of 4 frequency channels
+
     #now subaveraging in time
     if phase_bins != 2048:
         subs_time_avg = np.zeros((len(freqsm)//4,phase_bins))
@@ -211,19 +168,6 @@ def subaverages4(mjdi, data, freqsm, plot = False):
                 subs_time_avg[i][ii] = np.average(subs[i][((2048//phase_bins)*ii):((2048//phase_bins)*ii)+(2048//phase_bins)])
         subs = subs_time_avg
 
-    #if number of frequency channels not divisible by 4
-    # if len(freqsm)%4 != 0:
-        #print('All subintegrations have 4 frequency channels except final\
-        #    subintegration has ' + str(len(freqsm)%4) + ' frequencie(s)')
-    #     data_d = data[len(freqsm)-(len(freqsm)%4):]
-    #     subs[-1] = np.average(data_d, axis = 0)
-    #     dataf = freqsm[len(freqsm)-(len(freqsm)%4):]
-    #     center_freqs[-1] = np.average(dataf)
-    #else:
-        #print('All subintegrations have 4 frequency channels')
-
-    #plots the 4 highest frequency channels of the epoch, which are
-    #subaveraged for the highest frequency pulse
     if plot == True:
         fig, ax = plt.subplots(2,2)
         fig.suptitle('MJD 57537 High Frequency Pulses')
@@ -257,7 +201,34 @@ def subaverages4(mjdi, data, freqsm, plot = False):
             plt.plot(subs[i])
             plt.show()
 
-    #print the total number of subaverages
-    #print('Number of subaverages is ' + str(len(center_freqs)))
-
     return(subs, center_freqs, mjdi)
+
+def calculate_tau(profile):
+    '''Calculates tau value of J1903 profile by calculating where it decays to
+    the value of its max divided by e. Microseconds
+
+    Preconditions: profile is a 1 dimensional array of the length of one J1903
+    period'''
+
+    iii = np.copy(profile)
+    #isolate decaying part of pbf
+    maxim = np.where((iii == np.max(iii)))[0][0]
+    iii[:maxim] = 0.0
+    near = find_nearest(iii, np.max(iii)/math.e)
+    tau = (near[1][0][0] - maxim) * j1903_period / np.size(profile) #microseconds
+    tau_index = near[1][0][0]
+    tau_unconvert = near[0]
+    return(tau, tau_index, tau_unconvert)
+
+# def calculate_tau_exp(profile):
+#     '''Calculates tau value of J1903 profile by calculating where it decays to
+#     the value of its max divided by e. Microseconds
+#
+#     Preconditions: profile is a 1 dimensional array of length number of phase bins'''
+#     iii = np.copy(profile)
+#     near = find_nearest(iii, np.max(iii)/math.e)
+#     #RESCALE THE TAU VALUES HERE FOR CONVOLUTION
+#     tau = (near[1][0][0]) * j1903_period / cordes_phase_bins #microseconds
+#     tau_index = near[1][0][0]
+#     tau_unconvert = near[0]
+#     return(tau, tau_index, tau_unconvert)

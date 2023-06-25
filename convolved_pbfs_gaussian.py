@@ -11,7 +11,7 @@ import math
 from scipy.integrate import trapz
 from scipy.interpolate import CubicSpline
 
-from fitting_parameters import *
+from fit_functions import *
 
 #===============================================================================
 # Convolve with varying beta pbfs
