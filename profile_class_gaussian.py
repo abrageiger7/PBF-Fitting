@@ -320,11 +320,11 @@ class Profile_Gauss:
         pbfwidth_round = int(np.around(widths[pbfwidth_ind]))
 
 
-        if pbf_type = 'beta':
+        if pbf_type == 'beta':
             title = f'BETA={betaselect[bzeta_ind]}|GAUSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}||PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
-        elif pbf_type = 'exp':
+        elif pbf_type == 'exp':
             title = f'EXP|GAUSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
-        elif pbf_type = 'zeta':
+        elif pbf_type == 'zeta':
             title = f'ZETA={zetaselect[bzeta_ind]}|GAUSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
 
         plt.savefig(title)

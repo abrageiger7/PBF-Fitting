@@ -8,23 +8,18 @@ Debugging and testing profile fitting
 #imports
 import numpy as np
 import matplotlib.pyplot as plt
-import fit_functions as fittin
-import convolved_pbfs as conv
-#import intrinsic_pbfs as intrins
 import math
-from profile_class import Profile
-import zeta_convolved_pbfs as zconv
 
 from profile_class_gaussian import Profile_Gauss as pcg
 from profile_class_sband_intrinsic import Profile_Intrinss as pcs
 
 #import the parameter bank for reference, comparing, and plotting
-convolved_profiles = conv.convolved_profiles
-widths = conv.widths
-gauss_widths = conv.widths_gaussian
-betaselect = conv.betaselect
-time = conv.time
-zetaselect = zconv.zetaselect
+#convolved_profiles = conv.convolved_profiles
+#widths = conv.widths
+#gauss_widths = conv.widths_gaussian
+#betaselect = conv.betaselect
+#time = conv.time
+#zetaselect = zconv.zetaselect
 
 #import data
 data_dict = np.load("J1903_data.npy")
