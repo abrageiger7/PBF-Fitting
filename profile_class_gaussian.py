@@ -533,6 +533,7 @@ class Profile_Gauss:
                     plt.savefig(title)
                     plt.close(i*4)
 
+                print(chi_beta_ind)
                 #overall best fit plot
                 self.fit_plot(pbf_type, chi_beta_ind, pbf_width_ind, gauss_width_ind, low_chi)
 
