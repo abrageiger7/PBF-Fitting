@@ -301,9 +301,9 @@ class Profile_Gauss:
         plt.ylabel('Pulse Intensity')
         plt.plot(time, self.data_suba*self.mask, '.', ms = '2.4', label = 'Data')
         if high_pbf != -1:
-            plt.plot(time, fitted_templateh, alpha = 0.5, label = fr'Upper Error; $\tau$ = {int(np.around(tau_val_high))} $\mu$s', color = 'orange')
+            plt.plot(time, fitted_templateh, alpha = 0.5, label = fr'Upper Error; $\tau$ = {int(np.around(tau_val_high))} $\mu$s', color = 'orange', lw = 3)
         if low_pbf != -1:
-            plt.plot(time, fitted_templatel, alpha = 0.5, label = fr'Lower Error; $\tau$ = {int(np.around(tau_val_low))} $\mu$s', color = 'orange')
+            plt.plot(time, fitted_templatel, alpha = 0.5, label = fr'Lower Error; $\tau$ = {int(np.around(tau_val_low))} $\mu$s', color = 'orange', lw = 3)
         plt.plot(time, fitted_template, label = fr'Best fit; $\tau$ = {int(np.around(tau_val,0))} $\mu$s', color = 'red')
         plt.plot([], [], ' ', label=fr"min $\chi^2$ = {np.around(low_chi,2)}")
         plt.legend(prop={'size': 7})
