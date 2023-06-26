@@ -27,11 +27,57 @@ time = conv.time
 zetaselect = zconv.zetaselect
 
 #import data
-data = np.load("J1903_data.npy")
-freq = np.load("J1903_freqs.npy")
-mjds = np.load("J1903_mjds.npy")
-chan = np.load("J1903_numchan.npy")
-dur = np.load("J1903_dur.npy")
+data_dict = np.load("J1903_data.npy")
+
+mjd_strings = list(data_dict.keys())
+
+mjd0 = data_dict[mjd_strings[0]]['mjd']
+data0 = data_dict[mjd_strings[0]]['data']
+freqs0 = data_dict[mjd_strings[0]]['freqs']
+dur0 = data_dict[mjd_strings[0]]['dur']
+
+
+#===============================================================================
+# Testing new organized code
+# ==============================================================================
+
+#test gaussian fitting
+p = pcg(mjd0,data0,freqs0,dur0)
+p.fit(0, 'beta')
+p.fit(0, 'beta', bzeta_ind = 11)
+p.fit(0, 'beta', bzeta_ind = 6, gwidth_ind = 25)
+#dont actually ever set pbf width yet, so no function for it
+p.fit(0, 'zeta')
+p.fit(0, 'zeta', bzeta_ind = 0)
+p.fit(0, 'zeta', bzeta_ind = 6, gwidth_ind = 25)
+#dont actually ever set pbf width yet, so no function for it
+p.fit(0, 'exp')
+p.fit(0, 'exp', gwidth_ind = 25)
+#dont actually ever set pbf width yet, so no function for it
+
+#test sband intrinsic fitting
+p = pcs(mjd0,data0,freqs0,dur0)
+p.fit(0, 'beta')
+p.fit(0, 'beta', bzeta_ind = 11)
+p.fit(0, 'beta', bzeta_ind = 6, iwidth_ind = 25)
+#dont actually ever set pbf width yet, so no function for it
+p.fit(0, 'zeta')
+p.fit(0, 'zeta', bzeta_ind = 0)
+p.fit(0, 'zeta', bzeta_ind = 6, iwidth_ind = 25)
+#dont actually ever set pbf width yet, so no function for it
+p.fit(0, 'exp')
+p.fit(0, 'exp', iwidth_ind = 25)
+#dont actually ever set pbf width yet, so no function for it
+
+
+
+#===============================================================================
+# BELOW CODE FROM BEFORE REORGANIZE CLASS ON 6/25
+# THIS REORGANIZED INTO TWO CLASSES - ONE FOR EACH INTRINSIC SHAPE
+# ==============================================================================
+
+
+
 
 #===============================================================================
 # Testing power law for s-band intrinsic shape
