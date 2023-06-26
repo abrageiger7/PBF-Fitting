@@ -497,7 +497,7 @@ class Profile_Intrinss(Profile_Gauss):
                 chi_sqs_array = np.zeros(num_pbfwidth)
                 for i in pbfwidth_inds:
 
-                    template = intrins_convolved_profiles[pbf_type][bzeta_ind][i][iwidth_ind]
+                    template = sband_intrins_convolved_profiles[pbf_type][bzeta_ind][i][iwidth_ind]
                     chi_sq = self.fit_sing(template, num_par)
                     chi_sqs_array[i] = chi_sq
 
