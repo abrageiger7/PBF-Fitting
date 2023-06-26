@@ -29,9 +29,7 @@ exp_tau_values = tau_values['exp']
 zeta_tau_values = tau_values['zeta']
 
 #intrinsic widths
-
-with open('sband_intrins_fwhm.pkl', 'rb') as fp:
-    intrinss_fwhm = pickle.load(fp)
+intrinss_fwhm = np.load('sband_intrins_fwhm.npy')
 
 
 
