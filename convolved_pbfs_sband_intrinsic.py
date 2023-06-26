@@ -94,7 +94,7 @@ ii = 0
 for i in intrinsic_pulses:
 
     sp = SinglePulse(i)
-    intrinss_fwhm[ii] = sp.getFWHM()
+    intrinss_fwhm[ii] = sp.getFWHM() * (j1903_period/np.size(i))
     ii += 1
 
 plt.plot(intrinss_fwhm, label = 'intrinsic_s', alpha = 0.5)
