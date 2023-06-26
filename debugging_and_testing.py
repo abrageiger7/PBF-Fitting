@@ -40,29 +40,29 @@ dur0 = data_dict[mjd_strings[0]]['dur']
 
 #test gaussian fitting
 p = pcg(mjd0,data0,freqs0,dur0)
-#p.fit(0, 'beta')
-#p.fit(0, 'beta', bzeta_ind = 11)
+p.fit(0, 'beta')
+p.fit(0, 'beta', bzeta_ind = 11)
 p.fit(0, 'beta', bzeta_ind = 6, gwidth_ind = 25)
 #dont actually ever set pbf width yet, so no function for it
-#p.fit(0, 'zeta')
-#p.fit(0, 'zeta', bzeta_ind = 0)
+p.fit(0, 'zeta')
+p.fit(0, 'zeta', bzeta_ind = 0)
 p.fit(0, 'zeta', bzeta_ind = 6, gwidth_ind = 25)
 #dont actually ever set pbf width yet, so no function for it
-#p.fit(0, 'exp')
+p.fit(0, 'exp')
 p.fit(0, 'exp', gwidth_ind = 25)
 #dont actually ever set pbf width yet, so no function for it
 
 #test sband intrinsic fitting
 p = pcs(mjd0,data0,freqs0,dur0)
-#p.fit(0, 'beta')
-#p.fit(0, 'beta', bzeta_ind = 11)
+p.fit(0, 'beta')
+p.fit(0, 'beta', bzeta_ind = 11)
 p.fit(0, 'beta', bzeta_ind = 6, iwidth_ind = 25)
 #dont actually ever set pbf width yet, so no function for it
-#p.fit(0, 'zeta')
-#p.fit(0, 'zeta', bzeta_ind = 0)
+p.fit(0, 'zeta')
+p.fit(0, 'zeta', bzeta_ind = 0)
 p.fit(0, 'zeta', bzeta_ind = 6, iwidth_ind = 25)
 #dont actually ever set pbf width yet, so no function for it
-#p.fit(0, 'exp')
+p.fit(0, 'exp')
 p.fit(0, 'exp', iwidth_ind = 25)
 #dont actually ever set pbf width yet, so no function for it
 
