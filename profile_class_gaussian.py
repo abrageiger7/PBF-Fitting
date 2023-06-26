@@ -11,9 +11,6 @@ import math
 import matplotlib.pyplot as plt
 from pypulse.singlepulse import SinglePulse
 
-import convolved_pbfs_gaussian as conv
-import tau
-
 from fit_functions import *
 
 #fitting templates
