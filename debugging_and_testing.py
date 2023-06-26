@@ -42,48 +42,48 @@ dur0 = data_dict[mjd_strings[0]]['dur']
 #===============================================================================
 # Test of best fit widths for number of different mjds at highest freq
 # ==============================================================================
-for i in range(len(mjd_strings)//5):
-
-    mjd0 = data_dict[mjd_strings[i*5]]['mjd']
-    data0 = data_dict[mjd_strings[i*5]]['data']
-    freqs0 = data_dict[mjd_strings[i*5]]['freqs']
-    dur0 = data_dict[mjd_strings[i*5]]['dur']
-
-    p = pcs(mjd0,data0,freqs0,dur0)
-    p.fit(0, 'beta', bzeta_ind=11)
-    p.fit(0, 'exp')
+# for i in range(len(mjd_strings)//5):
+#
+#     mjd0 = data_dict[mjd_strings[i*5]]['mjd']
+#     data0 = data_dict[mjd_strings[i*5]]['data']
+#     freqs0 = data_dict[mjd_strings[i*5]]['freqs']
+#     dur0 = data_dict[mjd_strings[i*5]]['dur']
+#
+#     p = pcs(mjd0,data0,freqs0,dur0)
+#     p.fit(0, 'beta', bzeta_ind=11)
+#     p.fit(0, 'exp')
 
 #===============================================================================
 # Testing new organized code
 # ==============================================================================
 
-# #test gaussian fitting
-# p = pcg(mjd0,data0,freqs0,dur0)
-# p.fit(0, 'beta')
-# p.fit(0, 'beta', bzeta_ind = 11)
-# p.fit(0, 'beta', bzeta_ind = 6, gwidth_ind = 25)
-# #dont actually ever set pbf width yet, so no function for it
-# p.fit(0, 'zeta')
-# p.fit(0, 'zeta', bzeta_ind = 0)
-# p.fit(0, 'zeta', bzeta_ind = 6, gwidth_ind = 25)
-# #dont actually ever set pbf width yet, so no function for it
-# p.fit(0, 'exp')
-# p.fit(0, 'exp', gwidth_ind = 25)
-# #dont actually ever set pbf width yet, so no function for it
-#
-# #test sband intrinsic fitting
-# p = pcs(mjd0,data0,freqs0,dur0)
-# p.fit(0, 'beta')
-# p.fit(0, 'beta', bzeta_ind = 11)
-# p.fit(0, 'beta', bzeta_ind = 6, iwidth_ind = 25)
-# #dont actually ever set pbf width yet, so no function for it
-# p.fit(0, 'zeta')
-# p.fit(0, 'zeta', bzeta_ind = 0)
-# p.fit(0, 'zeta', bzeta_ind = 6, iwidth_ind = 25)
-# #dont actually ever set pbf width yet, so no function for it
-# p.fit(0, 'exp')
-# p.fit(0, 'exp', iwidth_ind = 25)
-# #dont actually ever set pbf width yet, so no function for it
+#test gaussian fitting
+p = pcg(mjd0,data0,freqs0,dur0)
+p.fit(0, 'beta')
+p.fit(0, 'beta', bzeta_ind = 11)
+p.fit(0, 'beta', bzeta_ind = 6, gwidth_ind = 25)
+#dont actually ever set pbf width yet, so no function for it
+p.fit(0, 'zeta')
+p.fit(0, 'zeta', bzeta_ind = 0)
+p.fit(0, 'zeta', bzeta_ind = 6, gwidth_ind = 25)
+#dont actually ever set pbf width yet, so no function for it
+p.fit(0, 'exp')
+p.fit(0, 'exp', gwidth_ind = 25)
+#dont actually ever set pbf width yet, so no function for it
+
+#test sband intrinsic fitting
+p = pcs(mjd0,data0,freqs0,dur0)
+p.fit(0, 'beta')
+p.fit(0, 'beta', bzeta_ind = 11)
+p.fit(0, 'beta', bzeta_ind = 6, iwidth_ind = 25)
+#dont actually ever set pbf width yet, so no function for it
+p.fit(0, 'zeta')
+p.fit(0, 'zeta', bzeta_ind = 0)
+p.fit(0, 'zeta', bzeta_ind = 6, iwidth_ind = 25)
+#dont actually ever set pbf width yet, so no function for it
+p.fit(0, 'exp')
+p.fit(0, 'exp', iwidth_ind = 25)
+#dont actually ever set pbf width yet, so no function for it
 
 #===============================================================================
 # BELOW CODE FROM BEFORE REORGANIZE CLASS ON 6/25
