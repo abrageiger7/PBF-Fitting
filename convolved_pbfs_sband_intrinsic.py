@@ -102,6 +102,8 @@ plt.plot(gauss_fwhm, label = 'gaussian', alpha = 0.5)
 plt.legend()
 #plt.show()
 
+np.save('sband_intrins_fwhm', intrinss_fwhm)
+
 #===============================================================================
 # Now convolved with beta pbfs
 #===============================================================================
