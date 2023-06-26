@@ -52,11 +52,11 @@ zetaselect = np.array([0.01, 0.1, 0.2, 0.3, 0.5, 1.0, 2.0, 5.0])
 #array of widths used (pbf stretch factors)
 #previously as low as .1 and as high as 42
 num_pbfwidth = 400
-widths = np.linspace(0.0001, 35.0, num_pbfwidth)
+widths = np.linspace(0.1, 35.0, num_pbfwidth)
 
 #array of gaussian widths (phase bins)
 num_gwidth = 200
-widths_gaussian = np.linspace((0.01/2048)*phase_bins, (150.0/2048)*phase_bins, num_gwidth)
+widths_gaussian = np.linspace((0.1/2048)*phase_bins, (150.0/2048)*phase_bins, num_gwidth)
 
 #gauss widths converted to fwhm microseconds
 gauss_fwhm = widths_gaussian * ((0.0021499/phase_bins) * 1e6 * (2.0*math.sqrt(2*math.log(2))))
