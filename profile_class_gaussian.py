@@ -459,30 +459,30 @@ class Profile_Gauss:
                 taus_collect = np.zeros(num_beta)
                 taus_err_collect = np.zeros((2,num_beta))
                 ind = 0
-                for i in chi_sqs:
+                for i in chi_sqs_array:
 
                     beta = betaselect[ind]
 
                     #scale the chi-squared array by the rms value of the profile
 
-                    self.chi_plot(chi_sqs_array, pbf_type, bzeta = beta)
+                    self.chi_plot(i, pbf_type, bzeta = beta)
 
                     #least squares
-                    low_chi = find_nearest(chi_sqs_array, 0.0)[0]
+                    low_chi = find_nearest(i, 0.0)[0]
                     chi_sqs_collect[ind] = low_chi
 
-                    if chi_sqs_array[0][0] < low_chi+1 and chi_sqs_array[-1][-1] < low_chi+1:
+                    if i[0][0] < low_chi+1 and i[-1][-1] < low_chi+1:
                         raise Exception('NOT CONVERGING ENOUGH') #stops code if not
                         #enough parameters to reach reduced low_chi + 1 before end
                         #of parameter space
 
                     #lsqs pbf width
-                    lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+                    lsqs_pbf_index = find_nearest(i, 0.0)[1][0][0]
                     lsqs_pbf_val = widths[lsqs_pbf_index]
                     pbf_width_collect[ind] = lsqs_pbf_val
 
                     #lsqs gaussian width
-                    lsqs_gauss_index = find_nearest(chi_sqs_array, 0.0)[1][1][0]
+                    lsqs_gauss_index = find_nearest(i, 0.0)[1][1][0]
                     lsqs_gauss_val = gauss_fwhm[lsqs_gauss_index]
                     gaussian_width_collect[ind] = lsqs_gauss_val
 
@@ -668,30 +668,30 @@ class Profile_Gauss:
                 taus_collect = np.zeros(num_zeta)
                 taus_err_collect = np.zeros((2,num_zeta))
                 ind = 0
-                for i in chi_sqs:
+                for i in chi_sqs_array:
 
                     zeta = zetaselect[ind]
 
                     #scale the chi-squared array by the rms value of the profile
 
-                    self.chi_plot(chi_sqs_array, pbf_type, bzeta = zeta)
+                    self.chi_plot(i, pbf_type, bzeta = zeta)
 
                     #least squares
-                    low_chi = find_nearest(chi_sqs_array, 0.0)[0]
+                    low_chi = find_nearest(i, 0.0)[0]
                     chi_sqs_collect[ind] = low_chi
 
-                    if chi_sqs_array[0][0] < low_chi+1 and chi_sqs_array[-1][-1] < low_chi+1:
+                    if i[0][0] < low_chi+1 and i[-1][-1] < low_chi+1:
                         raise Exception('NOT CONVERGING ENOUGH') #stops code if not
                         #enough parameters to reach reduced low_chi + 1 before end
                         #of parameter space
 
                     #lsqs pbf width
-                    lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
+                    lsqs_pbf_index = find_nearest(i, 0.0)[1][0][0]
                     lsqs_pbf_val = widths[lsqs_pbf_index]
                     pbf_width_collect[ind] = lsqs_pbf_val
 
                     #lsqs gaussian width
-                    lsqs_gauss_index = find_nearest(chi_sqs_array, 0.0)[1][1][0]
+                    lsqs_gauss_index = find_nearest(i, 0.0)[1][1][0]
                     lsqs_gauss_val = gauss_fwhm[lsqs_gauss_index]
                     gaussian_width_collect[ind] = lsqs_gauss_val
 
