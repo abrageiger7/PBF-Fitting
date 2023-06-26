@@ -11,8 +11,10 @@ import math
 from scipy.stats import pearsonr
 import matplotlib.ticker as tick
 from astropy.time import Time
+import pickle
 
 from profile_class_sband_intrinsic import Profile_Intrinss as pcs
+from fitting_params import *
 
 
 #import data
@@ -20,8 +22,8 @@ with open('j1903_data.pkl', 'rb') as fp:
     data_dict = pickle.load(fp)
 
 mjd_strings = list(data_dict.keys())
-mjds = np.zeros(np.size(mjd_string))
-for i in range(np.size(mjd_strings)):
+mjds = np.zeros(np.size(mjd_strings))
+for i in range(np.size(mjd_stringss)):
     mjds[i] = data_dict[mjd_strings[i]]['mjd']
 
 #TO DO: intrinsic pulse shape convolution -> not really valid because even highest
@@ -181,7 +183,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
     plt.rc('ytick', labelsize='x-small')
-    title = f'timea_power_laws_beta=3_99999_gwidth=ind{beta_gwidth_ind}_1.pdf'
+    title = f'timea_power_laws_intrinss_beta={betaselect[beta_ind]}_gwidth=ind{beta_gwidth_ind}_1.pdf'
     figb.savefig(title)
     figb.show()
     plt.close('all')
@@ -299,7 +301,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     ax.set_xlabel(r'$\nu$ (GHz)')
     ax.set_ylabel(r'$\tau$ ($\mu$s)')
     ax.set_title('Decaying Exponential J1903+0327 Scattering vs. Epoch')
-    title = f'timea_power_laws_exponential_gwidth=pwrlaw_1.pdf'
+    title = f'timea_power_laws_intrinss_exponential_gwidth=ind{beta_gwidth_ind}_1.pdf'
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
     plt.rc('ytick', labelsize='x-small')
@@ -425,7 +427,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
     plt.rc('ytick', labelsize='x-small')
-    title = f'timea_power_laws_beta=3_99999_gwidth=ind{beta_gwidth_ind}_2.pdf'
+    title = f'timea_power_laws_intrinss_beta={betaselect[beta_ind]}_gwidth=ind{beta_gwidth_ind}_2.pdf'
     figb2.savefig(title)
     plt.close('all')
 
@@ -545,14 +547,14 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     ax.set_xlabel(r'$\nu$ (GHz)')
     ax.set_ylabel(r'$\tau$ ($\mu$s)')
     ax.set_title('Decaying Exponential J1903+0327 Scattering vs. Epoch')
-    title = f'timea_power_laws_exponential_gwidth=pwrlaw_2.pdf'
+    title = f'timea_power_laws_intrinss_exponential_gwidth=ind{beta_gwidth_ind}_2.pdf'
     plt.rc('font', family = 'serif')
     plt.rc('xtick', labelsize='x-small')
     plt.rc('ytick', labelsize='x-small')
     fige2.savefig(title)
     plt.close('all')
 
-    np.save('timea_powerlaw_data', [plaw_datab,plaw_datae])
+    np.save(f'timea_intrinss_beta={betaselect[beta_ind]}_gwidth=ind{beta_gwidth_ind}_powerlaw_data', [plaw_datab,plaw_datae])
 
     #now plot slopes and yints over time
 
@@ -595,7 +597,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     [cap.set_alpha(0.3) for cap in caps]
 
     fig.tight_layout()
-    plt.savefig('timea_time_scales.pdf')
+    plt.savefig('timea_intrinss_time_scales.pdf')
     plt.close(5)
 
 
@@ -647,7 +649,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     axs.flat[3].set_xlabel('MJD', fontsize = 14)
 
     fig.tight_layout()
-    plt.savefig('timea_time_scales_seperate_panels.pdf')
+    plt.savefig('timea_intrinss_time_scales_seperate_panels.pdf')
     plt.close(6)
 
     #autocorrelation
@@ -667,7 +669,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     acor3 = axs.flat[3].acorr(plaw_datab[:,3][arr1inds], label = r'Beta = 3.99999 PBF $\tau_0$', maxlags = 55)
 
     fig.tight_layout()
-    plt.savefig('timea_autocorrelation.pdf')
+    plt.savefig('timea_intrinss_autocorrelation.pdf')
     plt.close(11)
 
 
@@ -738,7 +740,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     axs.flat[6].legend(loc = 'upper left', fontsize = 8)
 
     fig.tight_layout()
-    plt.savefig('timea_alpha_tau_hist.pdf')
+    plt.savefig('timea_intrinss_alpha_tau_hist.pdf')
     plt.close(7)
 
     #now plot tau_0 versus alpha
@@ -764,7 +766,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     [bar.set_alpha(0.2) for bar in bars]
     [cap.set_alpha(0.2) for cap in caps]
     plt.legend()
-    plt.savefig('timea_tau_vs_alpha.pdf')
+    plt.savefig('timea_intrinss_tau_vs_alpha.pdf')
     plt.close(8)
 
     #now plot dec exp versus beta data
@@ -804,7 +806,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     axs.flat[1].text(-2.78, -3.1, f'r = {np.round(corrs,2)}', bbox=dict(facecolor='none', edgecolor='black'))
 
     fig.tight_layout()
-    plt.savefig('timea_beta_versus_dece.pdf')
+    plt.savefig('timea_intrinss_beta_versus_dece.pdf')
     plt.close(9)
 
 
