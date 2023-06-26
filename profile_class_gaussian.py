@@ -10,6 +10,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from pypulse.singlepulse import SinglePulse
+import pickle
 
 from fit_functions import *
 
