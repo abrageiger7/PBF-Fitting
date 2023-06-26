@@ -8,6 +8,7 @@ Calculating Tau Values for Varying PBFs (varying in type and width)
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+import pickle
 
 from fit_functions import *
 

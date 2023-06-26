@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import math
 from scipy.integrate import trapz
 from scipy.interpolate import CubicSpline
+import pickle
 
 from fit_functions import *
 

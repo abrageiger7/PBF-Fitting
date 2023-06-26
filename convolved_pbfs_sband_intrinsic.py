@@ -15,6 +15,7 @@ from scipy.integrate import trapz
 from scipy.interpolate import CubicSpline
 from scipy import special
 import itertools
+import pickle
 
 import convolved_pbfs_gaussian as conv
 from fit_functions import *

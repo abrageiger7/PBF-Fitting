@@ -9,6 +9,7 @@ Debugging and testing profile fitting
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+import pickle
 
 from profile_class_gaussian import Profile_Gauss as pcg
 from profile_class_sband_intrinsic import Profile_Intrinss as pcs
