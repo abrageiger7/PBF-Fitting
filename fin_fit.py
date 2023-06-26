@@ -14,6 +14,7 @@ from astropy.time import Time
 
 from profile_class_gaussian import Profile_Gauss as pcg
 from profile_class_sband_intrinsic import Profile_Intrinss as pcs
+from fit_functions import *
 
 
 #import data

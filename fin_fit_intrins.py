@@ -14,7 +14,7 @@ from astropy.time import Time
 import pickle
 
 from profile_class_sband_intrinsic import Profile_Intrinss as pcs
-from fitting_params import *
+from fit_functions import *
 
 
 #import data
