@@ -723,12 +723,12 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     axs.flat[7].plot(yint_test, np.sum(norm_likelihood_yinte, axis = 0)/trapz(np.sum(norm_likelihood_yinte, axis = 0)), color = 'g', label = 'Exponential PBF')
     axs.flat[7].set_xlabel(r'$\tau_0$ ($\mu$s)', fontsize=16)
 
-    axs.flat[0].set_yticks(np.linspace(0,14,5))
-    axs.flat[2].set_yticks(np.linspace(0,14,5))
+    axs.flat[0].set_yticks(np.linspace(0,12,5))
+    axs.flat[2].set_yticks(np.linspace(0,12,5))
 
     axs.flat[4].ticklabel_format(axis='y', style='sci', scilimits=(0,0))
-    axs.flat[6].set_yticks(np.linspace(0,.015,4))
-    axs.flat[4].set_yticks(np.linspace(0,.015,4))
+    axs.flat[6].set_yticks(np.linspace(0,.01,4))
+    axs.flat[4].set_yticks(np.linspace(0,.01,4))
     axs.flat[6].ticklabel_format(axis='y', style='sci', scilimits=(0,0))
 
     axs.flat[6].sharey(axs.flat[4])
@@ -761,7 +761,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     corrb, _ = pearsonr(plaw_datab[:,3], plaw_datab[:,0])
     corre, _ = pearsonr(plaw_datae[:,3], plaw_datae[:,0])
 
-    plt.text(155, -4.2, f'Decaying Exponential r = {np.round(corrb,2)} \nBeta r = {np.round(corre,2)}', bbox=dict(facecolor='none', edgecolor='black'))
+    plt.text(80, -6.5, f'Decaying Exponential r = {np.round(corrb,2)} \nBeta r = {np.round(corre,2)}', bbox=dict(facecolor='none', edgecolor='black'))
 
     [bar.set_alpha(0.2) for bar in bars]
     [cap.set_alpha(0.2) for cap in caps]
@@ -802,8 +802,8 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
     corry, _ = pearsonr(plaw_datab[:,3], plaw_datae[:,3])
     corrs, _ = pearsonr(plaw_datab[:,0], plaw_datae[:,0])
 
-    axs.flat[0].text(145, 165, f'r = {np.round(corry,2)}', bbox=dict(facecolor='none', edgecolor='black'))
-    axs.flat[1].text(-2.78, -3.1, f'r = {np.round(corrs,2)}', bbox=dict(facecolor='none', edgecolor='black'))
+    axs.flat[0].text(76, 76, f'r = {np.round(corry,2)}', bbox=dict(facecolor='none', edgecolor='black'))
+    axs.flat[1].text(-5, -6.5, f'r = {np.round(corrs,2)}', bbox=dict(facecolor='none', edgecolor='black'))
 
     fig.tight_layout()
     plt.savefig('timea_intrinss_beta_versus_dece.pdf')
