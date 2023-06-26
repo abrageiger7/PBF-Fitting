@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from pypulse.singlepulse import SinglePulse
 import pickle
 
+from convolved_pbfs_sband_intrinsic import intrinss_fwhm
 from fit_functions import *
 
 from profile_class_gaussian import Profile_Gauss
