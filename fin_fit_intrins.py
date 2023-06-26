@@ -209,20 +209,20 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
         freq_list = np.zeros(p.num_sub)
 
-        tau_listb = np.zeros(p.num_sub)
-        tau_low_listb = np.zeros(p.num_sub)
-        tau_high_listb = np.zeros(p.num_sub)
-        fse_listb = np.zeros(p.num_sub)
+        tau_liste = np.zeros(p.num_sub)
+        tau_low_liste = np.zeros(p.num_sub)
+        tau_high_liste = np.zeros(p.num_sub)
+        fse_liste = np.zeros(p.num_sub)
 
         for ii in range(p.num_sub):
 
             print(f'Frequency {ii}')
 
-            datab = p.fit(ii, 'exp', iwidth_ind = beta_gwidth_ind)
-            tau_listb[ii] = datab['tau_fin']
-            tau_low_listb[ii] = datab['tau_low']
-            tau_high_listb[ii] = datab['tau_up']
-            fse_listb[ii] = datab['fse_effect']
+            datae = p.fit(ii, 'exp', iwidth_ind = beta_gwidth_ind)
+            tau_liste[ii] = datae['tau_fin']
+            tau_low_liste[ii] = datae['tau_low']
+            tau_high_liste[ii] = datae['tau_up']
+            fse_liste[ii] = datae['fse_effect']
 
             freq_list[ii] = p.freq_suba
 
@@ -453,20 +453,20 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind):
 
         freq_list = np.zeros(p.num_sub)
 
-        tau_listb = np.zeros(p.num_sub)
-        tau_low_listb = np.zeros(p.num_sub)
-        tau_high_listb = np.zeros(p.num_sub)
-        fse_listb = np.zeros(p.num_sub)
+        tau_liste = np.zeros(p.num_sub)
+        tau_low_liste = np.zeros(p.num_sub)
+        tau_high_liste = np.zeros(p.num_sub)
+        fse_liste = np.zeros(p.num_sub)
 
         for ii in range(p.num_sub):
 
             print(f'Frequency {ii}')
 
-            datab = p.fit(ii, 'exp', iwidth_ind = beta_gwidth_ind)
-            tau_listb[ii] = datab['tau_fin']
-            tau_low_listb[ii] = datab['tau_low']
-            tau_high_listb[ii] = datab['tau_up']
-            fse_listb[ii] = datab['fse_effect']
+            datae = p.fit(ii, 'exp', iwidth_ind = beta_gwidth_ind)
+            tau_liste[ii] = datae['tau_fin']
+            tau_low_liste[ii] = datae['tau_low']
+            tau_high_liste[ii] = datae['tau_up']
+            fse_liste[ii] = datae['fse_effect']
 
             freq_list[ii] = p.freq_suba
 
