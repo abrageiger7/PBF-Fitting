@@ -2,7 +2,7 @@
 Created June 2023
 @author: Abra Geiger abrageiger7
 
-Class for profile fitting intrinsic shape of sband profile - still need to update***
+Class for profile fitting intrinsic shape of sband profile.
 """
 
 import itertools
@@ -19,12 +19,16 @@ from fit_functions import *
 from profile_class_gaussian import Profile_Gauss
 
 #fitting templates
-sband_intrins_convolved_profiles = conv.sband_intrins_convolved_profiles
+with open('sband_intrins_convolved_profiles.pkl', 'rb') as fp:
+    sband_intrins_convolved_profiles = pickle.load(fp)
 
 #tau values corresponding to above templates
-beta_tau_values = tau.beta_tau_values
-exp_tau_values = tau.exp_tau_values
-zeta_tau_values = tau.zeta_tau_values
+with open('tau_values.pkl', 'rb') as fp:
+    tau_values = pickle.load(fp)
+
+beta_tau_values = tau_values['beta']
+exp_tau_values = tau_values['exp']
+zeta_tau_values = tau_values['zeta']
 
 
 

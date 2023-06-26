@@ -2,7 +2,7 @@
 Created June 2023
 @author: Abra Geiger abrageiger7
 
-Class for profile fitting
+Class for profile fitting with gaussian intrinsic shape.
 """
 
 import itertools
@@ -17,12 +17,16 @@ import tau
 from fit_functions import *
 
 #fitting templates
-gauss_convolved_profiles = conv.gauss_convolved_profiles
+with open('gauss_convolved_profiles.pkl', 'rb') as fp:
+    gauss_convolved_profiles = pickle.load(fp)
 
 #tau values corresponding to above templates
-beta_tau_values = tau.beta_tau_values
-exp_tau_values = tau.exp_tau_values
-zeta_tau_values = tau.zeta_tau_values
+with open('tau_values.pkl', 'rb') as fp:
+    tau_values = pickle.load(fp)
+
+beta_tau_values = tau_values['beta']
+exp_tau_values = tau_values['exp']
+zeta_tau_values = tau_values['zeta']
 
 
 class Profile_Gauss:
