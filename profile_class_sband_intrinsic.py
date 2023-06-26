@@ -100,13 +100,13 @@ class Profile_Intrinss(Profile_Gauss):
             plt.ylabel('Reduced Chi-Sq')
             plt.plot(widths, chi_sq_arr, drawstyle='steps-pre')
 
-            if pbf_type = 'beta':
+            if pbf_type == 'beta':
                     title = f"BETA={bzeta}|INTRINSS|PBF_fit_chisq_setg|MJD={self.mjd_round}|FREQ={self.freq_round}|IW={iwidth_round}.pdf"
 
-            elif pbf_type = 'exp':
+            elif pbf_type == 'exp':
                     title = f"EXP|INTRINSS|PBF_fit_chisq_setg|MJD={self.mjd_round}|FREQ={self.freq_round}|IW={iwidth_round}.pdf"
 
-            elif pbf_type = 'zeta':
+            elif pbf_type == 'zeta':
                     title = f"ZETA={bzeta}|INTRINSS|PBF_fit_chisq_setg|MJD={self.mjd_round}|FREQ={self.freq_round}|IW={iwidth_round}.pdf"
 
             plt.savefig(title)
