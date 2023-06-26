@@ -205,14 +205,14 @@ class Profile_Gauss:
                 tau_val_high = beta_tau_values[bzeta_ind][high_pbf]
 
         elif pbf_type == 'exp':
-            i = exp_convolved_profiles[pbfwidth_ind][gwidth_ind]
+            i = gauss_convolved_profiles[pbf_type][pbfwidth_ind][gwidth_ind]
             tau_val = exp_tau_values[pbfwidth_ind]
 
             if low_pbf != -1:
-                low_pbf_i = exp_convolved_profiles[low_pbf][gwidth_ind]
+                low_pbf_i = gauss_convolved_profiles[pbf_type][low_pbf][gwidth_ind]
                 tau_val_low = exp_tau_values[low_pbf]
             if high_pbf != -1:
-                high_pbf_i = exp_convolved_profiles[high_pbf][gwidth_ind]
+                high_pbf_i = gauss_convolved_profiles[pbf_type][high_pbf][gwidth_ind]
                 tau_val_high = exp_tau_values[high_pbf]
 
         elif pbf_type == 'zeta':
