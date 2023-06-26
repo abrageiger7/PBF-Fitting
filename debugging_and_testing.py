@@ -36,16 +36,16 @@ dur0 = data_dict[mjd_strings[0]]['dur']
 #===============================================================================
 # Test of best fit widths for number of different mjds
 # ==============================================================================
-for i in range(len(mjd_strings)):
+for i in range(len(mjd_strings)//5):
 
-    mjd0 = data_dict[mjd_strings[i]]['mjd']
-    data0 = data_dict[mjd_strings[i]]['data']
-    freqs0 = data_dict[mjd_strings[i]]['freqs']
-    dur0 = data_dict[mjd_strings[i]]['dur']
+    mjd0 = data_dict[mjd_strings[i*5]]['mjd']
+    data0 = data_dict[mjd_strings[i*5]]['data']
+    freqs0 = data_dict[mjd_strings[i*5]]['freqs']
+    dur0 = data_dict[mjd_strings[i*5]]['dur']
 
     p = pcs(mjd0,data0,freqs0,dur0)
-    data1 = p.fit(0, 'beta', bzeta_ind=11)
-    data2 = p.fit(0, 'exp')
+    p.fit(0, 'beta', bzeta_ind=11)
+    p.fit(0, 'exp')
 
 #===============================================================================
 # Testing new organized code
