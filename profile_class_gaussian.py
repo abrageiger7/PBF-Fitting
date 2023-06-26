@@ -535,7 +535,7 @@ class Profile_Gauss:
 
                 print(chi_beta_ind)
                 #overall best fit plot
-                self.fit_plot(pbf_type, chi_beta_ind, pbf_width_ind, gauss_width_ind, low_chi)
+                self.fit_plot(pbf_type, int(chi_beta_ind), pbf_width_ind, gauss_width_ind, low_chi)
 
                 data_returns = {}
                 data_returns['low_chi'] = low_chi
