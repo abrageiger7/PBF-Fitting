@@ -23,7 +23,7 @@ with open('j1903_data.pkl', 'rb') as fp:
 
 mjd_strings = list(data_dict.keys())
 mjds = np.zeros(np.size(mjd_strings))
-for i in range(np.size(mjd_stringss)):
+for i in range(np.size(mjd_strings)):
     mjds[i] = data_dict[mjd_strings[i]]['mjd']
 
 #TO DO: intrinsic pulse shape convolution -> not really valid because even highest
