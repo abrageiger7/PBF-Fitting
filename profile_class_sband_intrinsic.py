@@ -388,7 +388,7 @@ class Profile_Intrinss(Profile_Gauss):
                 tau_fin = taus_collect[chi_beta_ind]
 
                 pbf_width_ind = np.where(widths == pbf_width_fin)[0][0]
-                intrins_width_ind = np.where((intrins_fwhm == intrinsic_width_collect[chi_beta_ind]))[0][0]
+                intrins_width_ind = np.where((intrinss_fwhm == intrinsic_width_collect[chi_beta_ind]))[0][0]
 
                 #plotting the fit parameters over beta
                 for i in range(4):
@@ -484,12 +484,12 @@ class Profile_Intrinss(Profile_Gauss):
             #case where beta and intrinsix width are set, but fitting for pbf width
             elif iwidth_ind != -1 and pbfwidth_ind == -1 and bzeta_ind != -1:
 
-                print(f'Set beta = {betaselect[bzeta_ind]} and intrinsic width = {intrins_fwhm[iwidth_ind]} microseconds. Fitting for PBF Width.')
+                print(f'Set beta = {betaselect[bzeta_ind]} and intrinsic width = {intrinss_fwhm[iwidth_ind]} microseconds. Fitting for PBF Width.')
 
                 num_par = 3 # number of fitted parameters
 
                 beta = betaselect[bzeta_ind]
-                iwidth = intrins_fwhm[iwidth_ind]
+                iwidth = intrinss_fwhm[iwidth_ind]
 
                 chi_sqs_array = np.zeros(num_pbfwidth)
                 for i in pbfwidth_inds:
