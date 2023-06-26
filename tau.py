@@ -5,13 +5,11 @@ Created April 2023
 Calculating Tau Values for Varying PBFs (varying in type and width)
 """
 
-import convolved_pbfs as conv
 import numpy as np
 import matplotlib.pyplot as plt
 import math
 
 from fit_functions import *
-from fitting_params import *
 
 #tau values are the amount of time covered between the mode of the pbf and
 #the mode/e value of the pbf

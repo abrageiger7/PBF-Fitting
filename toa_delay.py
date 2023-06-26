@@ -18,20 +18,7 @@ from scipy.integrate import trapz
 from scipy.interpolate import CubicSpline
 from scipy import special
 import itertools
-import convolved_pbfs as conv
-import tau
-import convolved_exp as cexp
-import zeta_convolved_pbfs as zconv
 
-betaselect = conv.betaselect
-widths = conv.widths
-gwidth_params_jump = 20
-parameters = conv.parameters[::gwidth_params_jump, :]
-phase_bins = conv.phase_bins
-t = conv.t
-bpbf_data_unitarea = conv.pbf_data_unitarea
-zpbf_data_unitarea = zconv.pbf_data_unitarea
-exp_data_unitarea = cexp.exp_data_unitarea
 
 
 
