@@ -104,7 +104,7 @@ class Profile_Gauss:
 
         #check of logical function inputs
 
-        if pbf_type != 'beta' or pbf_type != 'zeta' or pbf_type != 'exp':
+        if pbf_type != 'beta' and pbf_type != 'zeta' and pbf_type != 'exp':
             raise Exception('Invalid pbf_type.')
 
         if pbf_type == 'beta' or pbf_type == 'zeta':
@@ -182,7 +182,7 @@ class Profile_Gauss:
 
         #test that arguement combination is logical
 
-        if pbf_type != 'beta' or pbf_type != 'zeta' or pbf_type != 'exp':
+        if pbf_type != 'beta' and pbf_type != 'zeta' and pbf_type != 'exp':
             raise Exception('Invalid pbf_type.')
 
         if pbf_type == 'beta' or pbf_type == 'zeta':
@@ -411,10 +411,8 @@ class Profile_Gauss:
         No error calculations for varying more than one parameter
         '''
 
-        if pbf_type != 'beta':
-            if pbf_type != 'zeta':
-                if pbf_type != 'exp':
-                    raise Exception('Invalid pbf_type.')
+        if pbf_type != 'beta' and pbf_type != 'zeta' and pbf_type != 'exp':
+            raise Exception('Invalid pbf_type.')
 
         if pbf_type == 'beta' or pbf_type == 'zeta':
             if type(bzeta_ind) != int:
