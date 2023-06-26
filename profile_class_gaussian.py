@@ -409,8 +409,10 @@ class Profile_Gauss:
         No error calculations for varying more than one parameter
         '''
 
-        if pbf_type != 'beta' or pbf_type != 'zeta' or pbf_type != 'exp':
-            raise Exception('Invalid pbf_type.')
+        if pbf_type != 'beta':
+            if pbf_type != 'zeta':
+                if pbf_type != 'exp':
+                    raise Exception('Invalid pbf_type.')
 
         if pbf_type == 'beta' or pbf_type == 'zeta':
             if type(bzeta_ind) != int:
