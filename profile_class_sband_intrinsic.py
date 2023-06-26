@@ -78,13 +78,13 @@ class Profile_Intrinss(Profile_Gauss):
             plt.imshow(chi_sq_arr, cmap=plt.cm.viridis_r, origin = 'lower', aspect = 0.25)
             plt.colorbar()
 
-            if pbf_type = 'beta':
+            if pbf_type == 'beta':
                     title = f"BETA={bzeta}|INTRINSS|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
 
-            elif pbf_type = 'exp':
+            elif pbf_type == 'exp':
                     title = f"EXP|INTRINSS|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
 
-            elif pbf_type = 'zeta':
+            elif pbf_type == 'zeta':
                     title = f"ZETA={bzeta}|INTRINSS|PBF_fit_chisq|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
 
             plt.savefig(title)
