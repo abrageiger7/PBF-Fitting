@@ -14,14 +14,6 @@ import pickle
 from profile_class_gaussian import Profile_Gauss as pcg
 from profile_class_sband_intrinsic import Profile_Intrinss as pcs
 
-#import the parameter bank for reference, comparing, and plotting
-#convolved_profiles = conv.convolved_profiles
-#widths = conv.widths
-#gauss_widths = conv.widths_gaussian
-#betaselect = conv.betaselect
-#time = conv.time
-#zetaselect = zconv.zetaselect
-
 #import data
 with open('j1903_data.pkl', 'rb') as fp:
     data_dict = pickle.load(fp)
