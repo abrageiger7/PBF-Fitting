@@ -99,7 +99,7 @@ for i in intrinsic_pulses:
 plt.plot(intrinss_fwhm, label = 'intrinsic_s', alpha = 0.5)
 plt.plot(gauss_fwhm, label = 'gaussian', alpha = 0.5)
 plt.legend()
-plt.plot()
+plt.show()
 
 #===============================================================================
 # Now convolved with beta pbfs
