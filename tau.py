@@ -73,5 +73,8 @@ for i in widths_exp_array:
 tau_values['exp'] = exp_tau_values
 
 #===============================================================================
+#Save data
+#===============================================================================
 
-np.save('tau_values', tau_values)
+with open('tau_values.pkl', 'wb') as fp:
+    pickle.dump(tau_values, fp)

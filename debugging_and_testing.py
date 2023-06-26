@@ -22,7 +22,8 @@ from profile_class_sband_intrinsic import Profile_Intrinss as pcs
 #zetaselect = zconv.zetaselect
 
 #import data
-data_dict = np.load("J1903_data.npy")
+with open('j1903_data.pkl', 'rb') as fp:
+    data_dict = pickle.load(fp)
 
 mjd_strings = list(data_dict.keys())
 

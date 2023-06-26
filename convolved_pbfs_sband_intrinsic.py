@@ -99,7 +99,7 @@ for i in intrinsic_pulses:
 plt.plot(intrinss_fwhm, label = 'intrinsic_s', alpha = 0.5)
 plt.plot(gauss_fwhm, label = 'gaussian', alpha = 0.5)
 plt.legend()
-plt.show()
+#plt.show()
 
 #===============================================================================
 # Now convolved with beta pbfs
@@ -171,4 +171,5 @@ sband_intrins_convolved_profiles['beta'] = b_convolved_w_dataintrins
 sband_intrins_convolved_profiles['zeta'] = z_convolved_w_dataintrins
 sband_intrins_convolved_profiles['exp'] = e_convolved_w_dataintrins
 
-np.save('sband_intrins_convolved_profiles', sband_intrins_convolved_profiles)
+with open('sband_intrins_convolved_profiles.pkl', 'wb') as fp:
+    pickle.dump(sband_intrins_convolved_profiles, fp)
