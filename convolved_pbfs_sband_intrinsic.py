@@ -100,7 +100,7 @@ for i in intrinsic_pulses:
 plt.plot(intrinss_fwhm, label = 'intrinsic_s', alpha = 0.5)
 plt.plot(gauss_fwhm, label = 'gaussian', alpha = 0.5)
 plt.legend()
-#plt.show()
+plt.show()
 
 np.save('sband_intrins_fwhm', intrinss_fwhm)
 
