@@ -219,16 +219,3 @@ def calculate_tau(profile):
     tau_index = near[1][0][0]
     tau_unconvert = near[0]
     return(tau, tau_index, tau_unconvert)
-
-# def calculate_tau_exp(profile):
-#     '''Calculates tau value of J1903 profile by calculating where it decays to
-#     the value of its max divided by e. Microseconds
-#
-#     Preconditions: profile is a 1 dimensional array of length number of phase bins'''
-#     iii = np.copy(profile)
-#     near = find_nearest(iii, np.max(iii)/math.e)
-#     #RESCALE THE TAU VALUES HERE FOR CONVOLUTION
-#     tau = (near[1][0][0]) * j1903_period / cordes_phase_bins #microseconds
-#     tau_index = near[1][0][0]
-#     tau_unconvert = near[0]
-#     return(tau, tau_index, tau_unconvert)
