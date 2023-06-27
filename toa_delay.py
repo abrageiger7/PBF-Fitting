@@ -20,8 +20,6 @@ from scipy import special
 import itertools
 
 
-
-
 #intrinsic pulse shapes - guassians
 ii = 0
 intrinsic_gaussians = np.zeros((20,phase_bins))

@@ -188,5 +188,5 @@ gauss_convolved_profiles['beta'] = beta_convolved_profiles
 gauss_convolved_profiles['zeta'] = zeta_convolved_profiles
 gauss_convolved_profiles['exp'] = exp_convolved_profiles
 
-with open('gauss_convolved_profiles_phasebins={phase_bins}.pkl', 'wb') as fp:
+with open(f'gauss_convolved_profiles_phasebins={phase_bins}.pkl', 'wb') as fp:
     pickle.dump(gauss_convolved_profiles, fp)

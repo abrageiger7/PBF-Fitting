@@ -17,7 +17,7 @@ from fit_functions import *
 from profile_class_gaussian import Profile_Gauss
 
 #fitting templates
-with open('sband_intrins_convolved_profiles_phasebins={phase_bins}.pkl', 'rb') as fp:
+with open(f'sband_intrins_convolved_profiles_phasebins={phase_bins}.pkl', 'rb') as fp:
     sband_intrins_convolved_profiles = pickle.load(fp)
 
 #tau values corresponding to above templates
