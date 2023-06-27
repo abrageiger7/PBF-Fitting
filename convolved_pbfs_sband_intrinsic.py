@@ -174,5 +174,5 @@ sband_intrins_convolved_profiles['beta'] = b_convolved_w_dataintrins
 sband_intrins_convolved_profiles['zeta'] = z_convolved_w_dataintrins
 sband_intrins_convolved_profiles['exp'] = e_convolved_w_dataintrins
 
-with open('sband_intrins_convolved_profiles.pkl', 'wb') as fp:
+with open('sband_intrins_convolved_profiles_phasebins={phase_bins}.pkl', 'wb') as fp:
     pickle.dump(sband_intrins_convolved_profiles, fp)
