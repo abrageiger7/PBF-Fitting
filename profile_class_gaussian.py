@@ -15,7 +15,7 @@ import pickle
 from fit_functions import *
 
 #fitting templates
-with open(f'gauss_convolved_profiles_phasebins={phasebins}.pkl', 'rb') as fp:
+with open(f'gauss_convolved_profiles_phasebins={phase_bins}.pkl', 'rb') as fp:
     gauss_convolved_profiles = pickle.load(fp)
 
 #tau values corresponding to above templates
