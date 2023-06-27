@@ -427,7 +427,7 @@ class Profile_Gauss:
         num_zeta = np.size(zetaselect)
 
         beta_inds = np.arange(num_beta)
-        zeta_ind = np.arange(num_zeta)
+        zeta_inds = np.arange(num_zeta)
         gwidth_inds = np.arange(num_gwidth)
         pbfwidth_inds = np.arange(num_pbfwidth)
 
