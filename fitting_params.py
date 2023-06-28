@@ -19,8 +19,8 @@ init_data_phase_bins = 2048
 #number of phase bins for a profile - time average every 8 of the original data
 #2048
 
-#phase_bins = init_data_phase_bins//8
-phase_bins = 2048
+phase_bins = init_data_phase_bins//8
+#phase_bins = 2048
 
 # number of time bins for original cordes pbfs
 cordes_phase_bins = 9549
