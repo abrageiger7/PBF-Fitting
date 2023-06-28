@@ -90,7 +90,7 @@ def likelihood_evaluator(x, y, cdf=False, median=False, pm=True, values=None):
             retval[i] = x[indv]
         return retval
 
-def chi2_distance(A, B, std, subt_deg_of_freedom = 0):
+def chi2_distance(A, B, std, subt_deg_of_freedom):
 
     '''Takes two vectors and calculates their comparative chi-squared value
 
