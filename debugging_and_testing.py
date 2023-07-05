@@ -25,18 +25,43 @@ data0 = data_dict[mjd_strings[0]]['data']
 freqs0 = data_dict[mjd_strings[0]]['freqs']
 dur0 = data_dict[mjd_strings[0]]['dur']
 
+mjd1 = data_dict[mjd_strings[50]]['mjd']
+data1 = data_dict[mjd_strings[50]]['data']
+freqs1 = data_dict[mjd_strings[50]]['freqs']
+dur1 = data_dict[mjd_strings[50]]['dur']
+
+#===============================================================================
+# Test of best fit beta at various frequencies for 2 epochs
+# ==============================================================================
+
+#test gaussian fitting
+p = pcg(mjd0,data0,freqs0,dur0)
+p.fit(0, 'beta')
+p.fit(3, 'beta')
+p.fit(6, 'beta')
+p.fit(p.num_sub, 'beta')
+
+p = pcg(mjd1,data1,freqs1,dur1)
+p.fit(0, 'beta')
+p.fit(3, 'beta')
+p.fit(6, 'beta')
+p.fit(p.num_sub, 'beta')
+
 #===============================================================================
 # Test of best fit intrinsic gaussian width for exponential pbf
+# Results - around the middle of the band (1430 MHz) the best fit intrinsic
+# gaussian width is about 91 microseconds. Using this instead of the powerlaw now
+# This is currently index 49 of the gaussian fwhm array
 # ==============================================================================
-for i in range(len(mjd_strings)//5):
-
-    mjd0 = data_dict[mjd_strings[i*5]]['mjd']
-    data0 = data_dict[mjd_strings[i*5]]['data']
-    freqs0 = data_dict[mjd_strings[i*5]]['freqs']
-    dur0 = data_dict[mjd_strings[i*5]]['dur']
-
-    p = pcs(mjd0,data0,freqs0,dur0)
-    p.fit(6, 'exp')
+# for i in range(len(mjd_strings)//5):
+#
+#     mjd0 = data_dict[mjd_strings[i*5]]['mjd']
+#     data0 = data_dict[mjd_strings[i*5]]['data']
+#     freqs0 = data_dict[mjd_strings[i*5]]['freqs']
+#     dur0 = data_dict[mjd_strings[i*5]]['dur']
+#
+#     p = pcg(mjd0,data0,freqs0,dur0)
+#     p.fit(6, 'exp')
 
 #===============================================================================
 # Test of best fit widths for number of different mjds at lower freq
