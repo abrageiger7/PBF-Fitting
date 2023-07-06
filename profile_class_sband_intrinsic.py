@@ -424,7 +424,7 @@ class Profile_Intrinss(Profile_Gauss):
                     plt.close(i*4)
 
                 #overall best fit plot
-                self.fit_plot(pbf_type, chi_beta_ind, pbf_width_ind, intrins_width_ind, low_chi)
+                self.fit_plot(pbf_type, int(chi_beta_ind), pbf_width_ind, intrins_width_ind, low_chi)
 
                 data_returns = {}
                 data_returns['low_chi'] = low_chi
