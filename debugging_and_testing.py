@@ -37,22 +37,57 @@ dur1 = data_dict[mjd_strings[45]]['dur']
 
 #===============================================================================
 # Test of best fit beta at various frequencies for 2 epochs
+# (tested w both types of intrinsic shapes - gaussian and sband average)
 # ==============================================================================
 
 #test gaussian fitting
-p = pcg(mjd0,data0,freqs0,dur0)
+p = pcs(mjd0,data0,freqs0,dur0)
 p.fit(0, 'beta')
 p.fit(3, 'beta')
 p.fit(6, 'beta')
 p.fit(p.num_sub-1, 'beta')
 
-p = pcg(mjd2,data2,freqs2,dur2)
+p = pcs(mjd2,data2,freqs2,dur2)
 p.fit(0, 'beta')
 p.fit(3, 'beta')
 p.fit(6, 'beta')
 p.fit(p.num_sub-1, 'beta')
 
-p = pcg(mjd1,data1,freqs1,dur1)
+p = pcs(mjd1,data1,freqs1,dur1)
+p.fit(0, 'beta')
+p.fit(3, 'beta')
+p.fit(6, 'beta')
+p.fit(p.num_sub-1, 'beta')
+
+mjd0 = data_dict[mjd_strings[0]]['mjd']
+data0 = data_dict[mjd_strings[0]]['data']
+freqs0 = data_dict[mjd_strings[0]]['freqs']
+dur0 = data_dict[mjd_strings[0]]['dur']
+
+mjd2 = data_dict[mjd_strings[30]]['mjd']
+data2 = data_dict[mjd_strings[30]]['data']
+freqs2 = data_dict[mjd_strings[30]]['freqs']
+dur2 = data_dict[mjd_strings[30]]['dur']
+
+mjd1 = data_dict[mjd_strings[50]]['mjd']
+data1 = data_dict[mjd_strings[50]]['data']
+freqs1 = data_dict[mjd_strings[50]]['freqs']
+dur1 = data_dict[mjd_strings[50]]['dur']
+
+#test gaussian fitting
+p = pcs(mjd0,data0,freqs0,dur0)
+p.fit(0, 'beta')
+p.fit(3, 'beta')
+p.fit(6, 'beta')
+p.fit(p.num_sub-1, 'beta')
+
+p = pcs(mjd2,data2,freqs2,dur2)
+p.fit(0, 'beta')
+p.fit(3, 'beta')
+p.fit(6, 'beta')
+p.fit(p.num_sub-1, 'beta')
+
+p = pcs(mjd1,data1,freqs1,dur1)
 p.fit(0, 'beta')
 p.fit(3, 'beta')
 p.fit(6, 'beta')
