@@ -20,20 +20,20 @@ with open('j1903_data.pkl', 'rb') as fp:
 
 mjd_strings = list(data_dict.keys())
 
-mjd0 = data_dict[mjd_strings[0]]['mjd']
-data0 = data_dict[mjd_strings[0]]['data']
-freqs0 = data_dict[mjd_strings[0]]['freqs']
-dur0 = data_dict[mjd_strings[0]]['dur']
+mjd0 = data_dict[mjd_strings[10]]['mjd']
+data0 = data_dict[mjd_strings[10]]['data']
+freqs0 = data_dict[mjd_strings[10]]['freqs']
+dur0 = data_dict[mjd_strings[10]]['dur']
 
-mjd2 = data_dict[mjd_strings[30]]['mjd']
-data2 = data_dict[mjd_strings[30]]['data']
-freqs2 = data_dict[mjd_strings[30]]['freqs']
-dur2 = data_dict[mjd_strings[30]]['dur']
+mjd2 = data_dict[mjd_strings[25]]['mjd']
+data2 = data_dict[mjd_strings[25]]['data']
+freqs2 = data_dict[mjd_strings[25]]['freqs']
+dur2 = data_dict[mjd_strings[25]]['dur']
 
-mjd1 = data_dict[mjd_strings[50]]['mjd']
-data1 = data_dict[mjd_strings[50]]['data']
-freqs1 = data_dict[mjd_strings[50]]['freqs']
-dur1 = data_dict[mjd_strings[50]]['dur']
+mjd1 = data_dict[mjd_strings[45]]['mjd']
+data1 = data_dict[mjd_strings[45]]['data']
+freqs1 = data_dict[mjd_strings[45]]['freqs']
+dur1 = data_dict[mjd_strings[45]]['dur']
 
 #===============================================================================
 # Test of best fit beta at various frequencies for 2 epochs
