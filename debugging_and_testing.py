@@ -36,62 +36,132 @@ freqs1 = data_dict[mjd_strings[45]]['freqs']
 dur1 = data_dict[mjd_strings[45]]['dur']
 
 #===============================================================================
-# Test of best fit beta at various frequencies for 2 epochs
-# (tested w both types of intrinsic shapes - gaussian and sband average)
+# Now seeing what intrinsic width favored with beta = 3.5 and sband intrinsic shape
 # ==============================================================================
 
-#test gaussian fitting
+beta3_5_best_sband_intrins_widths = np.zeros((3,36))
+#test best intrinsic width w beta = 3.5
 p = pcs(mjd0,data0,freqs0,dur0)
-p.fit(0, 'beta')
-p.fit(3, 'beta')
-p.fit(6, 'beta')
-p.fit(p.num_sub-1, 'beta')
+for i in range(p.num_sub):
+    data = p.fit(i, 'beta', bzeta_ind = 1)
+    beta3_5_best_sband_intrins_widths[0,i] = p.mjd
+    beta3_5_best_sband_intrins_widths[1,i] = p.freq_suba
+    beta3_5_best_sband_intrins_widths[2,i] = data['intrins_width']
+adding_1 = p.num_sub
 
 p = pcs(mjd2,data2,freqs2,dur2)
-p.fit(0, 'beta')
-p.fit(3, 'beta')
-p.fit(6, 'beta')
-p.fit(p.num_sub-1, 'beta')
+for i in range(p.num_sub):
+    data = p.fit(i, 'beta', bzeta_ind = 1)
+    beta3_5_best_sband_intrins_widths[0,i+adding_1] = p.mjd
+    beta3_5_best_sband_intrins_widths[1,i+adding_1] = p.freq_suba
+    beta3_5_best_sband_intrins_widths[2,i+adding_1] = data['intrins_width']
+adding_2 = p.num_sub
 
 p = pcs(mjd1,data1,freqs1,dur1)
-p.fit(0, 'beta')
-p.fit(3, 'beta')
-p.fit(6, 'beta')
-p.fit(p.num_sub-1, 'beta')
+for i in range(p.num_sub):
+    data = p.fit(i, 'beta', bzeta_ind = 1)
+    beta3_5_best_sband_intrins_widths[0,i+adding_1+adding_2] = p.mjd
+    beta3_5_best_sband_intrins_widths[1,i+adding_1+adding_2] = p.freq_suba
+    beta3_5_best_sband_intrins_widths[2,i+adding_1+adding_2] = data['intrins_width']
 
-mjd0 = data_dict[mjd_strings[0]]['mjd']
-data0 = data_dict[mjd_strings[0]]['data']
-freqs0 = data_dict[mjd_strings[0]]['freqs']
-dur0 = data_dict[mjd_strings[0]]['dur']
+np.save('beta3_5_best_sband_intrins_widths_test', beta3_5_best_sband_intrins_widths)
 
-mjd2 = data_dict[mjd_strings[30]]['mjd']
-data2 = data_dict[mjd_strings[30]]['data']
-freqs2 = data_dict[mjd_strings[30]]['freqs']
-dur2 = data_dict[mjd_strings[30]]['dur']
+# #===============================================================================
+# # Test of best fit beta at various frequencies for 2 epochs
+# # (tested w both types of intrinsic shapes - gaussian and sband average)
+# # ==============================================================================
+#
+#
+# #test gaussian fitting
+# p = pcg(mjd0,data0,freqs0,dur0)
+# p.fit(0, 'beta')
+# p.fit(3, 'beta')
+# p.fit(6, 'beta')
+# p.fit(p.num_sub-1, 'beta')
+#
+# p = pcg(mjd2,data2,freqs2,dur2)
+# p.fit(0, 'beta')
+# p.fit(3, 'beta')
+# p.fit(6, 'beta')
+# p.fit(p.num_sub-1, 'beta')
+#
+# p = pcg(mjd1,data1,freqs1,dur1)
+# p.fit(0, 'beta')
+# p.fit(3, 'beta')
+# p.fit(6, 'beta')
+# p.fit(p.num_sub-1, 'beta')
 
-mjd1 = data_dict[mjd_strings[50]]['mjd']
-data1 = data_dict[mjd_strings[50]]['data']
-freqs1 = data_dict[mjd_strings[50]]['freqs']
-dur1 = data_dict[mjd_strings[50]]['dur']
+#test sband fitting
+# p = pcs(mjd0,data0,freqs0,dur0)
+# p.fit(0, 'beta')
+# p.fit(3, 'beta')
+# p.fit(6, 'beta')
+# p.fit(p.num_sub-1, 'beta')
+#
+# p = pcs(mjd2,data2,freqs2,dur2)
+# p.fit(0, 'beta')
+# p.fit(3, 'beta')
+# p.fit(6, 'beta')
+# p.fit(p.num_sub-1, 'beta')
+#
+# p = pcs(mjd1,data1,freqs1,dur1)
+# p.fit(0, 'beta')
+# p.fit(3, 'beta')
+# p.fit(6, 'beta')
+# p.fit(p.num_sub-1, 'beta')
+#
+# mjd0 = data_dict[mjd_strings[0]]['mjd']
+# data0 = data_dict[mjd_strings[0]]['data']
+# freqs0 = data_dict[mjd_strings[0]]['freqs']
+# dur0 = data_dict[mjd_strings[0]]['dur']
+#
+# mjd2 = data_dict[mjd_strings[30]]['mjd']
+# data2 = data_dict[mjd_strings[30]]['data']
+# freqs2 = data_dict[mjd_strings[30]]['freqs']
+# dur2 = data_dict[mjd_strings[30]]['dur']
+#
+# mjd1 = data_dict[mjd_strings[50]]['mjd']
+# data1 = data_dict[mjd_strings[50]]['data']
+# freqs1 = data_dict[mjd_strings[50]]['freqs']
+# dur1 = data_dict[mjd_strings[50]]['dur']
+#
+# #test sband fitting
+# p = pcs(mjd0,data0,freqs0,dur0)
+# p.fit(0, 'beta')
+# p.fit(3, 'beta')
+# p.fit(6, 'beta')
+# p.fit(p.num_sub-1, 'beta')
+#
+# p = pcs(mjd2,data2,freqs2,dur2)
+# p.fit(0, 'beta')
+# p.fit(3, 'beta')
+# p.fit(6, 'beta')
+# p.fit(p.num_sub-1, 'beta')
+#
+# p = pcs(mjd1,data1,freqs1,dur1)
+# p.fit(0, 'beta')
+# p.fit(3, 'beta')
+# p.fit(6, 'beta')
+# p.fit(p.num_sub-1, 'beta')
 
-#test gaussian fitting
-p = pcs(mjd0,data0,freqs0,dur0)
-p.fit(0, 'beta')
-p.fit(3, 'beta')
-p.fit(6, 'beta')
-p.fit(p.num_sub-1, 'beta')
-
-p = pcs(mjd2,data2,freqs2,dur2)
-p.fit(0, 'beta')
-p.fit(3, 'beta')
-p.fit(6, 'beta')
-p.fit(p.num_sub-1, 'beta')
-
-p = pcs(mjd1,data1,freqs1,dur1)
-p.fit(0, 'beta')
-p.fit(3, 'beta')
-p.fit(6, 'beta')
-p.fit(p.num_sub-1, 'beta')
+# #test gaussian fitting
+# p = pcg(mjd0,data0,freqs0,dur0)
+# p.fit(0, 'beta')
+# p.fit(3, 'beta')
+# p.fit(6, 'beta')
+# p.fit(p.num_sub-1, 'beta')
+#
+# p = pcg(mjd2,data2,freqs2,dur2)
+# p.fit(0, 'beta')
+# p.fit(3, 'beta')
+# p.fit(6, 'beta')
+# p.fit(p.num_sub-1, 'beta')
+#
+# p = pcg(mjd1,data1,freqs1,dur1)
+# p.fit(0, 'beta')
+# p.fit(3, 'beta')
+# p.fit(6, 'beta')
+# p.fit(p.num_sub-1, 'beta')
 
 #===============================================================================
 # Test of best fit intrinsic gaussian width for exponential pbf
