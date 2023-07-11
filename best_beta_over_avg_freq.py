@@ -7,7 +7,7 @@ Calculations of Best Fit Beta for each frequency Over all MJD averaged
 Only 100 pbf to choose from when ran
 - set fitting_params.py in this way
 
-Set gwidth to 91 microseconds index 12 when 50 gwidths
+Set gwidth to 91 microseconds (index 12 when 50 gwidths)
 """
 
 import numpy as np
@@ -153,7 +153,9 @@ beta_collect = np.zeros(np.size(freqs))
 
 pbfwidth_collect = np.zeros(np.size(freqs))
 
-iwidth_ind = 12
+iwidth = 91.0
+
+iwidth_ind = find_nearest((gauss_fwhm, iwidth))[1][0][0]
 
 for i in range(np.size(freqs)):
 
@@ -171,7 +173,7 @@ plt.plot(freqs, beta_collect, '.')
 plt.xlabel('Frequency [MHz]')
 plt.ylabel('Best Fit Beta')
 plt.title('Best Beta for All Data Freq Avg')
-plt.savefig(f'best_beta_for_all_lband_data_averaged_per_freq_setiwidth={gauss_fwhm[iwidth_ind]}.pdf')
+plt.savefig(f'best_beta_for_all_lband_data_averaged_per_freq_setiwidth={int(np.round(gauss_fwhm[iwidth_ind]))}.pdf')
 plt.show()
 
 plt.close('all')
@@ -182,7 +184,7 @@ plt.plot(freqs, pbfwidth_collect, '.')
 plt.xlabel('Frequency [MHz]')
 plt.ylabel('Best Fit PBF Width')
 plt.title('Best PBF Width for All Data Freq Avg')
-plt.savefig(f'best_pbfwidth_for_all_lband_data_averaged_per_freq_setiwidth={gauss_fwhm[iwidth_ind]}.pdf')
+plt.savefig(f'best_pbfwidth_for_all_lband_data_averaged_per_freq_setiwidth={int(np.round(gauss_fwhm[iwidth_ind]))}.pdf')
 plt.show()
 
 plt.close('all')
