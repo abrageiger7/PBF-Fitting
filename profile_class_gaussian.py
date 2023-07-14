@@ -16,7 +16,30 @@ from fit_functions import *
 
 #fitting templates
 with open(f'gauss_convolved_profiles_phasebins={phase_bins}.pkl', 'rb') as fp:
-    gauss_convolved_profiles = pickle.load(fp)
+    pre_memory_mapped_template = pickle.load(fp)
+
+gauss_convolved_profiles_beta = np.memmap('gauss_convolved_profiles_beta', dtype='float64', mode='w+', shape=np.shape(pre_memory_mapped_template['beta']))
+
+gauss_convolved_profiles_beta[:,:,:] = pre_memory_mapped_template['beta'][:,:,:]
+gauss_convolved_profiles_beta.flush()
+
+gauss_convolved_profiles_zeta = np.memmap('gauss_convolved_profiles_zeta', dtype='float64', mode='w+', shape=np.shape(pre_memory_mapped_template['zeta']))
+
+gauss_convolved_profiles_zeta[:,:,:] = pre_memory_mapped_template['zeta'][:,:,:]
+gauss_convolved_profiles_zeta.flush()
+
+gauss_convolved_profiles_exp = np.memmap('gauss_convolved_profiles_exp', dtype='float64', mode='w+', shape=np.shape(pre_memory_mapped_template['exp']))
+
+gauss_convolved_profiles_exp[:,:,:] = pre_memory_mapped_template['exp'][:,:,:]
+gauss_convolved_profiles_exp.flush()
+
+gauss_convolved_profiles = {}
+
+gauss_convolved_profiles['beta'] = gauss_convolved_profiles_beta
+gauss_convolved_profiles['zeta'] = gauss_convolved_profiles_zeta
+gauss_convolved_profiles['exp'] = gauss_convolved_profiles_exp
+
+del(pre_memory_mapped_template)
 
 #tau values corresponding to above templates
 with open('tau_values.pkl', 'rb') as fp:
@@ -111,23 +134,29 @@ class Profile_Gauss:
             if bzeta == -1:
                 raise Exception('Please indicate the b/zeta value used.')
 
-        plt.figure(45)
+        plt.figure(1)
 
         if gwidth == -1 and pbfwidth == -1: #neither width set, so 2D chi^2 surface
 
             plt.title("Fit Chi-sqs")
-            plt.xlabel("Gaussian FWHM (microseconds)")
-            plt.ylabel("PBF Width")
+            plt.xlabel(r"Gaussian FWHM [$\mu$s]")
+            plt.ylabel(r"Tau [$\mu$s]")
 
             #adjust the imshow tick marks
             gauss_ticks = np.zeros(10)
             for ii in range(10):
-                gauss_ticks[ii] = str(gauss_fwhm[ii*20])[:3]
-            pbf_ticks = np.zeros(10)
-            for ii in range(10):
-                pbf_ticks[ii] = str(widths[ii*40])[:3]
+                gauss_ticks[ii] = str(gauss_fwhm[ii*(num_gwidth//10)])[:3]
+
+            tau_ticks = np.zeros(10)
+            if pbf_type == 'beta' or pbf_type == 'zeta':
+                for ii in range(10):
+                    tau_ticks[ii] = str(tau_values['pbf_type'][bzeta_ind][ii*(num_pbfwidth//10)])[:3]
+            elif pbf_type == 'exp':
+                for ii in range(10):
+                    tau_ticks[ii] = str(tau_values['pbf_type'][ii*(num_pbfwidth//10)])[:3]
+
             plt.xticks(ticks = np.linspace(0,num_gwidth,num=10), labels = gauss_ticks)
-            plt.yticks(ticks = np.linspace(0,num_pbfwidth,num=10), labels = pbf_ticks)
+            plt.yticks(ticks = np.linspace(0,num_pbfwidth,num=10), labels = tau_ticks)
 
             plt.imshow(chi_sq_arr, cmap=plt.cm.viridis_r, origin = 'lower', aspect = 0.25)
             plt.colorbar()
@@ -143,16 +172,21 @@ class Profile_Gauss:
 
             plt.savefig(title)
             print(title)
-            plt.close(45)
+            plt.close('all')
 
         elif gwidth != -1: #gwidth set, so 1D chi^2 surface
 
             gwidth_round = int(np.around(gwidth))
 
             plt.title('Fit Chi-sqs')
-            plt.xlabel('PBF Width')
+            plt.xlabel(r'Tau [$\mu$s]')
             plt.ylabel('Reduced Chi-Sq')
-            plt.plot(widths, chi_sq_arr, drawstyle='steps-pre')
+
+            if pbf_type == 'beta' or pbf_type == 'zeta':
+                plt.plot(tau_values[pbf_type][bzeta_ind], chi_sq_arr, drawstyle='steps-pre')
+
+            elif pbf_type == 'exp':
+                plt.plot(tau_values[pbf_type], chi_sq_arr, drawstyle='steps-pre')
 
             if pbf_type == 'beta':
                     title = f"BETA={bzeta}|GAUSS|PBF_fit_chisq_setg|MJD={self.mjd_round}|FREQ={self.freq_round}|GWIDTH={gwidth_round}.pdf"
@@ -165,7 +199,7 @@ class Profile_Gauss:
 
             plt.savefig(title)
             print(title)
-            plt.close(45)
+            plt.close('all')
 
 
     def fit_plot(self, pbf_type, bzeta_ind, pbfwidth_ind, gwidth_ind, low_chi, low_pbf = -1, high_pbf = -1):
@@ -245,8 +279,8 @@ class Profile_Gauss:
 
         fitted_template = fitted_template*self.mask
 
-        plt.figure(50)
-        fig1 = plt.figure(50)
+        plt.figure(1)
+        fig1 = plt.figure(1)
         #Plot Data-model
         frame1=fig1.add_axes((.1,.3,.8,.6))
         #xstart, ystart, xend, yend [units are fraction of the image frame, from bottom left corner]
@@ -319,19 +353,19 @@ class Profile_Gauss:
         plt.plot()
 
         gwidth_round = int(np.around(gauss_fwhm[gwidth_ind]))
-        pbfwidth_round = int(np.around(widths[pbfwidth_ind]))
+        tau_round = int(np.around(tau_val))
 
 
         if pbf_type == 'beta':
-            title = f'BETA={betaselect[bzeta_ind]}|GAUSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}||PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
+            title = f'BETA={betaselect[bzeta_ind]}|GAUSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}||TAU={tau_round}|GW={gwidth_round}.pdf'
         elif pbf_type == 'exp':
-            title = f'EXP|GAUSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
+            title = f'EXP|GAUSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|TAU={tau_round}|GW={gwidth_round}.pdf'
         elif pbf_type == 'zeta':
-            title = f'ZETA={zetaselect[bzeta_ind]}|GAUSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|GW={gwidth_round}.pdf'
+            title = f'ZETA={zetaselect[bzeta_ind]}|GAUSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|TAU={tau_round}|GW={gwidth_round}.pdf'
 
         plt.savefig(title)
         print(title)
-        plt.close(50)
+        plt.close('all')
 
     def comp_fse(self, tau):
         '''Calculates the error due to the finite scintile effect. Reference
@@ -506,7 +540,7 @@ class Profile_Gauss:
                 #plotting the fit parameters over beta
                 for i in range(4):
 
-                    plt.figure(i*4)
+                    plt.figure(1)
                     plt.xlabel('Beta')
 
                     if i == 0:
@@ -531,7 +565,7 @@ class Profile_Gauss:
 
                     title = f'ALLBETA|GAUSS|PBF_fit_overall_{param}|MJD={self.mjd_round}|FREQ={self.freq_round}|bestBETA={betaselect[chi_beta_ind]}.pdf'
                     plt.savefig(title)
-                    plt.close(i*4)
+                    plt.close('all')
 
                 print(chi_beta_ind)
                 #overall best fit plot
@@ -716,7 +750,7 @@ class Profile_Gauss:
                 #plotting the fit parameters over beta
                 for i in range(4):
 
-                    plt.figure(i*4)
+                    plt.figure(1)
                     plt.xlabel('Zeta')
 
                     if i == 0:
@@ -741,7 +775,7 @@ class Profile_Gauss:
 
                     title = f'ALLZETA|PBF_fit_overall_{param}|MJD={self.mjd_round}|FREQ={self.freq_round}|bestZETA={zetaselect[chi_zeta_ind]}.pdf'
                     plt.savefig(title)
-                    plt.close(i*4)
+                    plt.close('all')
 
                 self.fit_plot(pbf_type, chi_zeta_ind, pbf_width_ind, gauss_width_ind, low_chi)
 
@@ -1000,7 +1034,7 @@ class Profile_Gauss:
     #
     #             chi_sqs_collect[i] += dataret[0]
     #
-    #     plt.figure(10)
+    #     plt.figure(1)
     #     plt.plot(pwr_ind, chi_sqs_collect, drawstyle = 'steps')
     #     plt.xlabel('Gaussian Width Power Law Indices')
     #     plt.ylabel('Summed Chi Squared')
@@ -1011,7 +1045,7 @@ class Profile_Gauss:
     #     elif intrins:
     #         title = f'EXP|INTRINS|gwidth_pwrlaw|chisq_plot|MJD={self.mjd_round}.pdf'
     #     plt.savefig(title)
-    #     plt.close(10)
+    #     plt.close('all')
     #     print(title)
     #
     #     lowest_chi_ind = np.where((chi_sqs_collect == np.min(chi_sqs_collect)))[0][0]

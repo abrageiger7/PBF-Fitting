@@ -16,9 +16,34 @@ from fit_functions import *
 
 from profile_class_gaussian import Profile_Gauss
 
-#fitting templates
+#fitting templates memory mapped
 with open(f'sband_intrins_convolved_profiles_phasebins={phase_bins}.pkl', 'rb') as fp:
-    sband_intrins_convolved_profiles = pickle.load(fp)
+    pre_memory_mapped_template = pickle.load(fp)
+
+sband_intrins_convolved_profiles_beta = np.memmap('sband_intrins_convolved_profiles_beta', dtype='float64', mode='w+', shape=np.shape(pre_memory_mapped_template['beta']))
+
+sband_intrins_convolved_profiles_beta[:,:,:] = pre_memory_mapped_template['beta'][:,:,:]
+sband_intrins_convolved_profiles_beta.flush()
+
+sband_intrins_convolved_profiles_zeta = np.memmap('sband_intrins_convolved_profiles_zeta', dtype='float64', mode='w+', shape=np.shape(pre_memory_mapped_template['zeta']))
+
+sband_intrins_convolved_profiles_zeta[:,:,:] = pre_memory_mapped_template['zeta'][:,:,:]
+sband_intrins_convolved_profiles_zeta.flush()
+
+sband_intrins_convolved_profiles_exp = np.memmap('sband_intrins_convolved_profiles_exp', dtype='float64', mode='w+', shape=np.shape(pre_memory_mapped_template['exp']))
+
+sband_intrins_convolved_profiles_exp[:,:,:] = pre_memory_mapped_template['exp'][:,:,:]
+sband_intrins_convolved_profiles_exp.flush()
+
+sband_intrins_convolved_profiles = {}
+
+sband_intrins_convolved_profiles['beta'] = sband_intrins_convolved_profiles_beta
+sband_intrins_convolved_profiles['zeta'] = sband_intrins_convolved_profiles_zeta
+sband_intrins_convolved_profiles['exp'] = sband_intrins_convolved_profiles_exp
+
+del(pre_memory_mapped_template)
+
+
 
 #tau values corresponding to above templates
 with open('tau_values.pkl', 'rb') as fp:
@@ -62,23 +87,29 @@ class Profile_Intrinss(Profile_Gauss):
             if bzeta == -1:
                 raise Exception('Please indicate the b/zeta value used.')
 
-        plt.figure(45)
+        plt.figure(1)
 
         if iwidth == -1 and pbfwidth == -1: #neither width set, so 2D chi^2 surface
 
             plt.title("Fit Chi-sqs")
-            plt.xlabel("Intrinsic FWHM (microseconds)")
-            plt.ylabel("PBF Width")
+            plt.xlabel(r"Intrinsic FWHM [$\mu$s]")
+            plt.ylabel(r"Tau [$\mu$s]")
 
             #adjust the imshow tick marks
             iwidth_ticks = np.zeros(10)
             for ii in range(10):
-                iwidth_ticks[ii] = str(intrinss_fwhm[ii*20])[:3]
-            pbf_ticks = np.zeros(10)
-            for ii in range(10):
-                pbf_ticks[ii] = str(widths[ii*40])[:3]
+                iwidth_ticks[ii] = str(intrinss_fwhm[ii*(num_gwidth//10)])[:3]
+
+            tau_ticks = np.zeros(10)
+            if pbf_type == 'beta' or pbf_type == 'zeta':
+                for ii in range(10):
+                    tau_ticks[ii] = str(tau_values['pbf_type'][bzeta_ind][ii*(num_pbfwidth//10)])[:3]
+            elif pbf_type == 'exp':
+                for ii in range(10):
+                    tau_ticks[ii] = str(tau_values['pbf_type'][ii*(num_pbfwidth//10)])[:3]
+
             plt.xticks(ticks = np.linspace(0,num_gwidth,num=10), labels = iwidth_ticks)
-            plt.yticks(ticks = np.linspace(0,num_pbfwidth,num=10), labels = pbf_ticks)
+            plt.yticks(ticks = np.linspace(0,num_pbfwidth,num=10), labels = tau_ticks)
 
             plt.imshow(chi_sq_arr, cmap=plt.cm.viridis_r, origin = 'lower', aspect = 0.25)
             plt.colorbar()
@@ -94,16 +125,21 @@ class Profile_Intrinss(Profile_Gauss):
 
             plt.savefig(title)
             print(title)
-            plt.close(45)
+            plt.close('all')
 
         elif iwidth != -1: #iwidth set, so 1D chi^2 surface
 
             iwidth_round = int(np.around(iwidth))
 
             plt.title('Fit Chi-sqs')
-            plt.xlabel('PBF Width')
+            plt.xlabel(r'Tau [$\mu$s]')
             plt.ylabel('Reduced Chi-Sq')
-            plt.plot(widths, chi_sq_arr, drawstyle='steps-pre')
+
+            if pbf_type == 'beta' or pbf_type == 'zeta':
+                plt.plot(tau_values[pbf_type][bzeta_ind], chi_sq_arr, drawstyle='steps-pre')
+
+            elif pbf_type == 'exp':
+                plt.plot(tau_values[pbf_type], chi_sq_arr, drawstyle='steps-pre')
 
             if pbf_type == 'beta':
                     title = f"BETA={bzeta}|INTRINSS|PBF_fit_chisq_setg|MJD={self.mjd_round}|FREQ={self.freq_round}|IW={iwidth_round}.pdf"
@@ -116,7 +152,7 @@ class Profile_Intrinss(Profile_Gauss):
 
             plt.savefig(title)
             print(title)
-            plt.close(45)
+            plt.close('all')
 
     def fit_plot(self, pbf_type, bzeta_ind, pbfwidth_ind, iwidth_ind, low_chi, low_pbf = -1, high_pbf = -1):
 
@@ -201,8 +237,8 @@ class Profile_Intrinss(Profile_Gauss):
 
         fitted_template = fitted_template*self.mask
 
-        plt.figure(50)
-        fig1 = plt.figure(50)
+        plt.figure(1)
+        fig1 = plt.figure(1)
         #Plot Data-model
         frame1=fig1.add_axes((.1,.3,.8,.6))
         #xstart, ystart, xend, yend [units are fraction of the image frame, from bottom left corner]
@@ -275,18 +311,18 @@ class Profile_Intrinss(Profile_Gauss):
         plt.plot()
 
         iwidth_round = int(np.around(intrinss_fwhm[iwidth_ind]))
-        pbfwidth_round = int(np.around(widths[pbfwidth_ind]))
+        tau_round = int(np.around(tau_val))
 
         if pbf_type == 'beta':
-            title = f'BETA={betaselect[bzeta_ind]}|INTRINSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}||PBFW={pbfwidth_round}|IW={iwidth_round}.pdf'
+            title = f'BETA={betaselect[bzeta_ind]}|INTRINSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}||TAU={tau_round}|IW={iwidth_round}.pdf'
         elif pbf_type == 'exp':
-            title = f'EXP|INTRINSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|IW={iwidth_round}.pdf'
+            title = f'EXP|INTRINSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|TAU={tau_round}|IW={iwidth_round}.pdf'
         elif pbf_type == 'zeta':
-            title = f'ZETA={zetaselect[bzeta_ind]}|INTRINSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|PBFW={pbfwidth_round}|IW={iwidth_round}.pdf'
+            title = f'ZETA={zetaselect[bzeta_ind]}|INTRINSS|PBF_fit_plot|MJD={self.mjd_round}|FREQ={self.freq_round}|TAU={tau_round}|IW={iwidth_round}.pdf'
 
         plt.savefig(title)
         print(title)
-        plt.close(50)
+        plt.close('all')
 
 
     def fit(self, freq_subint_index, pbf_type, bzeta_ind = -1, iwidth_ind = -1, pbfwidth_ind = -1):
@@ -396,7 +432,7 @@ class Profile_Intrinss(Profile_Gauss):
                 #plotting the fit parameters over beta
                 for i in range(4):
 
-                    plt.figure(i*4)
+                    plt.figure(1)
                     plt.xlabel('Beta')
 
                     if i == 0:
@@ -421,7 +457,19 @@ class Profile_Intrinss(Profile_Gauss):
 
                     title = f'ALLBETA|INTRINSS|PBF_fit_overall_{param}|MJD={self.mjd_round}|FREQ={self.freq_round}|bestBETA={betaselect[chi_beta_ind]}.pdf'
                     plt.savefig(title)
-                    plt.close(i*4)
+                    plt.close('all')
+
+                #ERROR TEST - one reduced chi-squared unit above and below and these
+                #chi-squared bins are for varying pbf width
+
+                if chi_sqs_collect[0] > low_chi+(1/(self.bin_num_care-num_par)) and chi_sqs_collect[-1] > low_chi+(1/(self.bin_num_care-num_par)):
+                    below = find_nearest(chi_sqs_collect[:chi_beta_ind], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
+                    above = find_nearest(chi_sqs_collect[chi_beta_ind+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + chi_beta_ind + 1
+                    beta_low = beta_fin - betaselect[below]
+                    beta_up = betaselect[above] - beta_fin
+                else:
+                    beta_low = 0
+                    beta_up = 0
 
                 #overall best fit plot
                 self.fit_plot(pbf_type, int(chi_beta_ind), pbf_width_ind, intrins_width_ind, low_chi)
@@ -433,6 +481,112 @@ class Profile_Intrinss(Profile_Gauss):
                 data_returns['intrins_width'] = intrins_width_fin
                 data_returns['pbf_width'] = pbf_width_fin
                 data_returns[f'{pbf_type}'] = beta_fin
+                data_returns['beta_low'] = beta_low
+                data_returns['beta_up'] = beta_up
+
+                return(data_returns)
+
+            #case where beta and pbfwidth are free, iwidth is set
+            if iwidth_ind != -1 and pbfwidth_ind == -1 and bzeta_ind == -1:
+
+                print('Fitting for beta and PBF width.')
+
+                num_par = 4 #number of fitted parameters
+
+                iwidth = intrinss_fwhm[iwidth_ind]
+
+                chi_sqs_array = np.zeros((num_beta, num_pbfwidth))
+                for i in itertools.product(beta_inds, pbfwidth_inds):
+
+                    template = sband_intrins_convolved_profiles[pbf_type][i[0]][i[1]][iwidth_ind]
+                    chi_sq = self.fit_sing(template, num_par)
+                    chi_sqs_array[i[0]][i[1]] = chi_sq
+
+                chi_sqs_collect = np.zeros(num_beta)
+                pbf_width_collect = np.zeros(num_beta)
+                taus_collect = np.zeros(num_beta)
+                taus_err_collect = np.zeros((2,num_beta))
+                ind = 0
+                for i in chi_sqs_array:
+
+                    beta = betaselect[ind]
+
+                    #scale the chi-squared array by the rms value of the profile
+
+                    #self.chi_plot(i, pbf_type, bzeta = beta, iwidth = iwidth)
+
+                    #least squares
+                    low_chi = find_nearest(i, 0.0)[0]
+                    chi_sqs_collect[ind] = low_chi
+
+                    if i[0] < low_chi+(1/(self.bin_num_care-num_par)) or i[-1] < low_chi+(1/(self.bin_num_care-num_par)):
+                        #raise Exception('NOT CONVERGING ENOUGH')
+                        print('WARNING: PBF WIDTH NOT CONVERGING')
+
+                    #lsqs pbf width
+                    lsqs_pbf_index = find_nearest(i, 0.0)[1][0][0]
+                    lsqs_pbf_val = widths[lsqs_pbf_index]
+                    pbf_width_collect[ind] = lsqs_pbf_val
+
+                    taus_collect[ind] = beta_tau_values[ind][lsqs_pbf_index]
+
+                    #self.fit_plot(pbf_type, ind, lsqs_pbf_index, iwidth_ind, low_chi)
+
+                    ind+=1
+
+                low_chi = np.min(chi_sqs_collect)
+                chi_beta_ind = np.where(chi_sqs_collect == low_chi)[0][0]
+
+                beta_fin = betaselect[chi_beta_ind]
+                pbf_width_fin = pbf_width_collect[chi_beta_ind]
+                tau_fin = taus_collect[chi_beta_ind]
+
+                pbf_width_ind = np.where(widths == pbf_width_fin)[0][0]
+
+                #plotting the fit parameters over beta
+                for i in range(2):
+
+                    plt.figure(1)
+                    plt.xlabel('Beta')
+
+                    if i == 0:
+                        plt.ylabel('Chi-Squared')
+                        plt.plot(betaselect, chi_sqs_collect)
+                        param = 'chisqs'
+
+                    if i == 1:
+                        plt.ylabel('Overall Best Tau (microseconds)')
+                        plt.plot(betaselect, taus_collect)
+                        param = 'tau'
+
+                    title = f'ALLBETA|INTRINSS|PBF_fit_overall_{param}|MJD={self.mjd_round}|FREQ={self.freq_round}|setiwidth={int(np.round(iwidth))}|bestBETA={betaselect[chi_beta_ind]}.pdf'
+                    plt.savefig(title)
+                    plt.close('all')
+
+                #ERROR TEST - one reduced chi-squared unit above and below and these
+                #chi-squared bins are for varying pbf width
+
+                if chi_sqs_collect[0] > low_chi+(1/(self.bin_num_care-num_par)) and chi_sqs_collect[-1] > low_chi+(1/(self.bin_num_care-num_par)):
+                    below = find_nearest(chi_sqs_collect[:chi_beta_ind], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
+                    above = find_nearest(chi_sqs_collect[chi_beta_ind+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + chi_beta_ind + 1
+                    beta_low = beta_fin - betaselect[below]
+                    beta_up = betaselect[above] - beta_fin
+                else:
+                    beta_low = 0
+                    beta_up = 0
+
+                #overall best fit plot
+                self.fit_plot(pbf_type, int(chi_beta_ind), pbf_width_ind, iwidth_ind, low_chi)
+
+                data_returns = {}
+                data_returns['low_chi'] = low_chi
+                data_returns['tau_fin'] = tau_fin
+                data_returns['fse_effect'] = self.comp_fse(tau_fin)
+                data_returns['intrins_width_set'] = iwidth
+                data_returns['pbf_width'] = pbf_width_fin
+                data_returns[f'{pbf_type}'] = beta_fin
+                data_returns['beta_low'] = beta_low
+                data_returns['beta_up'] = beta_up
 
                 return(data_returns)
 
@@ -457,7 +611,7 @@ class Profile_Intrinss(Profile_Gauss):
                 #least squares
                 low_chi = find_nearest(chi_sqs_array, 0.0)[0]
 
-                if chi_sqs_array[0][0] < low_chi+1 or chi_sqs_array[-1][-1] < low_chi+1:
+                if chi_sqs_array[0][0] < low_chi+(1/(self.bin_num_care-num_par)) or chi_sqs_array[-1][-1] < low_chi+(1/(self.bin_num_care-num_par)):
                     raise Exception('NOT CONVERGING ENOUGH') #stops code if not
                     #enough parameters to reach reduced low_chi + 1 before end
                     #of parameter space
@@ -605,7 +759,7 @@ class Profile_Intrinss(Profile_Gauss):
                 #plotting the fit parameters over beta
                 for i in range(4):
 
-                    plt.figure(i*4)
+                    plt.figure(1)
                     plt.xlabel('Zeta')
 
                     if i == 0:
@@ -630,7 +784,7 @@ class Profile_Intrinss(Profile_Gauss):
 
                     title = f'ALLZETA|PBF_fit_overall_{param}|MJD={self.mjd_round}|FREQ={self.freq_round}|bestZETA={zetaselect[chi_zeta_ind]}.pdf'
                     plt.savefig(title)
-                    plt.close(i*4)
+                    plt.close('all')
 
                 self.fit_plot(pbf_type, chi_zeta_ind, pbf_width_ind, intrins_width_ind, low_chi)
 
@@ -765,7 +919,7 @@ class Profile_Intrinss(Profile_Gauss):
                 #least squares
                 low_chi = find_nearest(chi_sqs_array, 0.0)[0]
 
-                if chi_sqs_array[0][0] < low_chi+1 or chi_sqs_array[-1][-1] < low_chi+1:
+                if chi_sqs_array[0][0] < low_chi+(1/(self.bin_num_care-num_par)) or chi_sqs_array[-1][-1] < low_chi+(1/(self.bin_num_care-num_par)):
                     raise Exception('NOT CONVERGING ENOUGH') #stops code if not
                     #enough parameters to reach reduced low_chi + 1 before end
                     #of parameter space
