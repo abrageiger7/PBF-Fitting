@@ -28,6 +28,14 @@ from fit_functions import *
 with open(f'sband_intrins_convolved_profiles_phasebins={phase_bins}.pkl', 'rb') as fp:
     sband_intrins_convolved_profiles = pickle.load(fp)
 
+#tau values corresponding to above templates in phase bins
+with open(f'tau_values_phasebins={phase_bins}.pkl', 'rb') as fp:
+    tau_values = pickle.load(fp)
+
+beta_tau_values = tau_values['beta']
+exp_tau_values = tau_values['exp']
+zeta_tau_values = tau_values['zeta']
+
 
 def chi2_distance(A, B, subt_deg_of_freedom):
 
@@ -152,7 +160,7 @@ dur = 0.0
 
 beta_collect = np.zeros(np.size(freqs))
 
-pbfwidth_collect = np.zeros(np.size(freqs))
+tau_collect = np.zeros(np.size(freqs))
 
 iwidth = 101.0
 
@@ -174,27 +182,34 @@ for i in range(np.size(freqs)):
     beta = betaselect[lsqs_index_1]
     beta_collect[i] = beta
 
-    pbfwidth = widths[lsqs_index_2]
-    pbfwidth_collect[i] = pbfwidth
+    tau = beta_tau_values[lsqs_index_1][lsqs_index_2]
+    tau_collect[i] = tau
 
 plt.figure(1)
+plt.rc('font', family = 'serif')
 
-plt.plot(freqs, beta_collect, '.')
-plt.xlabel('Frequency [MHz]')
-plt.ylabel('Best Fit Beta')
-plt.title('Best Beta for All Data Freq Avg')
+fig, ax = plt.subplots()
+
+ax.plot(freqs, beta_collect, '.')
+
+ax.set_xlabel('Frequency [MHz]')
+ax.set_ylabel('Best Fit Beta')
+ax.set_title(f'Best Fit Beta, I_FWHM = {int(iwidth)}')
 plt.savefig(f'best_beta_for_all_lband_data_averaged_per_freq_setiwidth={int(np.round(gauss_fwhm[iwidth_ind]))}.pdf')
 plt.show()
-
 plt.close('all')
 
+
 plt.figure(2)
+plt.rc('font', family = 'serif')
 
-plt.plot(freqs, pbfwidth_collect, '.')
-plt.xlabel('Frequency [MHz]')
-plt.ylabel('Best Fit PBF Width')
-plt.title('Best PBF Width for All Data Freq Avg')
-plt.savefig(f'best_pbfwidth_for_all_lband_data_averaged_per_freq_setiwidth={int(np.round(gauss_fwhm[iwidth_ind]))}.pdf')
+fig, ax = plt.subplots()
+
+ax.plot(freqs, tau_collect, '.')
+
+ax.set_xlabel('Frequency [MHz]')
+ax.set_ylabel('Best Fit Tau')
+ax.set_title(f'Best Fit Tau, I_FWHM = {int(iwidth)}')
+plt.savefig(f'best_tau_for_all_lband_data_averaged_per_freq_setiwidth={int(np.round(gauss_fwhm[iwidth_ind]))}.pdf')
 plt.show()
-
 plt.close('all')
