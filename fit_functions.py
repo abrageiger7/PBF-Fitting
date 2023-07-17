@@ -15,6 +15,7 @@ File of Constants and Functions for Fitting Broadening Functions
 #imports
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 from scipy.integrate import trapz
 from scipy import special
 
@@ -28,8 +29,8 @@ init_data_phase_bins = 2048
 #number of phase bins for a profile - time average every 8 of the original data
 #2048
 
-#phase_bins = 2048
-phase_bins = init_data_phase_bins//8
+phase_bins = 2048
+#phase_bins = init_data_phase_bins//8
 
 # number of time bins for original cordes pbfs
 cordes_phase_bins = 9549
@@ -62,7 +63,7 @@ zetaselect = np.array([0.01, 0.1, 0.2, 0.3, 0.5, 1.0, 2.0, 5.0])
 
 #array of widths used (pbf stretch factors)
 #previously as low as .1 and as high as 42
-num_pbfwidth = 100
+num_pbfwidth = 200
 widths = np.linspace(0.1, 35.0, num_pbfwidth)
 
 #array of gaussian widths (phase bins)
