@@ -23,9 +23,9 @@ from profile_class_sband_intrinsic import Profile_Intrinss as pcs
 from fit_functions import *
 
 
-powerlaw_inter = 95.0 # this is about the fwhm of the sband average
+powerlaw_inter = 110.0 # this is about the fwhm of the sband average
 freq_inter = 1742.0 # this is the starting freq for the powerlaw
-powerlaws = np.array([-0.1]) # these are the powerlaws to test
+powerlaws = np.array([0.0]) # these are the powerlaws to test
 
 #import data
 with open('j1903_data.pkl', 'rb') as fp:
@@ -149,10 +149,10 @@ for pwrlaw_ind in range(np.size(powerlaws)):
     [bar.set_alpha(0.4) for bar in bars]
     [cap.set_alpha(0.4) for cap in caps]
 
-    ax.set_yticks(np.linspace(3.3,3.6,6))
+    #ax.set_yticks(np.linspace(3.3,3.6,6))
     ax.set_xlabel('Frequency [MHz]')
     ax.set_ylabel('Beta')
-    ax.set_title(f'Best Fit Beta, FWHM({freq_inter}) = {powerlaw_inter}, X_FWHM = {powerlaws[pwrlaw_ind]}')
+    ax.set_title(f'Best Fit Beta, FWHM({freq_inter}) = {int(powerlaw_inter)}, X_FWHM = {powerlaws[pwrlaw_ind]}')
     plt.savefig(f'best_beta_allmjd_versus_freq_ifwhm_{int(np.round(powerlaw_inter))}micros_pwrlaw{powerlaws[pwrlaw_ind]}.pdf')
     #plt.show()
     plt.close('all')

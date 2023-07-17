@@ -7,6 +7,7 @@ Creates array of pbfs varying in zeta and pbf width (stretch and squeeze factor)
 
 # Reference commentary regarding pbfs and their generation in
 # beta_varying_broadening_functions.py
+from fit_functions import *
 
 import numpy as np
 from numpy import zeros, size
@@ -14,8 +15,6 @@ from numpy import interp
 from scipy.interpolate import CubicSpline
 import math
 import glob
-
-from fitting_params import *
 
 # Read in the PBF files
 

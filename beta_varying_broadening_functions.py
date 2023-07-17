@@ -44,15 +44,14 @@ Creates array of pbfs varying in beta and pbf width (stretch and squeeze factor)
 # something like the characteristic pulse broadening time $\tau_d(\beta) / W$
 # where $W$ = pulse width before scattering (e.g. FWHM).
 
+from fit_functions import *
+
 import numpy as np
 from numpy import zeros, size
 from numpy import interp
 from scipy.interpolate import CubicSpline
 import math
 import glob
-
-from fitting_params import *
-
 
 # Read in the PBF files
 

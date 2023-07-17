@@ -6,11 +6,11 @@ Creates array of decaying exponential pbfs varying i pbf width (stretch and
 squeeze factor)
 """
 
+from fit_functions import *
+
 import numpy as np
 from scipy.interpolate import CubicSpline
 import math
-
-from fitting_params import *
 
 len_dec_exp_profile = 45
 
