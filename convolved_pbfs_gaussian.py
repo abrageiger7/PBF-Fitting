@@ -14,12 +14,15 @@ import pickle
 
 from fit_functions import *
 
+gauss_convolved_profiles = {}
+
 #===============================================================================
 # Convolve with varying beta pbfs
 #===============================================================================
 
 #import profiles from Professor Cordes
-beta_cordes_profs = np.load('beta_widths_pbf_data.npy')
+with open('beta_widths_pbf_data.npy', 'rb') as f:
+    beta_cordes_profs = np.load(f)
 
 # first want to scale the time to match the phase bins
 #this way we have 9549 values and they go up to however many phase bins
@@ -40,7 +43,10 @@ for i in beta_cordes_profs:
         timetofreq_pbfdata[data_index2] = pbfdata_freqs
         data_index2 = data_index2+1
     beta_pbf_data_freqscale[data_index1] = timetofreq_pbfdata
+
     data_index1 = data_index1+1
+
+del(beta_cordes_profs)
 
 #next we want to convert the broadening functions to unit area for convolution
 beta_pbf_data_unitarea = np.zeros((np.size(betaselect), np.size(widths), phase_bins))
@@ -54,10 +60,16 @@ for i in beta_pbf_data_freqscale:
         data_index2 = data_index2+1
     data_index1 = data_index1+1
 
+del(beta_pbf_data_freqscale)
+
+with open('beta_pbf_data_unitarea.npy', 'wb') as f:
+	np.save(f, beta_pbf_data_unitarea)
+
 #now convolve the pbfs with varying gaussians for the final bank of profiles to fit
 beta_convolved_profiles = np.zeros((np.size(betaselect), np.size(widths), \
 np.size(parameters[:,0]), phase_bins))
 #indicies of beta, template width, gaussian width, profile data
+
 
 data_index0 = 0
 for i in beta_pbf_data_unitarea:
@@ -75,12 +87,19 @@ for i in beta_pbf_data_unitarea:
         data_index1 = data_index1+1
     data_index0 = data_index0+1
 
+del(beta_pbf_data_unitarea)
+
+gauss_convolved_profiles['beta'] = beta_convolved_profiles
+
+del(beta_convolved_profiles)
+
 #===============================================================================
 #Convolve with varying zeta pbfs
 #===============================================================================
 
 #import profiles from professor Cordes
-zeta_cordes_profs = np.load('zeta_widths_pbf_data.npy')
+with open('zeta_widths_pbf_data.npy', 'wb') as f:
+    zeta_cordes_profs = np.load(f)
 
 #an array of the broadening functions scaled to however many phase bins data values
 zeta_pbf_data_freqscale = np.zeros((np.size(zetaselect), np.size(widths), phase_bins))
@@ -97,6 +116,8 @@ for i in zeta_cordes_profs:
     zeta_pbf_data_freqscale[data_index1] = timetofreq_pbfdata
     data_index1 = data_index1+1
 
+del(zeta_cordes_profs)
+
 #next we want to convert the broadening functions to unit area for convolution
 zeta_pbf_data_unitarea = np.zeros((np.size(zetaselect), np.size(widths), phase_bins))
 
@@ -108,6 +129,11 @@ for i in zeta_pbf_data_freqscale:
         zeta_pbf_data_unitarea[data_index1][data_index2] = ii/tsum
         data_index2 = data_index2+1
     data_index1 = data_index1+1
+
+with open('zeta_pbf_data_unitarea.npy', 'wb') as f:
+	np.save(f, zeta_pbf_data_unitarea)
+
+del(zeta_pbf_data_freqscale)
 
 #now convolve the pbfs with varying gaussians for the final bank of profiles to fit
 zeta_convolved_profiles = np.zeros((np.size(zetaselect), np.size(widths), \
@@ -130,6 +156,11 @@ for i in zeta_pbf_data_unitarea:
         data_index1 = data_index1+1
     data_index0 = data_index0+1
 
+del(zeta_pbf_data_unitarea)
+
+gauss_convolved_profiles['zeta'] = zeta_convolved_profiles
+
+del(zeta_convolved_profiles)
 
 #===============================================================================
 #Now convolve with decaying exponential pbfs
@@ -152,6 +183,7 @@ for ii in widths_exp_array:
     exp_pbf_data_freqscale[data_index1] = pbfdata_freqs
     data_index1 = data_index1+1
 
+del(widths_exp_array)
 
 #scale all profiles to unit area
 exp_data_unitarea = np.zeros((np.size(widths), phase_bins))
@@ -161,6 +193,11 @@ for ii in exp_pbf_data_freqscale:
     tsum = trapz(ii)
     exp_data_unitarea[data_index2] = ii/tsum
     data_index2 = data_index2+1
+
+del(exp_pbf_data_freqscale)
+
+with open('exp_data_unitarea.npy', 'wb') as f:
+	np.save(f, exp_data_unitarea)
 
 #convolve the unit area broadening functions with varying gaussians
 exp_convolved_profiles = np.zeros((np.size(widths),np.size(parameters[:,2]),phase_bins))
@@ -178,15 +215,11 @@ for ii in exp_data_unitarea:
         data_index2 = data_index2+1
     data_index0 = data_index0+1
 
+del(exp_data_unitarea)
 
-#===============================================================================
-#Now save dictionary of convolved profiles
-#===============================================================================
-
-gauss_convolved_profiles = {}
-gauss_convolved_profiles['beta'] = beta_convolved_profiles
-gauss_convolved_profiles['zeta'] = zeta_convolved_profiles
 gauss_convolved_profiles['exp'] = exp_convolved_profiles
+
+del(exp_convolved_profiles)
 
 with open(f'gauss_convolved_profiles_phasebins={phase_bins}.pkl', 'wb') as fp:
     pickle.dump(gauss_convolved_profiles, fp)
