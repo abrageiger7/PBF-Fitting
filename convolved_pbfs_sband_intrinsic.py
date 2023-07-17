@@ -20,11 +20,13 @@ import pickle
 import convolved_pbfs_gaussian as conv
 from fit_functions import *
 
-beta_pbf_data_unitarea = conv.beta_pbf_data_unitarea
-exp_data_unitarea = conv.exp_data_unitarea
-zeta_pbf_data_unitarea = conv.zeta_pbf_data_unitarea
+beta_pbf_data_unitarea = np.load('beta_pbf_data_unitarea.npy')
 
-j1903_intrins = np.load('j1903_high_freq_temp.npy') #2048//8 phase bins
+exp_data_unitarea = np.load('exp_data_unitarea.npy')
+
+zeta_pbf_data_unitarea = np.load('zeta_pbf_data_unitarea.npy')
+
+j1903_intrins = np.load('j1903_high_freq_temp.npy')
 
 #===============================================================================
 # First rescale J1903 template to varying widths
