@@ -98,7 +98,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, exp_gwidth_ind):
 
             print(f'Frequency {ii}')
 
-            datab = p.fit(ii, 'beta', bzeta_ind = beta_ind, iwidth_ind = beta_gwidth_ind)
+            datab = p.fit(ii, 'beta', bzeta_ind = beta_ind, gwidth_ind = beta_gwidth_ind)
             tau_listb[ii] = datab['tau_fin']
             tau_low_listb[ii] = datab['tau_low']
             tau_high_listb[ii] = datab['tau_up']
@@ -220,7 +220,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, exp_gwidth_ind):
 
             print(f'Frequency {ii}')
 
-            datae = p.fit(ii, 'exp', iwidth_ind = exp_gwidth_ind)
+            datae = p.fit(ii, 'exp', gwidth_ind = exp_gwidth_ind)
             tau_liste[ii] = datae['tau_fin']
             tau_low_liste[ii] = datae['tau_low']
             tau_high_liste[ii] = datae['tau_up']
@@ -341,7 +341,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, exp_gwidth_ind):
 
             print(f'Frequency {ii}')
 
-            datab = p.fit(ii, 'beta', bzeta_ind = beta_ind, iwidth_ind = beta_gwidth_ind)
+            datab = p.fit(ii, 'beta', bzeta_ind = beta_ind, gwidth_ind = beta_gwidth_ind)
             tau_listb[ii] = datab['tau_fin']
             tau_low_listb[ii] = datab['tau_low']
             tau_high_listb[ii] = datab['tau_up']
@@ -464,7 +464,7 @@ def power_laws_and_plots(beta_ind, beta_gwidth_ind, exp_gwidth_ind):
 
             print(f'Frequency {ii}')
 
-            datae = p.fit(ii, 'exp', iwidth_ind = exp_gwidth_ind)
+            datae = p.fit(ii, 'exp', gwidth_ind = exp_gwidth_ind)
             tau_liste[ii] = datae['tau_fin']
             tau_low_liste[ii] = datae['tau_low']
             tau_high_liste[ii] = datae['tau_up']
