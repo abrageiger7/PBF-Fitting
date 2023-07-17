@@ -16,7 +16,7 @@ from fit_functions import *
 
 from profile_class_gaussian import Profile_Gauss
 
-#fitting templates memory mapped
+#memory map fitting templates
 with open(f'sband_intrins_convolved_profiles_phasebins={phase_bins}.pkl', 'rb') as fp:
     pre_memory_mapped_template = pickle.load(fp)
 
@@ -56,7 +56,9 @@ zeta_tau_values = tau_values['zeta']
 #intrinsic widths
 intrinss_fwhm = np.load('sband_intrins_fwhm.npy')
 
-
+plt.rc('font', family = 'serif')
+plt.rc('xtick', labelsize='small')
+plt.rc('ytick', labelsize='small')
 
 class Profile_Intrinss(Profile_Gauss):
 
@@ -91,7 +93,7 @@ class Profile_Intrinss(Profile_Gauss):
 
         if iwidth == -1 and pbfwidth == -1: #neither width set, so 2D chi^2 surface
 
-            plt.title("Fit Chi-sqs")
+            plt.title("Reduced Chi-sqs")
             plt.xlabel(r"Intrinsic FWHM [$\mu$s]")
             plt.ylabel(r"Tau [$\mu$s]")
 

@@ -14,7 +14,7 @@ import pickle
 
 from fit_functions import *
 
-#fitting templates
+#memory map fitting templates
 with open(f'gauss_convolved_profiles_phasebins={phase_bins}.pkl', 'rb') as fp:
     pre_memory_mapped_template = pickle.load(fp)
 
@@ -49,6 +49,9 @@ beta_tau_values = tau_values['beta']
 exp_tau_values = tau_values['exp']
 zeta_tau_values = tau_values['zeta']
 
+plt.rc('font', family = 'serif')
+plt.rc('xtick', labelsize='small')
+plt.rc('ytick', labelsize='small')
 
 class Profile_Gauss:
 
@@ -138,7 +141,7 @@ class Profile_Gauss:
 
         if gwidth == -1 and pbfwidth == -1: #neither width set, so 2D chi^2 surface
 
-            plt.title("Fit Chi-sqs")
+            plt.title("Reduced Chi-sqs")
             plt.xlabel(r"Gaussian FWHM [$\mu$s]")
             plt.ylabel(r"Tau [$\mu$s]")
 
