@@ -29,7 +29,7 @@ with open(f'sband_intrins_convolved_profiles_phasebins={phase_bins}.pkl', 'rb') 
     sband_intrins_convolved_profiles = pickle.load(fp)
 
 #tau values corresponding to above templates in phase bins
-with open(f'tau_values_phasebins={phase_bins}.pkl', 'rb') as fp:
+with open(f'tau_values.pkl', 'rb') as fp:
     tau_values = pickle.load(fp)
 
 beta_tau_values = tau_values['beta']
