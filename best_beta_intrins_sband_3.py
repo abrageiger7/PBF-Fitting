@@ -20,6 +20,7 @@ import pickle
 from profile_class_sband_intrinsic import Profile_Intrinss as pcs
 from fit_functions import *
 
+
 #import data
 with open('j1903_data.pkl', 'rb') as fp:
     data_dict = pickle.load(fp)
