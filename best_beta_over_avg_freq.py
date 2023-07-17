@@ -4,7 +4,7 @@ Created July 2023
 
 Calculations of Best Fit Beta for each frequency Over all MJD averaged
 
-Only 100 pbf to choose from when ran
+Only 200 pbf to choose from when ran
 - set fitting_params.py in this way
 
 Set gwidth to 91 microseconds (index 12 when 50 gwidths)
@@ -22,6 +22,7 @@ from pypulse.singlepulse import SinglePulse
 
 from profile_class_sband_intrinsic import Profile_Intrinss as pcs
 from fit_functions import *
+
 
 #sband intrinsic convolved_profiles
 with open(f'sband_intrins_convolved_profiles_phasebins={phase_bins}.pkl', 'rb') as fp:
@@ -153,13 +154,22 @@ beta_collect = np.zeros(np.size(freqs))
 
 pbfwidth_collect = np.zeros(np.size(freqs))
 
-iwidth = 91.0
+iwidth = 101.0
 
-iwidth_ind = find_nearest((gauss_fwhm, iwidth))[1][0][0]
+iwidth_ind = find_nearest(gauss_fwhm, iwidth)[1][0][0]
 
 for i in range(np.size(freqs)):
 
-    lsqs_index_1, lsqs_index_2, toa_offset = find_best_template_3D(data[i], sband_intrins_convolved_profiles['beta'][:,:,iwidth_ind], num_par = 4)
+    subs_time_avg = np.zeros(phase_bins)
+
+    for ii in range(np.size(subs_time_avg)):
+            subs_time_avg[ii] = np.average(data[i][((2048//phase_bins)*ii):((2048//phase_bins)*(ii+1))])
+
+    plt.figure(1)
+    plt.plot(subs_time_avg)
+    plt.show()
+    plt.close('all')
+    lsqs_index_1, lsqs_index_2, toa_offset = find_best_template_3D(subs_time_avg, sband_intrins_convolved_profiles['beta'][:,:,iwidth_ind], num_par = 4)
 
     beta = betaselect[lsqs_index_1]
     beta_collect[i] = beta

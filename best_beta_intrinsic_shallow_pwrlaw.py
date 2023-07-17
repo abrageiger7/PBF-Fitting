@@ -22,9 +22,10 @@ import pickle
 from profile_class_sband_intrinsic import Profile_Intrinss as pcs
 from fit_functions import *
 
-powerlaw_inter = 101.0 # this is about the fwhm of the sband average
+
+powerlaw_inter = 95.0 # this is about the fwhm of the sband average
 freq_inter = 1742.0 # this is the starting freq for the powerlaw
-powerlaws = np.array([0.1,0.3,0.5]) # these are the powerlaws to test
+powerlaws = np.array([-0.1]) # these are the powerlaws to test
 
 #import data
 with open('j1903_data.pkl', 'rb') as fp:
@@ -35,9 +36,9 @@ mjds = np.zeros(np.size(mjd_strings))
 for i in range(np.size(mjd_strings)):
     mjds[i] = data_dict[mjd_strings[i]]['mjd']
 
-data_collect = {}
-
 for pwrlaw_ind in range(np.size(powerlaws)):
+
+    data_collect = {}
 
     for i in range(56):
 
@@ -85,6 +86,10 @@ for pwrlaw_ind in range(np.size(powerlaws)):
         data_collect[f'{int(np.round(mjd))}']['frequencies'] = freq_list
         data_collect[f'{int(np.round(mjd))}']['intrinsic_width_set'] = iwidth_listb
 
+    with open(f'best_beta_intrins_sband_allmjd_allfreq_iwidth_{int(np.round(powerlaw_inter))}micros_pwrlaw{powerlaws[pwrlaw_ind]}.pkl', 'wb') as fp:
+        pickle.dump(data_collect, fp)
+
+
 #===============================================================================
 # Now plotting the results - best fit beta mean and standard error for each of
 # 12 frequencies
@@ -102,51 +107,58 @@ for pwrlaw_ind in range(np.size(powerlaws)):
 
         for ii in mjd_list:
 
-            here = np.where(((data_collect_w[ii]['frequencies'] > (freqs[i]-3)) & (data_collect_w[ii]['frequencies'] < (freqs[i]+3))))
+            here = np.where(((data_collect[ii]['frequencies'] > (freqs[i]-25)) & (data_collect[ii]['frequencies'] < (freqs[i]+25))))
 
             if np.size(here) > 0:
 
-                beta_collect.append(data_collect_w[ii]['beta_fit'][here][0])
+                beta_collect.append(data_collect[ii]['beta_fit'][here][0])
 
         beta_based_on_freq_pwrlawiwidth[f'{freqs[i]}'] = beta_collect
 
-    beta_avgs_setiwidth = np.zeros(np.size(freqs))
-    beta_stds_setiwidth = np.zeros(np.size(freqs))
-    num_prof_per_freq_setiwidth = np.zeros(np.size(freqs))
+    beta_avgs_pwrlawiwidth = np.zeros(np.size(freqs))
+    beta_stds_pwrlawiwidth = np.zeros(np.size(freqs))
+    num_prof_per_freq_pwrlawiwidth = np.zeros(np.size(freqs))
 
+    beta_based_on_freq_pwrlawiwidth = dict(sorted(beta_based_on_freq_pwrlawiwidth.items()))
 
     ind = 0
 
-    for i in beta_based_on_freq_setiwidth.keys():
+    for i in beta_based_on_freq_pwrlawiwidth.keys():
 
         print(f'Frequency = {i}')
 
-        print(f'    Beta average = {np.average(beta_based_on_freq_setiwidth[i])}')
+        print(f'    Beta average = {np.average(beta_based_on_freq_pwrlawiwidth[i])}')
 
-        num_prof_per_freq_setiwidth[ind] = len(beta_based_on_freq_setiwidth[i])
+        num_prof_per_freq_pwrlawiwidth[ind] = len(beta_based_on_freq_pwrlawiwidth[i])
 
-        beta_avgs_setiwidth[ind] = np.average(beta_based_on_freq_setiwidth[i])
+        beta_avgs_pwrlawiwidth[ind] = np.average(beta_based_on_freq_pwrlawiwidth[i])
 
-        print(f'    Beta std = {np.std(beta_based_on_freq_setiwidth[i])}')
+        print(f'    Beta std = {np.std(beta_based_on_freq_pwrlawiwidth[i])}')
 
-        beta_stds_setiwidth[ind] = np.std(beta_based_on_freq_setiwidth[i])
+        beta_stds_pwrlawiwidth[ind] = np.std(beta_based_on_freq_pwrlawiwidth[i])
 
         ind += 1
 
     plt.figure(1)
     plt.rc('font', family = 'serif')
 
-    markers, caps, bars = plt.errorbar(x = freqs, y = beta_avgs_setiwidth, yerr = beta_stds_setiwidth/np.sqrt(num_prof_per_freq_setiwidth), fmt = '.', capsize = 2, color = 'k')
+    fig, ax = plt.subplots()
+
+    markers, caps, bars = ax.errorbar(x = freqs, y = beta_avgs_pwrlawiwidth, yerr = beta_stds_pwrlawiwidth/np.sqrt(num_prof_per_freq_pwrlawiwidth), fmt = '.', capsize = 2, color = 'k')
 
     [bar.set_alpha(0.4) for bar in bars]
     [cap.set_alpha(0.4) for cap in caps]
 
-    plt.xlabel('Frequency [MHz]')
-    plt.ylabel('Beta')
-    plt.title(rf'Best Fit Beta, $\X_(iFWHM)$ = {powerlaws[pwrlaw_ind]}')
-    plt.savefig(f'best_beta_allmjd_versus_freq_ifwhm_{int(np.round(gauss_fwhm[iwidth_ind]))}micros_pwrlaw{powerlaws[pwrlaw_ind]}.pdf')
-    plt.show()
+    ax.set_yticks(np.linspace(3.3,3.6,6))
+    ax.set_xlabel('Frequency [MHz]')
+    ax.set_ylabel('Beta')
+    ax.set_title(f'Best Fit Beta, FWHM({freq_inter}) = {powerlaw_inter}, X_FWHM = {powerlaws[pwrlaw_ind]}')
+    plt.savefig(f'best_beta_allmjd_versus_freq_ifwhm_{int(np.round(powerlaw_inter))}micros_pwrlaw{powerlaws[pwrlaw_ind]}.pdf')
+    #plt.show()
     plt.close('all')
 
-    with open(f'best_beta_intrins_sband_allmjd_allfreq_iwidth_{int(np.round(gauss_fwhm[iwidth_ind]))}micros_pwrlaw{powerlaws[pwrlaw_ind]}.pkl', 'wb') as fp:
-        pickle.dump(data_collect, fp)
+    del(beta_based_on_freq_pwrlawiwidth)
+    del(beta_avgs_pwrlawiwidth)
+    del(beta_stds_pwrlawiwidth)
+    del(num_prof_per_freq_pwrlawiwidth)
+    del(data_collect)
