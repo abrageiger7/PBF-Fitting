@@ -11,12 +11,14 @@ File of Constants and Functions for Fitting Broadening Functions
 # chi2_distance (helper function)
 # subaverages4
 # calculate_tau
+# triple_gauss
 
 #imports
 import matplotlib.pyplot as plt
 import numpy as np
 import math
 from scipy.integrate import trapz
+from scipy.interpolate import CubicSpline
 from scipy import special
 
 #===============================================================================
@@ -29,8 +31,8 @@ init_data_phase_bins = 2048
 #number of phase bins for a profile - time average every 8 of the original data
 #2048
 
-phase_bins = 2048
-#phase_bins = init_data_phase_bins//8
+#phase_bins = 2048
+phase_bins = init_data_phase_bins//8
 
 # number of time bins for original cordes pbfs
 cordes_phase_bins = 9549
@@ -49,35 +51,7 @@ time = np.arange(0,phase_bins,1) * (sec_pulse_per/phase_bins) * s_to_ms_conv #mi
 
 opr_size = int((600/2048)*phase_bins) #number of phase bins for offpulse noise calculation
 
-j1903_period = 0.0021499 * 1e6 #microseconds
-
-#===============================================================================
-# Fitting Parameters
-# ==============================================================================
-
-# beta values chosen to use
-betaselect = np.array([3.1, 3.5, 3.667, 3.8, 3.9, 3.95, 3.975, 3.99, 3.995, 3.9975, 3.999, 3.99999])
-
-# zeta values chosen to use
-zetaselect = np.array([0.01, 0.1, 0.2, 0.3, 0.5, 1.0, 2.0, 5.0])
-
-#array of widths used (pbf stretch factors)
-#previously as low as .1 and as high as 42
-num_pbfwidth = 200
-widths = np.linspace(0.1, 35.0, num_pbfwidth)
-
-#array of gaussian widths (phase bins)
-num_gwidth = 400
-widths_gaussian = np.linspace((0.1/2048)*phase_bins, (150.0/2048)*phase_bins, num_gwidth)
-
-#gauss widths converted to fwhm microseconds
-gauss_fwhm = widths_gaussian * ((0.0021499/phase_bins) * 1e6 * (2.0*math.sqrt(2*math.log(2))))
-
-#gaussian parameters in phase bins and arbitrary intensity comparitive to data
-parameters = np.zeros((num_gwidth, 3))
-parameters[:,0] = 0.3619 #general amplitude to be scaled
-parameters[:,1] = (1025.0/2048)*phase_bins #general mean
-parameters[:,2] = widths_gaussian #independent variable
+j1903_period = sec_pulse_per * 1e6 #microseconds
 
 #===============================================================================
 # Finite Scintle Effect
@@ -166,6 +140,64 @@ def likelihood_evaluator(x, y, cdf=False, median=False, pm=True, values=None):
             retval[i] = x[indv]
         return retval
 
+def stretch_or_squeeze(i, ii):
+
+    '''i is profile stretching and squeezing (numpy array), ii is stretch or squeeze factor (float or int)
+    Returns unit height stretched or squeezed array'''
+
+    cordes_phase_bins = np.size(i)
+
+    ii = np.abs(ii)
+
+    time_bins = np.arange(cordes_phase_bins)
+
+    #adjust times to this width
+    #multiply the times by the stretch/squeeze value (the width)
+    #for stretch greater than zero, the PBF will broaden
+    #for stretch less than zero, the PBF will narrow
+
+    if ii>1:
+        times_adjusted = time_bins*ii #1- widen the pulse
+        #interpolate the pulse in its broadened state
+        interpolate_width = CubicSpline(times_adjusted, i) #2- interpolate to get section of the pulse (extrapolate = True?
+        #-> probably don't need because should only be interpolating)
+        width_pbf_data = np.zeros(cordes_phase_bins)
+
+        #add the intensity that loops around for stretched pulses
+        index = 0
+        #while(index<(np.max(times_adjusted))):
+        while(index<(np.max(times_adjusted)-cordes_phase_bins)):
+            interp_sect = interpolate_width(np.arange(index,index+cordes_phase_bins,1))
+            width_pbf_data = np.add(width_pbf_data, interp_sect)
+            index = index+cordes_phase_bins
+
+        final_interp_sect_array = np.arange(index, int(np.max(times_adjusted))+1, 1)
+        final_interp_sect = interpolate_width(final_interp_sect_array)
+        final_interp_sect = np.concatenate((final_interp_sect, np.zeros((index + cordes_phase_bins - int(np.max(times_adjusted)) - 1))))
+        width_pbf_data = np.add(width_pbf_data, final_interp_sect)
+
+    #squeeze narrowed pulses and add section of training zeros onto the end of them
+    elif ii<1:
+        #lengthen the array of the pulse so the pulse is comparatively narrow, adding zeros to the end
+        width_pbf_data = np.zeros(int((1/ii)*cordes_phase_bins))
+        width_pbf_data[:cordes_phase_bins] = i
+        times_scaled = np.zeros(int((1/ii)*cordes_phase_bins))
+        #scale back to an array of size cordes_phase_bins
+        for iv in range(int((1/ii)*cordes_phase_bins)):
+            times_scaled[iv] = cordes_phase_bins/(int((1/ii)*cordes_phase_bins))*iv
+        interpolate_less1 = CubicSpline(times_scaled, width_pbf_data)
+        width_pbf_data = interpolate_less1(np.arange(cordes_phase_bins))
+
+    #for width values of 1, no alteration necessary
+    elif ii == 1:
+        width_pbf_data = i
+
+    #unit area
+    width_pbf_data = width_pbf_data / np.max(width_pbf_data)
+
+    return(width_pbf_data)
+
+
 def chi2_distance(A, B, std, subt_deg_of_freedom):
 
     '''Takes two vectors and calculates their comparative chi-squared value
@@ -188,7 +220,7 @@ def chi2_distance(A, B, std, subt_deg_of_freedom):
 
     return(chi_squared)
 
-def subaverages4(mjdi, data, freqsm, plot = False):
+def subaverages4(mjdi, data, freqsm, final_phase_bins, plot = False):
     '''Takes an epoch of pulsar data and subaverages every four frequency
     channels
 
@@ -222,7 +254,7 @@ def subaverages4(mjdi, data, freqsm, plot = False):
         plt.colorbar().set_label('Pulse Intensity')
         plt.show()
 
-    subs = np.zeros((len(freqsm)//4,2048))
+    subs = np.zeros((len(freqsm)//4,init_data_phase_bins))
     center_freqs = np.zeros(len(freqsm)//4)
 
     #floor division for subintegrations all of 4 frequency channels
@@ -236,12 +268,12 @@ def subaverages4(mjdi, data, freqsm, plot = False):
     #ignores any excess beyond the highest multiple of 4 frequency channels
 
     #now subaveraging in time
-    if phase_bins != 2048:
+    if final_phase_bins != init_data_phase_bins:
         subs_time_avg = np.zeros((len(freqsm)//4,phase_bins))
 
         for i in range(len(freqsm)//4):
             for ii in range(phase_bins):
-                subs_time_avg[i][ii] = np.average(subs[i][((2048//phase_bins)*ii):((2048//phase_bins)*ii)+(2048//phase_bins)])
+                subs_time_avg[i][ii] = np.average(subs[i][((init_data_phase_bins//phase_bins)*ii):((init_data_phase_bins//phase_bins)*ii)+(init_data_phase_bins//phase_bins)])
         subs = subs_time_avg
 
     if plot == True:
@@ -295,3 +327,38 @@ def calculate_tau(profile):
     tau_index = near[1][0][0]
     tau_unconvert = near[0]
     return(tau, tau_index, tau_unconvert)
+
+def single_gauss(p, t, unit_area = True):
+    '''Input of this array for the 3 Gaussian components: amp, mean, width
+    Returns unit area 1 component Gaussian'''
+    gauss = (p[0]*np.exp((-1.0/2.0)*(((t-(p[1]* phase_bins))/(p[2]* phase_bins))*((t-(p[1]* phase_bins))/(p[2]* phase_bins)))))
+    #unit area
+    max_gauss = np.max(gauss)
+    area_gauss = trapz(gauss)
+    if unit_area == False:
+        return(gauss)
+    gauss = gauss / area_gauss
+    return(gauss, max_gauss/area_gauss)
+
+def triple_gauss(p, g, q, t, unit_area = True):
+    '''Input of three arrays for the 3 Gaussian components: amp, mean, width
+    Returns unit area 3 component Gaussian'''
+    phase_bins = np.size(t)
+    gauss = (p[0]*np.exp((-1.0/2.0)*(((t-(p[1]* phase_bins))/(p[2]* phase_bins))*((t-(p[1]* phase_bins))/(p[2]* phase_bins))))) + (g[0]*np.exp((-1.0/2.0)*(((t-(g[1]* phase_bins))/(g[2]* phase_bins))*((t-(g[1]* phase_bins))/(g[2]* phase_bins))))) + (q[0]*np.exp((-1.0/2.0)*(((t-(q[1]* phase_bins))/(q[2]* phase_bins))*((t-(q[1]* phase_bins))/(q[2]* phase_bins)))))
+    #unit area
+    max_gauss = np.max(gauss)
+    area_gauss = trapz(gauss)
+    if unit_area == False:
+        return(gauss)
+    gauss = gauss / area_gauss
+    return(gauss, max_gauss/area_gauss)
+
+def convolve(arr1, arr2):
+    '''Input of two 1D arrays and returns them convolved and normalized to
+    unit height'''
+    if np.size(arr1) != np.size(arr2):
+        print('Input arrays must be the same size.')
+    convolved = np.fft.ifft(np.fft.fft(arr1)*np.fft.fft(arr2)).real
+    #unit area
+    convolved = convolved / np.max(convolved)
+    return(convolved)

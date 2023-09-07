@@ -8,6 +8,12 @@ Only 200 pbf to choose from when ran
 - set fitting_params.py in this way
 
 Set gwidth to 91 microseconds (index 12 when 50 gwidths)
+
+
+
+HAVE TO REDO WITH AUGUST REVISION AND IMPROVEMENT OF CODE AND ORGANIZATION
+
+
 """
 
 import numpy as np
@@ -208,7 +214,7 @@ fig, ax = plt.subplots()
 ax.plot(freqs, tau_collect, '.')
 
 ax.set_xlabel('Frequency [MHz]')
-ax.set_ylabel('Best Fit Tau')
+ax.set_ylabel(r'Best Fit Tau [$\mu$s]')
 ax.set_title(f'Best Fit Tau, I_FWHM = {int(iwidth)}')
 plt.savefig(f'best_tau_for_all_lband_data_averaged_per_freq_setiwidth={int(np.round(gauss_fwhm[iwidth_ind]))}.pdf')
 plt.show()
