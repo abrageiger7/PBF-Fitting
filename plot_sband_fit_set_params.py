@@ -15,9 +15,9 @@ shape convolved with an extended medium pulse broadening function with zeta = 0
 and beta = 11/3.'''
 
 comp1 = [0.04, 0.42, 0.01]
-comp2 = [1.0, 0.48, 0.04]
+comp2 = [1.0, 0.48, 0.01]
 comp3 = [0.3, 0.56, 0.025]
-tau = 11.2
+tau = 11.
 
 print('Component 1 ' + str(comp1))
 print('Component 2 ' + str(comp2))
@@ -49,9 +49,9 @@ sps = SinglePulse(profile_fitted*fitting[2])
 fitted_template = sps.shiftit(fitting[1])
 
 plt.figure(1)
-plt.plot(phase, sband, color = 'lightsteelblue', lw = 2.8)
-plt.plot(phase, fitted_template, color = 'midnightblue')
+plt.plot(phase, sband/np.max(sband), color = 'darkgrey', lw = 2.0)
+plt.plot(phase, fitted_template/np.max(sband), color = 'k')
 plt.xlabel('Pulse Phase')
-plt.title(f'J1903 Modeled S-band 2200 [MHz]')
+plt.ylabel('Normalised Flux')
 plt.show()
 plt.close('all')

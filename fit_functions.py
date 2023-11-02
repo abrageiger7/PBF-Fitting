@@ -49,7 +49,7 @@ s_to_ms_conv = 1e3
 #time phase bins in milliseconds
 time = np.arange(0,phase_bins,1) * (sec_pulse_per/phase_bins) * s_to_ms_conv #milliseconds
 
-opr_size = int((600/2048)*phase_bins) #number of phase bins for offpulse noise calculation
+opr_size = int((500/2048)*phase_bins) #number of phase bins for offpulse noise calculation
 
 j1903_period = sec_pulse_per * 1e6 #microseconds
 
@@ -147,6 +147,8 @@ def stretch_or_squeeze(i, ii):
 
     cordes_phase_bins = np.size(i)
 
+    plt.figure()
+
     ii = np.abs(ii)
 
     time_bins = np.arange(cordes_phase_bins)
@@ -185,11 +187,12 @@ def stretch_or_squeeze(i, ii):
         #scale back to an array of size cordes_phase_bins
         for iv in range(int((1/ii)*cordes_phase_bins)):
             times_scaled[iv] = cordes_phase_bins/(int((1/ii)*cordes_phase_bins))*iv
+
         interpolate_less1 = CubicSpline(times_scaled, width_pbf_data)
         width_pbf_data = interpolate_less1(np.arange(cordes_phase_bins))
 
     #for width values of 1, no alteration necessary
-    elif ii == 1:
+    else:
         width_pbf_data = i
 
     #unit area
@@ -311,6 +314,46 @@ def subaverages4(mjdi, data, freqsm, final_phase_bins, plot = False):
 
     return(subs, center_freqs, mjdi)
 
+def subaverage(data, freqsm, final_phase_bins, subaverage_by):
+    '''Takes an epoch of pulsar data and subaverages every subaverage_by
+    frequency channels
+
+    Pre-condition:
+    data (numpy array): a 2D array of the epoch data overfrequency and time
+    freqsm (list): the 1D frequency array corresponding the channels within the data
+    final_phase_bins (int): number of phase bins to time average to
+    subaverage_by (int): number of channels to average by
+
+    Returns the subaveraged data (numpy array) and the average frequencies for
+    this subaveraged data (list). Also subaverages in time if
+    phase bins is different from 2048 as in the data.'''
+
+    subs = np.zeros((len(freqsm)//subaverage_by,init_data_phase_bins))
+    center_freqs = np.zeros(len(freqsm)//subaverage_by)
+
+    #floor division for subintegrations all of 4 frequency channels
+    #also compute the average frequencies for each subintegration
+    for i in range(len(freqsm)//subaverage_by):
+        datad = data[subaverage_by*i:(subaverage_by*i)+subaverage_by]
+        dataf = freqsm[subaverage_by*i:(subaverage_by*i)+subaverage_by]
+        subs[i] = np.average(datad, axis = 0)
+        center_freqs[i] = np.average(dataf)
+
+    #ignores any excess beyond the highest multiple of 4 frequency channels
+    #now subaveraging in time
+    if final_phase_bins != init_data_phase_bins:
+        subs_time_avg = np.zeros((len(freqsm)//subaverage_by,phase_bins))
+
+        for i in range(len(freqsm)//subaverage_by):
+            for ii in range(phase_bins):
+                subs_time_avg[i][ii] = np.average(subs[i]\
+                [((init_data_phase_bins//phase_bins)*ii):\
+                ((init_data_phase_bins//phase_bins)*ii)\
+                +(init_data_phase_bins//phase_bins)])
+        subs = subs_time_avg
+
+    return(subs, center_freqs)
+
 def calculate_tau(profile):
     '''Calculates tau value of J1903 profile by calculating where it decays to
     the value of its max divided by e. Microseconds
@@ -362,3 +405,44 @@ def convolve(arr1, arr2):
     #unit area
     convolved = convolved / np.max(convolved)
     return(convolved)
+
+def profile_fscrunch(data):
+
+    '''Returns the frequency average of the input data array.
+
+    2D numpy array data: data array to average. Requires axes of frequency and
+    time respectively'''
+
+    return(np.average(data, axis = 0))
+
+def calculate_rms(profile):
+
+    '''Calculates the RMS of the noise of the first fifth of phase for pulse
+    data profile 'profile'.
+
+    1D numpy array profile: pulse data profile'''
+
+    opr_size = np.size(profile)//5
+
+    rms_collect = 0
+    for i in range(opr_size):
+        rms_collect += profile[i]**2
+
+    rms = math.sqrt(rms_collect/opr_size)
+    return(rms)
+
+def time_average(profile, new_phase_bins):
+
+    '''Averages the given profile in time resulting in a time averaged profile
+    with new_phase_bins number of phase bins.
+
+    numpy array profile: the data profile to subaverage
+    int new_phase_bins: the number of data points to subaverage to'''
+
+    number_to_average = np.size(profile)//new_phase_bins
+    averaged = np.zeros(new_phase_bins)
+
+    for i in range(np.size(averaged)):
+        averaged[i] = np.average(profile[number_to_average*i:number_to_average*(i+1)])
+
+    return(averaged)

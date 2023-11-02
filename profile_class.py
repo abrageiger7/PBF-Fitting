@@ -15,30 +15,31 @@ plt.rc('font', family = 'serif')
 class Profile_Fitting:
 
 
-    #Intrinsic model - version one before 8/23/23
+    # mcmc and powerlaw intrinsic model as of 9/12/23
     # sband_freq = 2200.0
-    # comp1_amp_sband = 0.055
-    # comp1_amp_pwrlaw = 0.91
-    # comp3_amp_sband = 0.41
-    # comp3_amp_pwrlaw = -0.30
-    # comp3_mean_sband = 0.045
-    # comp3_mean_pwrlaw = -0.057
+    # comp1_amp_sband = 0.054
+    # comp1_amp_pwrlaw = 0.77
+    # comp3_amp_sband = 0.332
+    # comp3_amp_pwrlaw = -0.3
+    # comp3_width_sband = 0.020
+    # comp3_width_pwrlaw = -1.0
+    # comp3_mean_sband = 0.540
+    # comp3_mean_pwrlaw = 0.0
 
-    #intrinsic model - version two after 8/25/23 - developed from beta = 11/3
-    # and zeta = 0 extended medium pbf
-    sband_freq = 2200.0
-    comp1_amp_sband = 0.057
-    comp1_amp_pwrlaw = 1.4
-    comp3_amp_sband = 0.40
-    comp3_amp_pwrlaw = 0.3
-    comp3_width_sband = 0.024
-    comp3_width_pwrlaw = -0.4
-    comp3_mean_sband = 0.54
+    # mcmc and powerlaw intrinsic model as of 10/18/23 (all powerlaws with
+    # error +- 0.1, except amp1 which is +-0.05)
+    sband_freq = 2132.0
+    comp1_amp_sband = 0.054
+    comp1_amp_pwrlaw = 1.08
+    comp3_amp_sband = 0.332
+    comp3_amp_pwrlaw = 0.0
+    comp3_width_sband = 0.020
+    comp3_width_pwrlaw = -0.9
+    comp3_mean_sband = 0.540
     comp3_mean_pwrlaw = 0.0
 
 
-
-    def __init__(self, mjd, data, frequencies, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms = -1):
+    def __init__(self, mjd, data, frequencies, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms = -1, subaverage=True):
         '''
         mjd (float) - epoch of observation
         data (2D array) - pulse data for epoch
@@ -78,9 +79,13 @@ class Profile_Fitting:
 
 
         #subaverages the data for every four frequency channels
-        s = subaverages4(mjd, data, frequencies, phase_bins)
-        self.num_sub = len(s[1])
-        self.subaveraged_info = s
+        if subaverage==True:
+            s = subaverages4(mjd, data, frequencies, phase_bins)
+            self.num_sub = len(s[1])
+            self.subaveraged_info = s
+        else:
+            self.num_sub = np.size(frequencies)
+            self.subaveraged_info = [data, frequencies]
 
 
     def fit_sing(self, profile, num_par):
@@ -106,7 +111,7 @@ class Profile_Fitting:
         #true minimum, not just a local min
         profile = np.roll(profile, ind_diff)
 
-        sp = SinglePulse(self.data_suba, opw = np.arange(0, self.start_index))
+        sp = SinglePulse(self.data_suba, opw = np.arange(0, opr_size))
         fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template
         #matching, scale factor, TOA error, scale factor error, signal to noise
         #ratio, cross-correlation coefficient
@@ -154,13 +159,18 @@ class Profile_Fitting:
             plt.xlabel(r'Tau [$\mu$s]')
             plt.ylabel('Reduced Chi-Sq')
 
-            if pbf_type == 'beta' or pbf_type == 'zeta':
+            if pbf_type == 'beta':
+                bzeta_ind = np.where((self.betas == bzeta))[0][0];
+                plt.plot(self.tau_values[pbf_type][bzeta_ind], chi_sq_arr, drawstyle='steps-pre')
+
+            elif pbf_type == 'zeta':
+                bzeta_ind = np.where((self.zetas == bzeta))[0][0];
                 plt.plot(self.tau_values[pbf_type][bzeta_ind], chi_sq_arr, drawstyle='steps-pre')
 
             elif pbf_type == 'exp':
                 plt.plot(self.tau_values[pbf_type], chi_sq_arr, drawstyle='steps-pre')
 
-            elif (pbf_type == 'beta' or pbf_type == 'zeta'):
+            if (pbf_type == 'beta' or pbf_type == 'zeta'):
                 if self.intrinsic_shape == 'modeled':
                     title = f"PBF_fit_chisq|{pbf_type.upper()}={bzeta}|{self.intrinsic_shape.upper()}|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
                 else:
@@ -323,7 +333,7 @@ class Profile_Fitting:
         #this lines the profiles up approximately so that Single Pulse finds the
         #true minimum, not just a local min
         profile = np.roll(profile, ind_diff)
-        sp = SinglePulse(self.data_suba, opw = np.arange(0, self.start_index))
+        sp = SinglePulse(self.data_suba, opw = np.arange(0, opr_size))
         fitting = sp.fitPulse(profile) #TOA cross-correlation, TOA template
         #matching, scale factor, TOA error, scale factor error, signal to noise
         #ratio, cross-correlation coefficient
@@ -345,7 +355,7 @@ class Profile_Fitting:
             #this lines the profiles up approximately so that Single Pulse finds the
             #true minimum, not just a local min
             profilel = np.roll(profilel, ind_diff)
-            sp = SinglePulse(self.data_suba, opw = np.arange(0, self.start_index))
+            sp = SinglePulse(self.data_suba, opw = np.arange(0, opr_size))
             fitting = sp.fitPulse(profilel) #TOA cross-correlation, TOA template
             #matching, scale factor, TOA error, scale factor error, signal to noise
             #ratio, cross-correlation coefficient
@@ -368,7 +378,7 @@ class Profile_Fitting:
             #this lines the profiles up approximately so that Single Pulse finds the
             #true minimum, not just a local min
             profileh = np.roll(profileh, ind_diff)
-            sp = SinglePulse(self.data_suba, opw = np.arange(0, self.start_index))
+            sp = SinglePulse(self.data_suba, opw = np.arange(0, opr_size))
             fitting = sp.fitPulse(profileh) #TOA cross-correlation, TOA template
             #matching, scale factor, TOA error, scale factor error, signal to noise
             #ratio, cross-correlation coefficient
@@ -464,18 +474,20 @@ class Profile_Fitting:
 
         mask = np.zeros(phase_bins)
 
-        if self.freq_suba >= 1600:
-            self.start_index = int((700/2048)*phase_bins)
-            self.stop_index = int((1548/2048)*phase_bins)
-        elif self.freq_suba >= 1400 and self.freq_suba < 1600:
-            self.start_index = int((700/2048)*phase_bins)
-            self.stop_index = int((1648/2048)*phase_bins)
-        elif self.freq_suba >= 1200 and self.freq_suba < 1400:
-            self.start_index = int((650/2048)*phase_bins)
-            self.stop_index = int((1798/2048)*phase_bins)
-        elif self.freq_suba >= 1000 and self.freq_suba < 1200:
-            self.start_index = int((600/2048)*phase_bins)
-            self.stop_index = int((1948/2048)*phase_bins)
+        # if self.freq_suba >= 1600:
+        #     self.start_index = int((700/2048)*phase_bins)
+        #     self.stop_index = int((1548/2048)*phase_bins)
+        # elif self.freq_suba >= 1400 and self.freq_suba < 1600:
+        #     self.start_index = int((700/2048)*phase_bins)
+        #     self.stop_index = int((1648/2048)*phase_bins)
+        # elif self.freq_suba >= 1200 and self.freq_suba < 1400:
+        #     self.start_index = int((650/2048)*phase_bins)
+        #     self.stop_index = int((1798/2048)*phase_bins)
+        # elif self.freq_suba >= 1000 and self.freq_suba < 1200:
+        #     self.start_index = int((600/2048)*phase_bins)
+        #     self.stop_index = int((1948/2048)*phase_bins)
+        self.start_index = 0
+        self.stop_index = phase_bins
         mask[self.start_index:self.stop_index] = 1.0
 
         self.bin_num_care = self.stop_index-self.start_index
@@ -497,13 +509,13 @@ class Profile_Fitting:
         if self.intrinsic_shape == 'modeled':
 
             comp1_amp = self.comp1_amp_sband * np.power(self.freq_suba/self.sband_freq, self.comp1_amp_pwrlaw)
-            comp1_mean = 0.414 # fraction of phase
-            comp1_width = 0.0215 # fraction of phase
+            comp1_mean = 0.406 # fraction of phase
+            comp1_width = 0.020 # fraction of phase
             comp1 = [comp1_amp, comp1_mean, comp1_width]
 
             comp2_amp = 1.00
-            comp2_mean = 0.500 # fraction of phase
-            comp2_width = 0.0157 # fraction of phase
+            comp2_mean = 0.493 # fraction of phase
+            comp2_width = 0.015 # fraction of phase
             comp2 = [comp2_amp, comp2_mean, comp2_width]
 
             comp3_amp = self.comp3_amp_sband * np.power(self.freq_suba/self.sband_freq, self.comp3_amp_pwrlaw)
@@ -684,7 +696,7 @@ class Profile_Fitting:
 
                     tau_fin = self.tau_values[pbf_type][bzeta_ind][lsqs_pbf_index]
 
-                    self.chi_plot(chi_sqs_arr, pbf_type, bzeta = beta)
+                    self.chi_plot(chi_sqs_array, pbf_type, bzeta = beta)
 
                     #ERROR TEST - one reduced chi-squared unit above and below and these
                     #chi-squared bins are for varying pbf width

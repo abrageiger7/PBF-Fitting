@@ -142,7 +142,7 @@ if __name__ == '__main__':
     num_pbfwidth = 400
 
     #looking to get tau values on this range for
-    tau_values = np.linspace(0.1,500,399)
+    tau_values = np.linspace(0.1,500,num_pbfwidth)
 
     #===============================================================================
     # Generate Beta and Tau Varying PBFs

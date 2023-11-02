@@ -8,6 +8,8 @@ from astropy.time import Time
 from scipy.stats import pearsonr
 import os
 
+'''Need to add screen type to plots so can distinguish!'''
+
 # arguments when running the script:
 # 1 - intrinsic shape (str) either 'modeled', 'gaussian', or 'sband_avg'
 intrinsic_shape = str(sys.argv[1])
@@ -15,12 +17,14 @@ intrinsic_shape = str(sys.argv[1])
 beta = float(sys.argv[2])
 # 3 - zeta value (float or int) - from 0.0 - 5.0
 zeta = float(sys.argv[3])
+# 4 - 'thin' or 'thick' medium pbf
+screen = str(sys.argv[4])
 
 if intrinsic_shape != 'modeled':
-    # 4 - intrinsic width (float or int) for numerical pbf fitting
-    iwidth_bzeta = float(sys.argv[4])
-    # 5 - intrinsic width (float or int) for decaying exponential pbf fitting
-    iwidth_exp = float(sys.argv[5])
+    # 5 - intrinsic width (float or int) for numerical pbf fitting
+    iwidth_bzeta = float(sys.argv[5])
+    # 6 - intrinsic width (float or int) for decaying exponential pbf fitting
+    iwidth_exp = float(sys.argv[6])
 
 
 # make sure inputted intrinsic shape is valid
@@ -108,6 +112,10 @@ def tau_vs_freq_pwrlaw(mjd_start_ind, mjd_end_ind, intrinsic_shape, pbf_type, bz
     figb, axsb = plt.subplots(nrows=7, ncols=4, sharex=True, sharey=True, figsize = (8.27,11.69))
 
     slopes_vs_freqs = np.zeros((mjd_end_ind-mjd_start_ind,4))
+    frequency_collection = []
+    tau_value_collection = []
+    tau_lowerr_value_collection = []
+    tau_higherr_value_collection = []
 
     #to collect the likelihood distributions for each mjd's fit
     likelihood_slope = np.zeros((mjd_end_ind-mjd_start_ind,num_slope))
@@ -156,6 +164,11 @@ def tau_vs_freq_pwrlaw(mjd_start_ind, mjd_end_ind, intrinsic_shape, pbf_type, bz
 
         tau_low_listb = np.sqrt(np.array(tau_low_listb)**2+np.array(fse_listb)**2)
         tau_high_listb = np.sqrt(np.array(tau_high_listb)**2+np.array(fse_listb)**2)
+
+        tau_value_collection.append(tau_listb)
+        tau_lowerr_value_collection.append(tau_low_listb)
+        tau_higherr_value_collection.append(tau_high_listb)
+        frequency_collection.append(freq_list)
 
         #convert errors to log space
         total_low_erra = tau_low_listb / (np.array(tau_listb)*math.log(10.0))
@@ -274,7 +287,7 @@ def tau_vs_freq_pwrlaw(mjd_start_ind, mjd_end_ind, intrinsic_shape, pbf_type, bz
     figb.show()
     plt.close('all')
 
-    return(plaw_data, likelihood_slope, likelihood_yint, slopes_vs_freqs)
+    return(plaw_data, likelihood_slope, likelihood_yint, slopes_vs_freqs, tau_value_collection, tau_lowerr_value_collection, tau_higherr_value_collection, frequency_collection)
 
 def plot_title(plot_title, pbf_type):
 
@@ -612,7 +625,7 @@ def plot_all_powerlaws(intrinsic_shape, pbf_type, bzeta_ind, iwidth_ind_bzeta = 
             title = f'powerlaw_data|{intrinsic_shape.upper()}|{pbf_type.upper()}={zetas[bzeta_ind]}&EXP|TIME_AVG_EVERY{time_avg_factor}'
 
 
-    if (intrinsic_shape == 'modeled' and sys.argv[4] == 'rerun') or (intrinsic_shape != 'modeled' and sys.argv[6] == 'rerun'):
+    if (intrinsic_shape == 'modeled' and sys.argv[5] == 'rerun') or (intrinsic_shape != 'modeled' and sys.argv[7] == 'rerun'):
 
         plaw_datab = np.zeros((np.size(mjds),6))
         plaw_datae = np.zeros((np.size(mjds),6))
@@ -622,32 +635,82 @@ def plot_all_powerlaws(intrinsic_shape, pbf_type, bzeta_ind, iwidth_ind_bzeta = 
         likelihood_yinte = np.zeros((np.size(mjds),num_yint))
         slopes_arr_b = np.zeros((np.size(mjds),4))
         slopes_arr_e = np.zeros((np.size(mjds),4))
+        tau_values_collecte = []
+        tau_values_collectb = []
+        tau_values_lowerr_collecte = []
+        tau_values_lowerr_collectb = []
+        tau_values_higherr_collecte = []
+        tau_values_higherr_collectb = []
+        frequencies_collect = []
 
-        plaw_data, likelihood_slope, likelihood_yint, slopes = tau_vs_freq_pwrlaw(0, np.size(mjds)//2, intrinsic_shape, pbf_type, bzeta_ind = bzeta_ind, iwidth_ind = iwidth_ind_bzeta)
+        plaw_data, likelihood_slope, likelihood_yint, slopes, taus, taus_low, taus_high, frequencies \
+        = tau_vs_freq_pwrlaw(0, np.size(mjds)//2, intrinsic_shape, pbf_type, bzeta_ind = bzeta_ind, iwidth_ind = iwidth_ind_bzeta)
         plaw_datab[:np.size(mjds)//2] = plaw_data
         likelihood_slopeb[:np.size(mjds)//2] = likelihood_slope
         likelihood_yintb[:np.size(mjds)//2] = likelihood_yint
         slopes_arr_b[:np.size(mjds)//2] = slopes
+        for x in taus:
+            tau_values_collectb.append(x)
+        for x in frequencies:
+            frequencies_collect.append(x)
+        for x in taus_low:
+            tau_values_lowerr_collectb.append(x)
+        for x in taus_high:
+            tau_values_higherr_collectb.append(x)
 
-        plaw_data, likelihood_slope, likelihood_yint, slopes = tau_vs_freq_pwrlaw(0, np.size(mjds)//2, intrinsic_shape, 'exp', iwidth_ind = iwidth_ind_exp)
+
+        plaw_data, likelihood_slope, likelihood_yint, slopes, taus, taus_low, taus_high, _ \
+        = tau_vs_freq_pwrlaw(0, np.size(mjds)//2, intrinsic_shape, 'exp', iwidth_ind = iwidth_ind_exp)
         plaw_datae[:np.size(mjds)//2] = plaw_data
         likelihood_slopee[:np.size(mjds)//2] = likelihood_slope
         likelihood_yinte[:np.size(mjds)//2] = likelihood_yint
         slopes_arr_e[:np.size(mjds)//2] = slopes
+        for x in taus:
+            tau_values_collecte.append(x)
+        for x in taus_low:
+            tau_values_lowerr_collecte.append(x)
+        for x in taus_high:
+            tau_values_higherr_collecte.append(x)
 
-        plaw_data, likelihood_slope, likelihood_yint, slopes = tau_vs_freq_pwrlaw(np.size(mjds)//2, np.size(mjds), intrinsic_shape, pbf_type, bzeta_ind = bzeta_ind, iwidth_ind = iwidth_ind_bzeta)
+
+        plaw_data, likelihood_slope, likelihood_yint, slopes, taus, taus_low, taus_high, frequencies \
+        = tau_vs_freq_pwrlaw(np.size(mjds)//2, np.size(mjds), intrinsic_shape, pbf_type, bzeta_ind = bzeta_ind, iwidth_ind = iwidth_ind_bzeta)
         plaw_datab[np.size(mjds)//2:np.size(mjds)] = plaw_data
         likelihood_slopeb[np.size(mjds)//2:np.size(mjds)] = likelihood_slope
         likelihood_yintb[np.size(mjds)//2:np.size(mjds)] = likelihood_yint
         slopes_arr_b[np.size(mjds)//2:np.size(mjds)] = slopes
+        for x in taus:
+            tau_values_collectb.append(x)
+        for x in frequencies:
+            frequencies_collect.append(x)
+        for x in taus_low:
+            tau_values_lowerr_collectb.append(x)
+        for x in taus_high:
+            tau_values_higherr_collectb.append(x)
 
-        plaw_data, likelihood_slope, likelihood_yint, slopes = tau_vs_freq_pwrlaw(np.size(mjds)//2, np.size(mjds), intrinsic_shape, 'exp', iwidth_ind = iwidth_ind_exp)
+
+        plaw_data, likelihood_slope, likelihood_yint, slopes, taus, taus_low, taus_high, _ \
+        = tau_vs_freq_pwrlaw(np.size(mjds)//2, np.size(mjds), intrinsic_shape, 'exp', iwidth_ind = iwidth_ind_exp)
         plaw_datae[np.size(mjds)//2:np.size(mjds)] = plaw_data
         likelihood_slopee[np.size(mjds)//2:np.size(mjds)] = likelihood_slope
         likelihood_yinte[np.size(mjds)//2:np.size(mjds)] = likelihood_yint
         slopes_arr_e[np.size(mjds)//2:np.size(mjds)] = slopes
+        for x in taus:
+            tau_values_collecte.append(x)
+        for x in taus_low:
+            tau_values_lowerr_collecte.append(x)
+        for x in taus_high:
+            tau_values_higherr_collecte.append(x)
 
-        np.savez(title, plaw_datab = plaw_datab, plaw_datae = plaw_datae, likelihood_slopeb = likelihood_slopeb, likelihood_yintb = likelihood_yintb, likelihood_slopee = likelihood_slopee, likelihood_yinte = likelihood_yinte, slopes_arr_b = slopes_arr_b, slopes_arr_e = slopes_arr_e)
+
+        np.savez(title, plaw_datab = plaw_datab, plaw_datae = plaw_datae, likelihood_slopeb = likelihood_slopeb, \
+        likelihood_yintb = likelihood_yintb, likelihood_slopee = likelihood_slopee, likelihood_yinte = likelihood_yinte, \
+        slopes_arr_b = slopes_arr_b, slopes_arr_e = slopes_arr_e, tau_values_collecte = np.array(tau_values_collecte, dtype = object), \
+        tau_values_collectb = np.array(tau_values_collectb, dtype = object), frequencies_collect = np.array(frequencies_collect, dtype = object), \
+        tau_values_lowerr_collecte = np.array(tau_values_lowerr_collecte, dtype = object), \
+        tau_values_lowerr_collectb = np.array(tau_values_lowerr_collectb, dtype = object), tau_values_higherr_collecte = \
+        np.array(tau_values_higherr_collecte, dtype = object), tau_values_higherr_collectb = \
+        np.array(tau_values_higherr_collectb, dtype = object))
 
 
     else:
@@ -679,7 +742,7 @@ if __name__ == '__main__':
 
 
     #load and memory map the profile fitting grid
-    if intrinsic_shape != 'modeled':
+    if intrinsic_shape != 'modeled' and screen == 'thick':
 
         fitting_profile_data = np.load(f'convolved_profiles_intrinsic={intrinsic_shape}|PHASEBINS={phase_bins}.npz')
         convolved_profiles = {}
@@ -711,7 +774,11 @@ if __name__ == '__main__':
 
         del(fitting_profile_data)
 
-    else:
+    elif intrinsic_shape != 'modeled' and screen == 'thin':
+
+        raise Exception("Thin screen model is only available for modeled intrinsic shape.")
+
+    elif screen == 'thick':
 
         ua_pbfs = {}
         tau_values = {}
@@ -730,7 +797,32 @@ if __name__ == '__main__':
         fitting_profiles = ua_pbfs
         intrinsic_fwhms = -1
 
-    #collect beta, zeta, and relevant related information
+    else:
+
+        # thin screen intrinsic modeled case
+
+        ua_pbfs = np.load('thin_screen_pbfs.npz')['pbfs_unitarea']
+        tau_values = np.load('thin_screen_pbfs.npz')['tau_mus']
+        betas = np.load('thin_screen_pbfs.npz')['betas']
+        zetas = np.load('thin_screen_pbfs.npz')['zetas']
+
+        fitting_profiles = ua_pbfs
+        intrinsic_fwhms = -1
+
+        #collect beta, zeta, and relevant related information
+        if zeta != 0:
+            type_test = 'zeta'
+            bzeta_ind = find_nearest(zetas, zeta)[1][0][0]
+            fitting_profiles = fitting_profiles[:,bzeta_ind,:,:]
+            tau_values = tau_values[:,bzeta_ind,:]
+
+        else:
+            type_test = 'beta'
+            bzeta_ind = find_nearest(betas,beta)[1][0][0]
+            fitting_profiles = fitting_profiles[bzeta_ind,:,:,:]
+            tau_values = tau_values[bzeta_ind,:,:]
+
+
     if zeta != 0:
         type_test = 'zeta'
         bzeta_ind = find_nearest(zetas, zeta)[1][0][0]

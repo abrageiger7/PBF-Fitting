@@ -1,15 +1,3 @@
-"""
-Created July 2023
-@author: Abra Geiger abrageiger7
-
-Calculations of Best Fit Beta Over all MJD and Frequency
-
-Only 100 pbf to choose from when ran
-- set fitting_params.py in this way
-
-Set intrinsic width to powerlaw starting at 101 microseconds
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -19,11 +7,12 @@ from astropy.time import Time
 import pickle
 import sys
 
-
 from profile_class import Profile_Fitting
 from fit_functions import *
 
-pbf_type = sys.argv[1]
+'''Adapt for one profile'''
+
+pbf_type = 'zeta'
 intrinsic_shape = 'modeled'
 
 if __name__ == '__main__':
@@ -56,42 +45,40 @@ if __name__ == '__main__':
 
     data_collect = {}
 
-    for i in range(56):
+    mjd = ...
+    data = data_dict[mjd_strings[i]]['data']
+    freqs = data_dict[mjd_strings[i]]['freqs']
+    dur = data_dict[mjd_strings[i]]['dur']
 
-        mjd = data_dict[mjd_strings[i]]['mjd']
-        data = data_dict[mjd_strings[i]]['data']
-        freqs = data_dict[mjd_strings[i]]['freqs']
-        dur = data_dict[mjd_strings[i]]['dur']
+    prof = Profile_Fitting(mjd, data, freqs, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms)
 
-        prof = Profile_Fitting(mjd, data, freqs, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms)
+    freq_list = np.zeros(prof.num_sub)
 
-        freq_list = np.zeros(prof.num_sub)
+    tau_listb = np.zeros(prof.num_sub)
 
-        tau_listb = np.zeros(prof.num_sub)
+    beta_listb = np.zeros(prof.num_sub)
+    beta_low_listb = np.zeros(prof.num_sub)
+    beta_up_listb = np.zeros(prof.num_sub)
 
-        beta_listb = np.zeros(prof.num_sub)
-        beta_low_listb = np.zeros(prof.num_sub)
-        beta_up_listb = np.zeros(prof.num_sub)
+    for ii in range(prof.num_sub):
 
-        for ii in range(prof.num_sub):
+        datab = prof.fit(ii, pbf_type)
 
-            datab = prof.fit(ii, pbf_type)
+        print(f'Frequency = {prof.freq_round}')
 
-            print(f'Frequency = {prof.freq_round}')
+        freq_list[ii] = prof.freq_suba
+        tau_listb[ii] = datab['tau_fin']
+        beta_listb[ii] = datab[pbf_type]
+        beta_low_listb[ii] = datab[f'{pbf_type}_low']
+        beta_up_listb[ii] = datab[f'{pbf_type}_up']
 
-            freq_list[ii] = prof.freq_suba
-            tau_listb[ii] = datab['tau_fin']
-            beta_listb[ii] = datab[pbf_type]
-            beta_low_listb[ii] = datab[f'{pbf_type}_low']
-            beta_up_listb[ii] = datab[f'{pbf_type}_up']
-
-        data_collect[f'{int(np.round(mjd))}'] = {}
-        data_collect[f'{int(np.round(mjd))}'][f'{pbf_type}_fit'] = beta_listb
-        data_collect[f'{int(np.round(mjd))}'][f'{pbf_type}_low'] = beta_low_listb
-        data_collect[f'{int(np.round(mjd))}'][f'{pbf_type}_up'] = beta_up_listb
-        data_collect[f'{int(np.round(mjd))}']['tau'] = tau_listb
-        data_collect[f'{int(np.round(mjd))}']['mjd'] = mjd
-        data_collect[f'{int(np.round(mjd))}']['frequencies'] = freq_list
+    data_collect[f'{int(np.round(mjd))}'] = {}
+    data_collect[f'{int(np.round(mjd))}'][f'{pbf_type}_fit'] = beta_listb
+    data_collect[f'{int(np.round(mjd))}'][f'{pbf_type}_low'] = beta_low_listb
+    data_collect[f'{int(np.round(mjd))}'][f'{pbf_type}_up'] = beta_up_listb
+    data_collect[f'{int(np.round(mjd))}']['tau'] = tau_listb
+    data_collect[f'{int(np.round(mjd))}']['mjd'] = mjd
+    data_collect[f'{int(np.round(mjd))}']['frequencies'] = freq_list
 
     with open(f'best_fit_{pbf_type}|{intrinsic_shape.upper()}.pkl', 'wb') as fp:
         pickle.dump(data_collect, fp)
