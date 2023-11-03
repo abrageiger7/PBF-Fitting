@@ -1,11 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-from fit_functions import calculate_tau, stretch_or_squeeze, phase_bins, time_average, find_nearest
+from fit_functions import calculate_tau, stretch_or_squeeze, phase_bins, find_nearest
 from scipy.interpolate import CubicSpline
 from scipy.integrate import trapz
-
-plt.ion()
 
 # Cordes thin screen pbfs
 # CAREFUL: time steps spaced logarithmically
@@ -37,41 +35,6 @@ original_tau_values = np.zeros(np.shape(pbf_array))
 
 reference_tau_scale = 50000.0
 
-i = find_nearest(betas, 3.667)[1][0][0]
-ii = find_nearest(zetas, 0)[1][0][0]
-
-time = time_values[i][ii]
-pbf = pbf_array[i][ii]
-plt.plot(time, pbf)
-
-spline = CubicSpline(time, pbf)
-
-# large number of phase bins to accomodate log time spacing
-time_linear = np.linspace(time[0], time[-1], large_phase_bins)
-pbf_linear = spline(time_linear)
-plt.plot(time_linear, pbf_linear)
-
-tau = one_over_e_values[i][ii]
-print(f"Scale factor = {reference_tau_scale/tau}")
-
-rescaled_pbf = stretch_or_squeeze(pbf_linear, reference_tau_scale/tau)
-plt.plot(time_linear, rescaled_pbf)
-
-del(pbf_linear)
-del(tau)
-new_pbf = time_average(rescaled_pbf, phase_bins)
-rescaled_pbfs[i][ii] = new_pbf
-original_tau_values[i][ii] = calculate_tau(new_pbf)[0]
-print(f"Final tau = {original_tau_values[i][ii]}")
-plt.plot(np.linspace(time[0], time[-1], phase_bins), new_pbf)
-plt.show()
-
-np.save('zeta_0_beta_11_3_thin_screen_pbf.npy', new_pbf/np.max(new_pbf))
-
-del(rescaled_pbf)
-del(new_pbf)
-
-
 for i in range(np.shape(pbf_array)[0]): #beta
      for ii in range(np.shape(pbf_array)[1]): #zeta
 
@@ -92,14 +55,14 @@ for i in range(np.shape(pbf_array)[0]): #beta
 
         del(pbf_linear)
         del(tau)
-        new_pbf = time_average(rescaled_pbf, phase_bins)
+        spline = CubicSpline(np.linspace(0,np.size(rescaled_pbf)-1,np.size(rescaled_pbf)), rescaled_pbf)
+        new_pbf = spline(np.linspace(0,np.size(rescaled_pbf)-1,phase_bins))
         rescaled_pbfs[i][ii] = new_pbf
         original_tau_values[i][ii] = calculate_tau(new_pbf)[0]
         print(f"Final tau = {original_tau_values[i][ii]}")
 
         del(rescaled_pbf)
         del(new_pbf)
-
 
 for i in range(np.shape(pbf_array)[0]): #beta
      for ii in range(np.shape(pbf_array)[1]): #zeta

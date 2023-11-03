@@ -9,7 +9,7 @@ zeta = str(sys.argv[3]) # set inner scale of waveumber spectrum
 screen = str(sys.argv[4]) # 4 'thin' or 'thick' medium pbf
 rerun = str(sys.argv[5]) # if 'rerun', recalulate the intrinsic components.
 # otherwise, just plot the already calculated data for the above inputs. Throws
-# exception is has not already been calcualted
+# exception if has not already been calcualted
 if rerun == 'rerun':
     numruns = int(sys.argv[6]) # number of mcmc runs in order to calculate sband
     # shape parameters

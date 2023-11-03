@@ -147,8 +147,6 @@ def stretch_or_squeeze(i, ii):
 
     cordes_phase_bins = np.size(i)
 
-    plt.figure()
-
     ii = np.abs(ii)
 
     time_bins = np.arange(cordes_phase_bins)
@@ -401,8 +399,9 @@ def convolve(arr1, arr2):
     unit height'''
     if np.size(arr1) != np.size(arr2):
         print('Input arrays must be the same size.')
-    convolved = np.fft.ifft(np.fft.fft(arr1)*np.fft.fft(arr2)).real
-    #unit area
+    arr1_unita = arr1/trapz(arr1)
+    arr2_unita = arr2/trapz(arr2)
+    convolved = np.fft.ifft(np.fft.fft(arr1_unita)*np.fft.fft(arr2)).real
     convolved = convolved / np.max(convolved)
     return(convolved)
 
@@ -439,7 +438,11 @@ def time_average(profile, new_phase_bins):
     numpy array profile: the data profile to subaverage
     int new_phase_bins: the number of data points to subaverage to'''
 
+    if (np.size(profile)%new_phase_bins != 0):
+        raise Exception('Must time average by an integer factor!')
+
     number_to_average = np.size(profile)//new_phase_bins
+
     averaged = np.zeros(new_phase_bins)
 
     for i in range(np.size(averaged)):

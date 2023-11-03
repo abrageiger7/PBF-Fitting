@@ -45,7 +45,6 @@ if __name__ == "__main__":
 
     mcmc_fitting_object = MCMC_Profile_Fit(beta, zeta, screen, sband, \
     sband_avg_center_freq, 'mjd_average')
-    print('completed object creation')
 
     if rerun == 'rerun':
 
@@ -56,10 +55,10 @@ if __name__ == "__main__":
         mcmc_fitting_object.frequency, screen, lband_data_array, lband_freqs, \
         sband)
 
-        amp1_tests = np.linspace(-1.0,1.0,41)
-        amp3_tests = np.linspace(-1.0,1.0,8)
-        width_tests = np.linspace(-1.0,1.0,8)
-        phase_tests = np.linspace(-1.0,1.0,8)
+        amp1_tests = np.linspace(-1.5,1.5,41)
+        amp3_tests = np.linspace(-1.3,1.2,8)
+        width_tests = np.linspace(-1.3,1.2,8)
+        phase_tests = np.linspace(-1.3,1.2,8)
 
         powerlaw_fitting_object.fit_comp3(amp3_tests, phase_tests, width_tests)
         powerlaw_fitting_object.fit_amp1(amp1_tests)

@@ -307,6 +307,7 @@ class MCMC_Profile_Fit(MCMC_Profile_Fit_Per_Epoch):
 
     def __init__(self, beta, zeta, thin_or_thick_medium, data_profile, \
     profile_freq, mjd_tag):
+        '''pbf must have at least as many phase bins as data profile'''
 
         self.beta = beta
         self.zeta = zeta
@@ -322,7 +323,10 @@ class MCMC_Profile_Fit(MCMC_Profile_Fit_Per_Epoch):
         self.profile = data_profile
         self.frequency = profile_freq
 
-        self.pbf = time_average(pbf, np.size(self.profile))
+        if np.size(self.profile) != np.size(pbf):
+            self.pbf = time_average(pbf, np.size(self.profile))
+        else:
+            self.pbf = pbf
         self.pbf_tau = calculate_tau(pbf)[0]
 
         # check profile
@@ -332,8 +336,8 @@ class MCMC_Profile_Fit(MCMC_Profile_Fit_Per_Epoch):
         color = 'k')
         ax.set_xlabel('Phase')
         ax.set_ylabel('Arbitrary Intensity')
-        ax.set_title(f'MJD {mjd_tag} S-band Average')
-        fig.show()
+        ax.set_title(f'MJD: {mjd_tag} S-band Average')
+        plt.show()
         plt.close('all')
 
         self.yerr = calculate_rms(self.profile)

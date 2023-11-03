@@ -92,6 +92,14 @@ if __name__ == '__main__':
 
     print('After Add to Baseline')
 
+    prof = Profile_Fitting(mjd, data+(.01*np.max(data[-1])), freqs, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms, subaverage=False)
+
+    datab = prof.fit(index_care, pbf_type)
+
+    print(datab[pbf_type], '-', datab['zeta_low'], '+', datab['zeta_up'])
+
+    print('After Subtract From Baseline')
+
     prof = Profile_Fitting(mjd, data-(.01*np.max(data[-1])), freqs, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms, subaverage=False)
 
     datab = prof.fit(index_care, pbf_type)

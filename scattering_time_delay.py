@@ -64,7 +64,10 @@ if __name__ == '__main__':
 
     timer_period = np.linspace(0,2.15,phase_bins)
 
-    subs_time_avg = time_average(pbf, phase_bins)
+    if (np.size(pbf) != phase_bins):
+        subs_time_avg = time_average(pbf, phase_bins)
+    else:
+        subs_time_avg = pbf
 
     for ii in range(np.size(subs_time_avg)):
         subs_time_avg[ii] = np.average(pbf[((cordes_phase_bins//phase_bins)*ii):((cordes_phase_bins//phase_bins)*(ii+1))])
