@@ -498,12 +498,7 @@ class Profile_Fitting:
         #Calculates the root mean square noise of the off pulse.
         #Used later to calculate normalized chi-squared.
 
-        rms_collect = 0
-        for i in range(opr_size):
-            rms_collect += self.data_suba[i]**2
-        rms = math.sqrt(rms_collect/opr_size)
-
-        self.rms_noise = rms
+        self.rms_noise = calculate_rms(self.data_suba, opr_size)
 
 
         if self.intrinsic_shape == 'modeled':

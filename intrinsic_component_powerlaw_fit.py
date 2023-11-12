@@ -59,7 +59,7 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
         # subaverage the data so that there are 8 resulting frequency channels
         self.data, self.frequencies = subaverage(data, frequencies, np.shape(data)[1]//8, np.shape(data)[0]//8)
 
-        self.pbf = time_average(pbf, np.shape(self.data)[1])
+        self.pbf = pbf
         self.pbf_tau = calculate_tau(pbf)[0]
 
         # calculate the rms of the noise for each frequency subaverage
@@ -115,7 +115,7 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
                         for ix in range(np.size(test_tau)):
 
                             intrinsic_shape = triple_gauss([amp, phase, width], self.comp2, self.comp1, timer)[0]
-                            pulse_broadening = stretch_or_squeeze(self.pbf, test_tau[ix])
+                            pulse_broadening = time_average(stretch_or_squeeze(self.pbf, test_tau[ix]), np.shape(self.data)[1])
                             profile = convolve(intrinsic_shape, pulse_broadening)
 
                             sp = SinglePulse(self.data[ind])
@@ -208,7 +208,7 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
                 for ix in range(np.size(test_tau)):
 
-                    profile = convolve(triple_gauss([gamp3, gcent3, gwidth3], self.comp2, [gamp1,self.comp1[1],self.comp1[2]], timer)[0], stretch_or_squeeze(self.pbf, test_tau[ix]))
+                    profile = convolve(triple_gauss([gamp3, gcent3, gwidth3], self.comp2, [gamp1,self.comp1[1],self.comp1[2]], timer)[0], time_average(stretch_or_squeeze(self.pbf, test_tau[ix]), np.shape(self.data)[1]))
 
                     sp = SinglePulse(self.data[ind])
                     fitting = sp.fitPulse(profile)
@@ -315,7 +315,7 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
                 intrinsic = triple_gauss([gamp3, gcent3, gwidth3], self.comp2, [gamp1,self.comp1[1],self.comp1[2]], timer)[0]
 
-                profile = convolve(intrinsic, stretch_or_squeeze(self.pbf, test_pbfwidth[iii]))
+                profile = convolve(intrinsic, time_average(stretch_or_squeeze(self.pbf, test_pbfwidth[iii]), np.shape(self.data)[1]))
 
                 sp = SinglePulse(self.data[ind])
                 fitting = sp.fitPulse(profile)
@@ -332,12 +332,13 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
             chi_sq_sum += pbf_chisq[here]
 
             pbfwidth = test_pbfwidth[here]
-            tau = calculate_tau(stretch_or_squeeze(self.pbf, pbfwidth))[0]
+            final_profiler = time_average(stretch_or_squeeze(self.pbf, pbfwidth), np.shape(self.data)[1])
+            tau = calculate_tau(final_profiler)[0]
             tau_values_collect[ind] = tau
 
             intrinsic = triple_gauss([gamp3, gcent3, gwidth3], self.comp2, [gamp1,self.comp1[1],self.comp1[2]], timer)[0]
 
-            profile = convolve(intrinsic, stretch_or_squeeze(self.pbf, pbfwidth))
+            profile = convolve(intrinsic, final_profiler)
 
             sp = SinglePulse(self.data[ind])
             fitting = sp.fitPulse(profile)
@@ -365,7 +366,7 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
         pbf_stretch_factor = self.sband_tau/self.pbf_tau
 
-        profile = convolve(intrinsic, stretch_or_squeeze(self.pbf, pbf_stretch_factor))
+        profile = convolve(intrinsic, time_average(stretch_or_squeeze(self.pbf, pbf_stretch_factor), np.shape(self.data)[1]))
 
         sp = SinglePulse(self.sband_profile)
         fitting = sp.fitPulse(profile)
@@ -453,7 +454,7 @@ class Intrinsic_Component_Powerlaw_Fit(Intrinsic_Component_Powerlaw_Fit_Per_Epoc
             self.data = data
             self.frequencies = frequencies
 
-            self.pbf = time_average(pbf, np.shape(self.data)[1])
+            self.pbf = pbf
             self.pbf_tau = calculate_tau(pbf)[0]
 
             # calculate the rms of the noise for each frequency subaverage

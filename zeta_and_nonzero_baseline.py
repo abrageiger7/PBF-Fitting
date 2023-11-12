@@ -53,6 +53,7 @@ for i in lband_data:
     data_time_averaged[ind] = time_average(i,256)
     ind += 1
 
+#index_care = len(freq_keys)-1
 index_care = 0
 key_care = freq_keys[index_care]
 
@@ -92,7 +93,7 @@ if __name__ == '__main__':
 
     print('After Add to Baseline')
 
-    prof = Profile_Fitting(mjd, data+(.01*np.max(data[-1])), freqs, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms, subaverage=False)
+    prof = Profile_Fitting(mjd, data+(.00001*np.max(data[-1])), freqs, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms, subaverage=False)
 
     datab = prof.fit(index_care, pbf_type)
 
@@ -100,7 +101,7 @@ if __name__ == '__main__':
 
     print('After Subtract From Baseline')
 
-    prof = Profile_Fitting(mjd, data-(.01*np.max(data[-1])), freqs, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms, subaverage=False)
+    prof = Profile_Fitting(mjd, data-(.00001*np.max(data[-1])), freqs, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms, subaverage=False)
 
     datab = prof.fit(index_care, pbf_type)
 

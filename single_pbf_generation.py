@@ -16,6 +16,7 @@ beta = float(sys.argv[1]) # set spectral index of wavenumber spectrum
 zeta = float(sys.argv[2]) # set inner scale of waveumber spectrum
 screen = str(sys.argv[3]) # 4 'thin' or 'thick' medium pbf
 
+plt.rc('font', family = 'serif')
 
 def pbf_data_beta(beta_input):
 
@@ -23,61 +24,22 @@ def pbf_data_beta(beta_input):
     betaselect = np.array([3.1, 3.5, 3.667, 3.8, 3.9, 3.95, 3.975, 3.99, 3.995, 3.9975, 3.999, 3.99999])
 
     beta_care = find_nearest(betaselect, beta_input)[0]
+    print(beta_care)
 
     # Read in the PBF files
-    npzfiles = glob.glob(f'PBF*beta_{beta_care}*zeta_0.000*.npz')
-    nfiles = size(npzfiles)
+    npzfile = glob.glob(f'PBF*beta_{beta_care}*zeta_0.000*.npz')
 
-    for n, npzfile in enumerate(npzfiles):
+    indata = np.load(npzfile[0], allow_pickle=True)   # True needed to get dicts
 
-        indata = np.load(npzfile, allow_pickle=True)    # True needed to get dicts
+    pbf = indata['PBF']
 
-        tvec = indata['tvec']
-        pbf = indata['PBF']
-        GDnu2 = indata['GDnu2']
-        bbeta = indata['bb']
-        dvs = indata['dvs']
-        vsvec = indata['vsvec']
-        inargs = indata['args']
-        zeta = inargs.all().zeta
-        sftype = inargs.all().sftype
+    pbf /= pbf.max()          # unit maximum
 
-        if n==0:
-            # use lists to handle input that has different length tvec's:
-            tvecarray2 = []
-            pbfarray2 = []
-            GDnu2array2 = []
-            betavec = zeros(nfiles)
-            dvsvec = zeros(nfiles)
-            zetavec = zeros(nfiles)
-            sftypevec = zeros(nfiles, dtype=str)
-
-        # Recalculate tvec because earlier versions of gammaD_from_pde_sw.py
-        # calculated it differently and seems to be off by x2 (too large)
-        dt_spline = 1 / (2.*vsvec.max())
-        # factor of 2\pi makes widths in vs-space and t-space in bin units reasonable
-
-        dt_spline *= 2*np.pi
-        Nt2 = vsvec.size
-        tvec = np.linspace(0, 2*Nt2-1,2*Nt2-1, endpoint=True) * dt_spline
-
-        GDnu2array2.append(GDnu2[0:size(vsvec)])
-        betavec[n] = bbeta
-        dvsvec[n] = dvs
-        zetavec[n] = zeta
-        sftypevec[n] = sftype
-
-        tvecplotmax = 30
-
-        pbf /= pbf.max()                # unit maximum
-        tinds = np.where(tvec < tvecplotmax)
-        time = tvec[tinds]
-
-        spline = CubicSpline(np.linspace(0,np.size(pbf)-1,np.size(pbf)), pbf)
-        new_pbf = spline(np.linspace(0,np.size(pbf)-1,init_data_phase_bins))
-
-        #returns the times (x-data) and pbf (y-data)
-        np.save(f'zeta_0_beta_{beta_care}_pbf.npy', new_pbf/new_pbf.max())
+    spline = CubicSpline(np.linspace(0,np.size(pbf)-1,np.size(pbf)), pbf)
+    new_pbf = spline(np.linspace(0,np.size(pbf)-1,init_data_phase_bins))
+    title = f'zeta_0.0_beta_{beta_care}_pbf.npy'
+    print(title)
+    np.save(title, new_pbf/new_pbf.max())
 
 
 def pbf_data_zeta(zeta_input):
@@ -86,61 +48,23 @@ def pbf_data_zeta(zeta_input):
     zetaselect = np.array([0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 1.0, 2.0, 5.0])
 
     zeta_care = find_nearest(zetaselect, zeta_input)[0]
+    print(zeta_care)
 
     # Select only beta = 3.66667 files:
-    npzfiles = glob.glob(f'PBF*3.66**npz')
-    nfiles = np.size(npzfiles)
+    npzfile = glob.glob(f'PBF*beta_3.66*zeta_{zeta_care}*.npz')
 
-    for n, npzfile in enumerate(npzfiles):
+    indata = np.load(npzfile[0], allow_pickle=True)   # True needed to get dicts
 
-        indata = np.load(npzfile, allow_pickle=True)    # True needed to get dicts
+    pbf = indata['PBF']
 
-        tvec = indata['tvec']
-        pbf = indata['PBF']
-        GDnu2 = indata['GDnu2']
-        bbeta = indata['bb']
-        dvs = indata['dvs']
-        vsvec = indata['vsvec']
-        inargs = indata['args']
-        zeta = inargs.all().zeta
-        sftype = inargs.all().sftype
+    pbf /= pbf.max()          # unit maximum
 
-        if n==0:
-            # use lists to handle input that has different length tvec's:
-            tvecarray2 = []
-            pbfarray2 = []
-            GDnu2array2 = []
-            betavec = zeros(nfiles)
-            dvsvec = zeros(nfiles)
-            zetavec = zeros(nfiles)
-            sftypevec = zeros(nfiles, dtype=str)
+    spline = CubicSpline(np.linspace(0,np.size(pbf)-1,np.size(pbf)), pbf)
+    new_pbf = spline(np.linspace(0,np.size(pbf)-1,init_data_phase_bins))
+    title = f'zeta_{zeta_care}_beta_3.667_pbf.npy'
+    print(title)
 
-        # Recalculate tvec because earlier versions of gammaD_from_pde_sw.py
-        # calculated it differently and seems to be off by x2 (too large)
-        dt_spline = 1 / (2.*vsvec.max())
-        # factor of 2\pi makes widths in vs-space and t-space in bin units reasonable
-
-        dt_spline *= 2*np.pi
-        Nt2 = vsvec.size
-        tvec = np.linspace(0, 2*Nt2-1,2*Nt2-1, endpoint=True) * dt_spline
-
-        GDnu2array2.append(GDnu2[0:size(vsvec)])
-        betavec[n] = bbeta
-        dvsvec[n] = dvs
-        zetavec[n] = zeta
-        sftypevec[n] = sftype
-
-        tvecplotmax = 30
-
-        pbf /= pbf.max()                # unit maximum
-        tinds = np.where(tvec < tvecplotmax)
-        time = tvec[tinds]
-
-        spline = CubicSpline(np.linspace(0,np.size(pbf)-1,np.size(pbf)), pbf)
-        new_pbf = spline(np.linspace(0,np.size(pbf)-1,init_data_phase_bins))
-
-        #returns the times (x-data) and pbf (y-data)
-        np.save(f'zeta_{zeta_care}_beta_11_3_pbf.npy', new_pbf/new_pbf.max())
+    np.save(title, new_pbf/new_pbf.max())
 
 
 def save_single_pbf_extended_medium(beta, zeta):
@@ -148,7 +72,7 @@ def save_single_pbf_extended_medium(beta, zeta):
     '''Requires that zeta is 0 is beta is not 11/3. Also, requires that beta
     and zeta values already have pbfs calculated.'''
 
-    if zeta == 0:
+    if zeta == 0.0:
 
         pbf_data_beta(beta)
 
@@ -181,7 +105,7 @@ def save_single_pbf_thin_screen(beta, zeta):
     betas = beta_values
     zetas = inner_scale
 
-    reference_tau_scale = 50000.0
+    reference_tau_scale = 400000.0
 
     i = find_nearest(betas, beta)[1][0][0]
     ii = find_nearest(zetas, zeta)[1][0][0]
@@ -210,12 +134,11 @@ def save_single_pbf_thin_screen(beta, zeta):
 
     print(f"Scale factor = {reference_tau_scale/tau}")
 
-    rescaled_pbf = stretch_or_squeeze(pbf_linear, reference_tau_scale/tau)
+    rescaled_pbf = stretch_or_squeeze(pbf_linear, reference_tau_scale/tau, plot=True)
     plt.figure(1)
     plt.plot(time_linear, rescaled_pbf, label=f'{large_phase_bins} Linearly Interpolated Time Steps', color='blue')
 
     del(pbf_linear)
-    del(tau)
     spline = CubicSpline(np.linspace(0,np.size(rescaled_pbf)-1,np.size(rescaled_pbf)), rescaled_pbf)
     new_pbf = spline(np.linspace(0,np.size(rescaled_pbf)-1,init_data_phase_bins))
     plt.plot(np.linspace(time[0], time[-1], init_data_phase_bins), new_pbf, label='Interpolated', color='red')

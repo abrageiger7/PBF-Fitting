@@ -20,9 +20,9 @@ class MCMC_Profile_Fit_Per_Epoch:
         self.beta = beta
         self.zeta = zeta
         if thin_or_thick_medium == 'thick':
-            pbf = np.load(f'zeta_{zeta}_beta_{beta}_pbf.npy')
+            self.pbf = np.load(f'zeta_{zeta}_beta_{beta}_pbf.npy')
         elif thin_or_thick_medium == 'thin':
-            pbf = np.load(f'zeta_{zeta}_beta_{beta}_thin_screen_pbf.npy')
+            self.pbf = np.load(f'zeta_{zeta}_beta_{beta}_thin_screen_pbf.npy')
         else:
             valid_thick = '\'thick\' or \'thin\''
             raise Exception(f'Choose a valid medium thickness: {valid_thick}')
@@ -47,8 +47,7 @@ class MCMC_Profile_Fit_Per_Epoch:
         self.profile = time_average(profile, np.size(profile)//8)
         self.frequency = np.average(np.asarray(epoch_data['freqs']))
 
-        self.pbf = time_average(pbf, np.size(self.profile))
-        self.pbf_tau = calculate_tau(pbf)[0]
+        self.pbf_tau = calculate_tau(self.pbf)[0]
 
         # check profile
         plt.figure(1)
@@ -80,12 +79,16 @@ class MCMC_Profile_Fit_Per_Epoch:
         comp2 = [MCMC_Profile_Fit.a2, phi2, w2]
         comp3 = [a3, phi3, w3]
 
+        #stretch or squeeze pbf, then time average
+        pbf_test = time_average(stretch_or_squeeze(self.pbf, \
+        np.abs(tau/self.pbf_tau)), np.size(self.profile))
+
         profile = convolve(triple_gauss(np.abs(comp1), np.abs(comp2), \
-        np.abs(comp3), x)[0], stretch_or_squeeze(self.pbf, \
-        np.abs(tau/self.pbf_tau)))
+        np.abs(comp3), x)[0], pbf_test)
         sp = SinglePulse(self.profile)
         fitting = sp.fitPulse(profile)
         sps = SinglePulse(profile*fitting[2])
+
         # don't roll the pbf because also fitting for phase!
         model = sps.data
 
@@ -143,9 +146,12 @@ class MCMC_Profile_Fit_Per_Epoch:
         three_gaussian_parameters[4]]
         comp3 = three_gaussian_parameters[5:8]
 
+        #stretch or squeeze pbf, then time average
+        pbf_test = time_average(stretch_or_squeeze(self.pbf, \
+        np.abs(tau/self.pbf_tau)), np.size(self.profile))
+
         profile_fitted = convolve(triple_gauss(comp1, comp2, comp3, \
-        np.arange(np.size(self.profile)))[0], stretch_or_squeeze(self.pbf, \
-        tau/self.pbf_tau))
+        np.arange(np.size(self.profile)))[0], pbf_test)
 
         sp = SinglePulse(self.profile)
         fitting = sp.fitPulse(profile_fitted)
@@ -323,10 +329,7 @@ class MCMC_Profile_Fit(MCMC_Profile_Fit_Per_Epoch):
         self.profile = data_profile
         self.frequency = profile_freq
 
-        if np.size(self.profile) != np.size(pbf):
-            self.pbf = time_average(pbf, np.size(self.profile))
-        else:
-            self.pbf = pbf
+        self.pbf = pbf
         self.pbf_tau = calculate_tau(pbf)[0]
 
         # check profile

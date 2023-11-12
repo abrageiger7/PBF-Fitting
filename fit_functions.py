@@ -140,16 +140,23 @@ def likelihood_evaluator(x, y, cdf=False, median=False, pm=True, values=None):
             retval[i] = x[indv]
         return retval
 
-def stretch_or_squeeze(i, ii):
+def stretch_or_squeeze(i, ii, plot=False):
 
     '''i is profile stretching and squeezing (numpy array), ii is stretch or squeeze factor (float or int)
     Returns unit height stretched or squeezed array'''
 
     cordes_phase_bins = np.size(i)
 
+    plt.rc('font', family = 'serif')
+
+    if plot:
+        fig, axs = plt.subplots(2)
+
     ii = np.abs(ii)
 
     time_bins = np.arange(cordes_phase_bins)
+
+    tau_ind = calculate_tau(i)[1]
 
     #adjust times to this width
     #multiply the times by the stretch/squeeze value (the width)
@@ -165,16 +172,65 @@ def stretch_or_squeeze(i, ii):
 
         #add the intensity that loops around for stretched pulses
         index = 0
-        #while(index<(np.max(times_adjusted))):
-        while(index<(np.max(times_adjusted)-cordes_phase_bins)):
+        ind = 0
+
+        interp_sect = interpolate_width(np.arange(index,index+cordes_phase_bins,1))
+        axs.flat[0].plot(interp_sect, label = f'{ind}')
+        axs.flat[1].plot(interp_sect)
+
+        width_pbf_data = np.add(width_pbf_data, interp_sect)
+        index = index+cordes_phase_bins
+        ind += 1
+
+        printed_less_consider = False
+        while (index<(np.max(times_adjusted)-cordes_phase_bins) and not printed_less_consider):
             interp_sect = interpolate_width(np.arange(index,index+cordes_phase_bins,1))
+
+            if (np.max(interp_sect) < 0.0000001*np.max(width_pbf_data)) and not printed_less_consider:
+                if plot:
+                    print(f'Index of First Insignificant Wrap = {ind}')
+                printed_less_consider = True
+            if plot:
+                if ind < 10:
+                    axs.flat[0].plot(interp_sect, label = f'{ind}')
+                    axs.flat[1].plot(interp_sect)
+
             width_pbf_data = np.add(width_pbf_data, interp_sect)
             index = index+cordes_phase_bins
+            ind += 1
 
-        final_interp_sect_array = np.arange(index, int(np.max(times_adjusted))+1, 1)
-        final_interp_sect = interpolate_width(final_interp_sect_array)
-        final_interp_sect = np.concatenate((final_interp_sect, np.zeros((index + cordes_phase_bins - int(np.max(times_adjusted)) - 1))))
-        width_pbf_data = np.add(width_pbf_data, final_interp_sect)
+        if plot:
+            print('Finished Wrapping')
+        if not printed_less_consider:
+            final_interp_sect_array = np.arange(index, int(np.max(times_adjusted))+1, 1)
+            final_interp_sect = interpolate_width(final_interp_sect_array)
+            final_interp_sect = np.concatenate((final_interp_sect, np.zeros((index + cordes_phase_bins - int(np.max(times_adjusted)) - 1))))
+            width_pbf_data = np.add(width_pbf_data, final_interp_sect)
+            if plot:
+                axs.flat[0].plot(final_interp_sect, label = 'Last')
+                axs.flat[1].plot(final_interp_sect, label = 'Last')
+
+        else:
+            if plot:
+                width_data_remaining = np.zeros(cordes_phase_bins)
+                while (index<(np.max(times_adjusted)-cordes_phase_bins)):
+                    interp_sect = interpolate_width(np.arange(index,index+cordes_phase_bins,1))
+                    width_data_remaining = np.add(width_data_remaining, interp_sect)
+                    index = index+cordes_phase_bins
+                    print(f'Wrap {ind}')
+                    ind += 1
+                axs.flat[0].plot(width_data_remaining, color = 'k', label = 'Excess')
+                axs.flat[1].plot(width_data_remaining, color = 'k', label = 'Excess')
+
+        if plot:
+            axs.flat[0].legend(fontsize = 'xx-small')
+            axs.flat[0].plot(width_pbf_data, color = 'k', ls = 'dashed', label = 'Final PBF')
+            axs.flat[1].plot(width_pbf_data, color = 'k', ls = 'dashed', label = 'Final PBF')
+            axs.flat[0].set_xscale('log')
+            axs.flat[0].set_yscale('log')
+            plt.savefig('stretched.pdf')
+            plt.show()
+            plt.close('all')
 
     #squeeze narrowed pulses and add section of training zeros onto the end of them
     elif ii<1:
@@ -414,18 +470,18 @@ def profile_fscrunch(data):
 
     return(np.average(data, axis = 0))
 
-def calculate_rms(profile):
+def calculate_rms(profile, opr_size):
 
     '''Calculates the RMS of the noise of the first fifth of phase for pulse
     data profile 'profile'.
 
     1D numpy array profile: pulse data profile'''
 
-    opr_size = np.size(profile)//5
+    mean = np.mean(profile[:opr_size])
 
     rms_collect = 0
     for i in range(opr_size):
-        rms_collect += profile[i]**2
+        rms_collect += (profile[i]-mean)**2
 
     rms = math.sqrt(rms_collect/opr_size)
     return(rms)
