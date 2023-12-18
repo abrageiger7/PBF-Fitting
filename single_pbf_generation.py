@@ -99,14 +99,13 @@ def save_single_pbf_thin_screen(beta, zeta):
     pdf_tau_values = pbf_data['tavevec']
 
     # because the time steps are spaced logarithmically, start with lots of points
-    large_phase_bins = 5000000
+    large_phase_bins = 10000000
 
     # parameters to collect for each pbf
     betas = beta_values
     zetas = inner_scale
 
     reference_tau_scale = 400000.0
-
     i = find_nearest(betas, beta)[1][0][0]
     ii = find_nearest(zetas, zeta)[1][0][0]
 

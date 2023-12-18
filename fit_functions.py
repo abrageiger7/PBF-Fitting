@@ -156,40 +156,50 @@ def stretch_or_squeeze(i, ii, plot=False):
 
     time_bins = np.arange(cordes_phase_bins)
 
-    tau_ind = calculate_tau(i)[1]
-
     #adjust times to this width
     #multiply the times by the stretch/squeeze value (the width)
     #for stretch greater than zero, the PBF will broaden
     #for stretch less than zero, the PBF will narrow
 
     if ii>1:
+
+        #print('Wrapping PBF')
         times_adjusted = time_bins*ii #1- widen the pulse
         #interpolate the pulse in its broadened state
         interpolate_width = CubicSpline(times_adjusted, i) #2- interpolate to get section of the pulse (extrapolate = True?
         #-> probably don't need because should only be interpolating)
         width_pbf_data = np.zeros(cordes_phase_bins)
+        n_tau = 200
 
         #add the intensity that loops around for stretched pulses
         index = 0
         ind = 0
 
+        #for the first wrap, calculate tau. Then, wrap the pbf until reach
+        #n_tau in time for the pbf
+
         interp_sect = interpolate_width(np.arange(index,index+cordes_phase_bins,1))
-        axs.flat[0].plot(interp_sect, label = f'{ind}')
-        axs.flat[1].plot(interp_sect)
+
+        tau_ind = calculate_tau(interp_sect)[1]
+
+        if plot:
+            axs.flat[0].plot(interp_sect, label = f'{ind}')
+            axs.flat[1].plot(interp_sect)
 
         width_pbf_data = np.add(width_pbf_data, interp_sect)
         index = index+cordes_phase_bins
         ind += 1
 
         printed_less_consider = False
-        while (index<(np.max(times_adjusted)-cordes_phase_bins) and not printed_less_consider):
-            interp_sect = interpolate_width(np.arange(index,index+cordes_phase_bins,1))
 
-            if (np.max(interp_sect) < 0.0000001*np.max(width_pbf_data)) and not printed_less_consider:
-                if plot:
-                    print(f'Index of First Insignificant Wrap = {ind}')
+        while (index<(np.max(times_adjusted)-cordes_phase_bins) and not printed_less_consider):
+
+            if (index + cordes_phase_bins > tau_ind * n_tau):
                 printed_less_consider = True
+
+            interp_sect = interpolate_width(np.arange(index,index+cordes_phase_bins,1))
+            #if printed_less_consider:
+
             if plot:
                 if ind < 10:
                     axs.flat[0].plot(interp_sect, label = f'{ind}')
@@ -234,16 +244,27 @@ def stretch_or_squeeze(i, ii, plot=False):
 
     #squeeze narrowed pulses and add section of training zeros onto the end of them
     elif ii<1:
-        #lengthen the array of the pulse so the pulse is comparatively narrow, adding zeros to the end
-        width_pbf_data = np.zeros(int((1/ii)*cordes_phase_bins))
-        width_pbf_data[:cordes_phase_bins] = i
-        times_scaled = np.zeros(int((1/ii)*cordes_phase_bins))
-        #scale back to an array of size cordes_phase_bins
-        for iv in range(int((1/ii)*cordes_phase_bins)):
-            times_scaled[iv] = cordes_phase_bins/(int((1/ii)*cordes_phase_bins))*iv
 
-        interpolate_less1 = CubicSpline(times_scaled, width_pbf_data)
-        width_pbf_data = interpolate_less1(np.arange(cordes_phase_bins))
+        #case where shrinking so much that must use a different method for efficieny
+        # if int((1/ii)*cordes_phase_bins) > 10000000:
+
+        interpolate_length = int(ii*cordes_phase_bins)
+        width_pbf_data = np.zeros(cordes_phase_bins)
+        times_scaled = np.arange(cordes_phase_bins)
+        interpolate_beginning = CubicSpline(times_scaled, i)
+        width_pbf_data[:interpolate_length] = interpolate_beginning(np.linspace(0,cordes_phase_bins,interpolate_length,endpoint=False))
+
+        # else:
+        #     #lengthen the array of the pulse so the pulse is comparatively narrow, adding zeros to the end
+        #     width_pbf_data = np.zeros(int((1/ii)*cordes_phase_bins))
+        #     width_pbf_data[:cordes_phase_bins] = i
+        #     times_scaled = np.zeros(int((1/ii)*cordes_phase_bins))
+        #     #scale back to an array of size cordes_phase_bins
+        #     for iv in range(int((1/ii)*cordes_phase_bins)):
+        #         times_scaled[iv] = cordes_phase_bins/(int((1/ii)*cordes_phase_bins))*iv
+        #
+        #     interpolate_less1 = CubicSpline(times_scaled, width_pbf_data)
+        #     width_pbf_data = interpolate_less1(np.arange(cordes_phase_bins))
 
     #for width values of 1, no alteration necessary
     else:
@@ -442,11 +463,11 @@ def triple_gauss(p, g, q, t, unit_area = True):
     Returns unit area 3 component Gaussian'''
     phase_bins = np.size(t)
     gauss = (p[0]*np.exp((-1.0/2.0)*(((t-(p[1]* phase_bins))/(p[2]* phase_bins))*((t-(p[1]* phase_bins))/(p[2]* phase_bins))))) + (g[0]*np.exp((-1.0/2.0)*(((t-(g[1]* phase_bins))/(g[2]* phase_bins))*((t-(g[1]* phase_bins))/(g[2]* phase_bins))))) + (q[0]*np.exp((-1.0/2.0)*(((t-(q[1]* phase_bins))/(q[2]* phase_bins))*((t-(q[1]* phase_bins))/(q[2]* phase_bins)))))
+    if unit_area == False:
+        return(gauss)
     #unit area
     max_gauss = np.max(gauss)
     area_gauss = trapz(gauss)
-    if unit_area == False:
-        return(gauss)
     gauss = gauss / area_gauss
     return(gauss, max_gauss/area_gauss)
 
@@ -454,11 +475,22 @@ def convolve(arr1, arr2):
     '''Input of two 1D arrays and returns them convolved and normalized to
     unit height'''
     if np.size(arr1) != np.size(arr2):
-        print('Input arrays must be the same size.')
+        raise Exception('Input arrays must be the same size.')
     arr1_unita = arr1/trapz(arr1)
     arr2_unita = arr2/trapz(arr2)
     convolved = np.fft.ifft(np.fft.fft(arr1_unita)*np.fft.fft(arr2)).real
     convolved = convolved / np.max(convolved)
+    return(convolved)
+
+def convolve_same_height_arr1(arr1, arr2):
+    '''Input of two 1D arrays and returns them convolved and normalized to
+    arr1 height'''
+    if np.size(arr1) != np.size(arr2):
+        raise Exception('Input arrays must be the same size.')
+    arr1_unita = arr1/trapz(arr1)
+    arr2_unita = arr2/trapz(arr2)
+    convolved = np.fft.ifft(np.fft.fft(arr1_unita)*np.fft.fft(arr2)).real
+    convolved = convolved / np.max(convolved) * np.max(arr1)
     return(convolved)
 
 def profile_fscrunch(data):
@@ -494,6 +526,9 @@ def time_average(profile, new_phase_bins):
     numpy array profile: the data profile to subaverage
     int new_phase_bins: the number of data points to subaverage to'''
 
+    if (np.size(profile) == new_phase_bins):
+        return profile
+
     if (np.size(profile)%new_phase_bins != 0):
         raise Exception('Must time average by an integer factor!')
 
@@ -505,3 +540,47 @@ def time_average(profile, new_phase_bins):
         averaged[i] = np.average(profile[number_to_average*i:number_to_average*(i+1)])
 
     return(averaged)
+
+def single_pbf_thin_screen(beta, zeta, tau_mus, pbf_data):
+
+    '''Calculate and save 2048 phase bin thin screen pbf for the inputted values
+    of beta and zeta (values must be contained in betas and zetas respectively)
+    '''
+
+    inner_scale = pbf_data['livec']
+    beta_values = pbf_data['betavec']
+    time_values = pbf_data['tvecarray']
+    pbf_array = pbf_data['pbfarray']
+    one_over_e_values = pbf_data['tevec']
+    pdf_tau_values = pbf_data['tavevec']
+
+    # because the time steps are spaced logarithmically, start with lots of points
+    large_phase_bins = 20000000
+
+    # parameters to collect for each pbf
+    betas = beta_values
+    zetas = inner_scale
+
+    i = find_nearest(betas, beta)[1][0][0]
+    ii = find_nearest(zetas, zeta)[1][0][0]
+
+    time = time_values[i][ii]
+    pbf = pbf_array[i][ii]
+
+    tau = (one_over_e_values[i][ii] / time[-1]) * j1903_period # microseconds
+
+    spline = CubicSpline(time, pbf)
+
+    # large number of phase bins to accomodate log time spacing
+    time_linear = np.linspace(time[0], time[-1], large_phase_bins)
+    pbf_linear = spline(time_linear)
+
+    rescaled_pbf = stretch_or_squeeze(pbf_linear, tau_mus/tau)
+    tau = calculate_tau(rescaled_pbf)[0]
+    print(f'Tau = {tau}')
+
+    del(pbf_linear)
+    spline = CubicSpline(np.linspace(0,np.size(rescaled_pbf)-1,np.size(rescaled_pbf)), rescaled_pbf)
+    new_pbf = spline(np.linspace(0,np.size(rescaled_pbf)-1,init_data_phase_bins))
+
+    return(new_pbf/np.max(new_pbf), tau)

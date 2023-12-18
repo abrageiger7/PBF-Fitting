@@ -3,9 +3,14 @@ from pypulse.singlepulse import SinglePulse
 import pickle
 from correct_dm_from_scattering import Correct_DM_From_Scattering_J1903
 from pathlib import Path
+import emcee
 
 
 class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
+
+    labels = ['Amplitude', 'Phase', 'Width']
+
+    number_of_iterations = 0
 
     def __init__(self, beta, zeta, mjd, sband_param_path, guess_correct_dm_pwrlaws, sband_freq, thin_or_thick_medium, sband_data_profile):
 
@@ -80,13 +85,14 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
         f"|ZETA={zeta}|SCREEN={thin_or_thick_medium.upper()}|MJD={int(np.round(mjd))}"
 
 
-    def fit_comp3(self, amp_test_arr, phase_test_arr, width_test_arr):
-        '''Fits for the best fit powerlaws for variation of the component
-        parameters over frequency.'''
+    def ln_likelihood(self, theta):
+        '''Returns ln(likelihood) for the parameters, theta, which in this case
+        are for the threes parameters for each of three intrinsic gaussians and
+        tau. The ln(likelihood) is simply the ln() of a gaussian distribution.
 
-        # collect the reduced chi-squared values for each combination of the test powerlaws
-        chisqs = np.zeros((np.size(amp_test_arr), np.size(phase_test_arr), \
-        np.size(width_test_arr)))
+        numpy array theta: array of intrinsic component parameters'''
+
+        amp_pwr, phase_pwr, width_pwr = theta
 
         test_tau = np.linspace(0.1,400.0,36)
 
@@ -94,110 +100,133 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
         timer = np.arange(np.shape(self.data)[1])
 
-        num_iterations = 0
+        chi_sq_sum = 0
 
-        for i in range(np.size(amp_test_arr)):
+        for ind in range(np.size(self.frequencies)):
 
-            for iii in range(np.size(phase_test_arr)):
+            # first component amplitude at this frequency and powerlaw combination
+            amp = self.comp3[0] * np.power((self.frequencies[ind]/self.sband_freq),amp_pwr)
 
-                for iv in range(np.size(width_test_arr)):
+            # first component phase at this frequency and powerlaw combination
+            phase = (self.comp3[1] - self.comp2[1]) * np.power((self.frequencies[ind]/self.sband_freq),phase_pwr) + self.comp2[1]
 
-                    # sum the chi-squared over all frequencies
-                    chi_sq_sum = 0
+            # first component width at this frequency and powerlaw combination
+            width = self.comp3[2] * np.power((self.frequencies[ind]/self.sband_freq),width_pwr)
 
-                    for ind in range(np.size(self.frequencies)):
+            # collect the chi squared value for each grid value of tau
+            pbf_chisq = np.zeros(np.size(test_tau))
 
-                        # first component amplitude at this frequency and powerlaw combination
-                        amp = self.comp3[0] * np.power((self.frequencies[ind]/self.sband_freq),amp_test_arr[i])
+            for ix in range(np.size(test_tau)):
 
-                        # first component phase at this frequency and powerlaw combination
-                        phase = (self.comp3[1] - self.comp2[1]) * np.power((self.frequencies[ind]/self.sband_freq),phase_test_arr[iii]) + self.comp2[1]
+                if self.screen == 'thick':
+                    #stretch or squeeze pbf, then time average
+                    stretch_or_squeeze_factor = test_tau[ix]/self.pbf_tau
+                    pulse_broadening = time_average(stretch_or_squeeze(self.pbf, \
+                    stretch_or_squeeze_factor), np.shape(self.data)[1])
 
-                        # first component width at this frequency and powerlaw combination
-                        width = self.comp3[2] * np.power((self.frequencies[ind]/self.sband_freq),width_test_arr[iv])
+                elif self.screen == 'thin':
+                    closest_tau_ind = find_nearest(self.tau_options, test_tau[ix])[1][0][0]
+                    pulse_broadening =  time_average(self.pbf_options[closest_tau_ind], np.shape(self.data)[1])
 
-                        # collect the chi squared value for each grid value of tau
-                        pbf_chisq = np.zeros(np.size(test_tau))
+                intrinsic_shape = triple_gauss([amp, phase, width], self.comp2, self.comp1, timer)[0]
 
-                        for ix in range(np.size(test_tau)):
+                profile = convolve(intrinsic_shape, pulse_broadening)
 
-                            if self.screen == 'thick':
-                                #stretch or squeeze pbf, then time average
-                                stretch_or_squeeze_factor = test_tau[ix]/self.pbf_tau
-                                pulse_broadening = time_average(stretch_or_squeeze(self.pbf, \
-                                stretch_or_squeeze_factor), np.shape(self.data)[1])
+                fitted_template = profile/trapz(profile)*trapz(self.data[ind])
 
-                            elif self.screen == 'thin':
-                                closest_tau_ind = find_nearest(self.tau_options, test_tau[ix])[1][0][0]
-                                pulse_broadening =  time_average(self.pbf_options[closest_tau_ind], np.shape(self.data)[1])
+                chi_sqs = chi2_distance(fitted_template, self.data[ind], self.rms_values[ind], 3)
 
-                            intrinsic_shape = triple_gauss([amp, phase, width], self.comp2, self.comp1, timer)[0]
+                pbf_chisq[ix] = chi_sqs
 
-                            profile = convolve(intrinsic_shape, pulse_broadening)
+            here = np.where((pbf_chisq == np.min(pbf_chisq)))[0][0]
 
-                            sp = SinglePulse(self.data[ind])
-                            fitting = sp.fitPulse(profile)
+            chi_sq_sum += pbf_chisq[here]
 
-                            sps = SinglePulse(profile*fitting[2])
-                            fitted_template = sps.shiftit(fitting[1])
+        chisq = chi_sq_sum / np.size(self.frequencies)
 
-                            # fitted_template = profile/trapz(profile)*trapz(self.data[ind])
+        likelihood = np.power(math.e, -1.0*chisq/2.0)
+        lnL = math.log(likelihood)
 
-                            chi_sqs = chi2_distance(fitted_template, self.data[ind], self.rms_values[ind], 3)
+        return lnL
 
-                            pbf_chisq[ix] = chi_sqs
+    def ln_prior(self, theta):
+        '''defines the acceptable probabalistic ranges in which the parameters
+        can be expected to fall 100% of the time returns either 0.0 of -np.inf
+        depending if the sample parameters are reasonable or not.
 
-                        here = np.where((pbf_chisq == np.min(pbf_chisq)))[0][0]
+        numpy array theta: array of intrinsic component parameters'''
 
-                        chi_sq_sum += pbf_chisq[here]
+        amp_pwr, phase_pwr, width_pwr = theta
+        if -4.0<amp_pwr<4.0 and -4.0<phase_pwr<4.0 and -4.0<width_pwr<4.0:
+            return 0.0
+        return -np.inf
 
-                        print(num_iterations)
-                        num_iterations += 1
 
-                    chisqs[i,iii,iv] = chi_sq_sum / np.size(self.frequencies)
+    def ln_probability(self, theta):
+        '''defines probability based upon the established accepted parameter
+        ranges and the ln_likelihood function. returns the probability for the
+        sample parameters.'''
 
-        # sum chi-sq along the various axes in order to visulaize for each
-        # parameter (parameter values are at global minimum, however)
+        lp = self.ln_prior(theta)
+        if not np.isfinite(lp):
+            return -np.inf
+        return lp + self.ln_likelihood(theta)
 
-        # example to justify (observe array shapes and sums):
-        # - array = np.array([[[[0,1],[2,1],[4,2]],[[3,5],[4,7],[6,9]]]])
-        # - array_sum = np.sum(array,axis=1)
-        # - array_sum_2 = np.sum(np.sum(array_sum,axis = 0), axis=0)
-        # - etc.
 
-        here = np.where((chisqs == np.min(chisqs)))
-        self.amp3_pwrlaw = amp_test_arr[here[0][0]]
+    def fit_comp3(self, numruns):
+
+        starting_values = [0,0,0]
+
+        #initializes the MCMC
+        pos = np.zeros((72,3))
+
+        pos = starting_values + 1e-2 * np.random.randn(72, 3)
+
+        nwalkers, ndim = pos.shape
+        sampler = emcee.EnsembleSampler(nwalkers, ndim, self.ln_probability)
+        #runs the MCMC
+        print('running sampler now')
+
+        sampler.run_mcmc(pos, numruns, progress=True)
+
         plt.figure(1)
-        plt.title(r'$\chi^2$ vs Amplitude 3 Powerlaw')
-        plt.xlabel('Amplitude Powerlaw')
-        plt.ylabel(r'$\chi^2$')
-        plt.plot(amp_test_arr, np.sum(np.sum(chisqs, axis=2)/np.shape(chisqs)[2], axis=1)/np.shape(chisqs)[1])
-        plt.savefig(f'amp3_pwrlaw_fitting|{self.plot_tag}.pdf')
+        figure, axes = plt.subplots(np.size(starting_values), figsize = \
+        (10,7), sharex=True)
+        samples_init = sampler.get_chain()
+        for i in range(ndim):
+            data = samples_init[:,:,i]
+            ax = axes[i]
+            ax.set_xlim(0, len(samples_init))
+            ax.set_ylabel(Intrinsic_Component_Powerlaw_Fit_Per_Epoch.labels[i])
+            ax.plot(data, 'k', alpha=0.2)
+        axes[ndim-1].set_xlabel("Iterations")
+        plt.savefig(f'powerlaw_sampling|{self.plot_tag}.pdf')
         plt.show()
         plt.close('all')
-        print('3rd Component Amplitude Powerlaw = ' + str(self.amp3_pwrlaw))
-        self.phase3_pwrlaw = phase_test_arr[here[1][0]]
+
+        #discards some samples and thins
+        auto_corr = sampler.get_autocorr_time()
+        print(auto_corr)
+        samples = sampler.get_chain(discard=2000, thin=50, flat=True)
+        parameters = np.percentile(samples, 50, axis = 0)
+        bott_params = parameters - np.percentile(samples, 16, axis = 0)
+        top_params = np.percentile(samples, 84, axis = 0) - parameters
+
+        self.amp3_pwrlaw = parameters[0]
+        self.phase3_pwrlaw = parameters[1]
+        self.width3_pwrlaw = parameters[2]
+
         plt.figure(1)
-        plt.title(r'$\chi^2$ vs Phase 3 Powerlaw')
-        plt.xlabel('Phase Powerlaw')
-        plt.ylabel(r'$\chi^2$')
-        plt.plot(phase_test_arr, np.sum(np.sum(chisqs, axis=2)/np.shape(chisqs)[2], axis=0)/np.shape(chisqs)[0])
-        plt.savefig(f'phi3_pwrlaw_fitting|{self.plot_tag}.pdf')
-        plt.show()
+        fig = corner.corner(samples, bins=50, color='dimgrey', smooth=0.6, \
+        plot_datapoints=False, plot_density=True, plot_contours=True, \
+        fill_contour=False, show_titles=True, labels = \
+        Intrinsic_Component_Powerlaw_Fit_Per_Epoch.labels[i])
+        plt.savefig(f'powerlaw_corner|{self.plot_tag}.pdf')
+        fig.show()
         plt.close('all')
-        print('3rd Component Center Powerlaw = ' + str(self.phase3_pwrlaw))
-        self.width3_pwrlaw = width_test_arr[here[2][0]]
-        plt.figure(1)
-        plt.title(r'$\chi^2$ vs Width 3 Powerlaw')
-        plt.xlabel('Width Powerlaw')
-        plt.ylabel(r'$\chi^2$')
-        plt.plot(width_test_arr, np.sum(np.sum(chisqs, axis=0)/np.shape(chisqs)[0], axis=0)/np.shape(chisqs)[1])
-        plt.savefig(f'width3_pwrlaw_fitting|{self.plot_tag}.pdf')
-        plt.show()
-        plt.close('all')
-        print('3rd Component Width Powerlaw = ' + str(self.width3_pwrlaw))
 
         return(self.amp3_pwrlaw, self.phase3_pwrlaw, self.width3_pwrlaw)
+
 
     def fit_amp1(self, param_test_array):
         '''Fits for the best fit powerlaw for variation of the first component
@@ -241,13 +270,13 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
                     profile = convolve(intrinsic_shape, pulse_broadening)
 
-                    sp = SinglePulse(self.data[ind])
-                    fitting = sp.fitPulse(profile)
+                    # sp = SinglePulse(self.data[ind])
+                    # fitting = sp.fitPulse(profile)
+                    #
+                    # sps = SinglePulse(profile*fitting[2])
+                    # fitted_template = sps.shiftit(fitting[1])
 
-                    sps = SinglePulse(profile*fitting[2])
-                    fitted_template = sps.shiftit(fitting[1])
-
-                    # fitted_template = profile/trapz(profile)*trapz(self.data[ind])
+                    fitted_template = profile/trapz(profile)*trapz(self.data[ind])
 
                     chi_sqs = chi2_distance(fitted_template, self.data[ind], self.rms_values[ind], 1)
 
@@ -303,7 +332,7 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
         np.savez(f'j1903_modeled_params|{self.plot_tag}', sband_params = [self.comp1, self.comp2, self.comp3], sband_freq = self.sband_freq, amp1_pwrlaw = self.amp1_pwrlaw, amp3_pwrlaw = self.amp3_pwrlaw, width3_pwrlaw = self.width3_pwrlaw, phase3_pwrlaw = self.phase3_pwrlaw)
 
-        axs.flat[0].set_yticks(np.linspace(0.002,(np.size(self.frequencies)-1)*0.005+0.002,np.size(self.frequencies)), np.round(self.frequencies,1), minor = False)
+        axs.flat[0].set_yticks(np.linspace(0.002,(np.size(self.frequencies)-1)*0.005+0.002,np.size(self.frequencies)), np.round(self.frequencies,1))
         fig.text(0.517, 0.003, r'Pulse Phase', ha='center', va='center', fontsize = 10)
         axs.flat[0].set_ylabel('Frequency [MHz]', fontsize = 10)
 
@@ -360,13 +389,13 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
                 profile = convolve(intrinsic, pulse_broadening)
 
-                sp = SinglePulse(self.data[ind])
-                fitting = sp.fitPulse(profile)
+                # sp = SinglePulse(self.data[ind])
+                # fitting = sp.fitPulse(profile)
+                #
+                # sps = SinglePulse(profile*fitting[2])
+                # fitted_template = sps.shiftit(fitting[1])
 
-                sps = SinglePulse(profile*fitting[2])
-                fitted_template = sps.shiftit(fitting[1])
-
-                # fitted_template = profile/trapz(profile)*trapz(self.data[ind])
+                fitted_template = profile/trapz(profile)*trapz(self.data[ind])
 
                 chi_sqs = chi2_distance(fitted_template, self.data[ind], self.rms_values[ind], 4)
 
@@ -395,13 +424,13 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
             profile = convolve(intrinsic, final_profiler)
 
-            sp = SinglePulse(self.data[ind])
-            fitting = sp.fitPulse(profile)
+            # sp = SinglePulse(self.data[ind])
+            # fitting = sp.fitPulse(profile)
+            #
+            # sps = SinglePulse(profile*fitting[2])
+            # fitted_template = sps.shiftit(fitting[1])
 
-            sps = SinglePulse(profile*fitting[2])
-            fitted_template = sps.shiftit(fitting[1])
-
-            # fitted_template = profile/trapz(profile)*trapz(self.data[ind])
+            fitted_template = profile/trapz(profile)*trapz(self.data[ind])
 
             index = ind
 
@@ -412,7 +441,7 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
             axs.flat[index].plot(t, fitted_template, color = 'k')
 
-            axs.flat[index].set_yticks([], minor = False)
+            axs.flat[index].set_yticks([])
 
             axs.flat[index].set_title(f'{int(np.round(self.frequencies[ind],2))} [MHz]')
 
@@ -433,13 +462,13 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
         profile = convolve(intrinsic, final_profiler)
 
-        sp = SinglePulse(self.sband_profile)
-        fitting = sp.fitPulse(profile)
+        # sp = SinglePulse(self.sband_profile)
+        # fitting = sp.fitPulse(profile)
+        #
+        # sps = SinglePulse(profile*fitting[2])
+        # fitted_template = sps.shiftit(fitting[1])
 
-        sps = SinglePulse(profile*fitting[2])
-        fitted_template = sps.shiftit(fitting[1])
-
-        # fitted_template = profile/trapz(profile)*trapz(self.sband_profile)
+        fitted_template = profile/trapz(profile)*trapz(self.sband_profile)
 
         index = ind
 
@@ -450,7 +479,7 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
         axs.flat[index].plot(t, fitted_template, color = 'k')
 
-        axs.flat[index].set_yticks([], minor = False)
+        axs.flat[index].set_yticks([])
 
         axs.flat[index].set_title(f'{int(np.round(self.sband_freq,2))} [MHz]')
 
@@ -521,7 +550,7 @@ class Intrinsic_Component_Powerlaw_Fit(Intrinsic_Component_Powerlaw_Fit_Per_Epoc
 
         sband_params = np.load(sband_param_path)['parameters']
 
-        print(sband_params)
+        print('Sband params: ',sband_params)
 
         self.comp1 = np.abs(sband_params[:3]) #first comp
 

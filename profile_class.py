@@ -5,41 +5,14 @@ import math
 from pypulse.singlepulse import SinglePulse
 import itertools
 
-
 from fit_functions import *
 
-
 plt.rc('font', family = 'serif')
-
 
 class Profile_Fitting:
 
 
-    # mcmc and powerlaw intrinsic model as of 9/12/23
-    # sband_freq = 2200.0
-    # comp1_amp_sband = 0.054
-    # comp1_amp_pwrlaw = 0.77
-    # comp3_amp_sband = 0.332
-    # comp3_amp_pwrlaw = -0.3
-    # comp3_width_sband = 0.020
-    # comp3_width_pwrlaw = -1.0
-    # comp3_mean_sband = 0.540
-    # comp3_mean_pwrlaw = 0.0
-
-    # mcmc and powerlaw intrinsic model as of 10/18/23 (all powerlaws with
-    # error +- 0.1, except amp1 which is +-0.05)
-    sband_freq = 2132.0
-    comp1_amp_sband = 0.054
-    comp1_amp_pwrlaw = 1.08
-    comp3_amp_sband = 0.332
-    comp3_amp_pwrlaw = 0.0
-    comp3_width_sband = 0.020
-    comp3_width_pwrlaw = -0.9
-    comp3_mean_sband = 0.540
-    comp3_mean_pwrlaw = 0.0
-
-
-    def __init__(self, mjd, data, frequencies, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms = -1, subaverage=True):
+    def __init__(self, mjd, data, frequencies, dur, screen, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms = -1, subaverage=True):
         '''
         mjd (float) - epoch of observation
         data (2D array) - pulse data for epoch
@@ -64,6 +37,7 @@ class Profile_Fitting:
         self.intrinsic_shape = intrinsic_shape
         self.betas = betas
         self.zetas = zetas
+        self.screen = screen
 
 
         if intrinsic_shape == 'gaussian' or intrinsic_shape == 'sband_avg':
@@ -76,6 +50,8 @@ class Profile_Fitting:
 
             self.pbfs = fitting_profiles
             self.tau_values = tau_values
+
+            print(self.tau_values)
 
 
         #subaverages the data for every four frequency channels
@@ -172,15 +148,15 @@ class Profile_Fitting:
 
             if (pbf_type == 'beta' or pbf_type == 'zeta'):
                 if self.intrinsic_shape == 'modeled':
-                    title = f"PBF_fit_chisq|{pbf_type.upper()}={bzeta}|{self.intrinsic_shape.upper()}|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
+                    title = f"PBF_fit_chisq|{pbf_type.upper()}={bzeta}|{self.intrinsic_shape.upper()}|MEDIUM={self.screen}|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
                 else:
-                    title = f"PBF_fit_chisq_setg|{pbf_type.upper()}={bzeta}|{self.intrinsic_shape.upper()}|MJD={self.mjd_round}|FREQ={self.freq_round}|IWIDTH={iwidth_round}.pdf"
+                    title = f"PBF_fit_chisq_setg|{pbf_type.upper()}={bzeta}|{self.intrinsic_shape.upper()}|MEDIUM={self.screen}|MJD={self.mjd_round}|FREQ={self.freq_round}|IWIDTH={iwidth_round}.pdf"
 
             elif pbf_type == 'exp':
                 if self.intrinisic_shape == 'modeled':
-                    title = f"PBF_fit_chisq|{pbf_type.upper()}|{self.intrinsic_shape.upper()}|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
+                    title = f"PBF_fit_chisq|{pbf_type.upper()}|{self.intrinsic_shape.upper()}|MEDIUM={self.screen}|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
                 else:
-                    title = f"PBF_fit_chisq_setg|{pbf_type.upper()}|{self.intrinsic_shape.upper()}|MJD={self.mjd_round}|FREQ={self.freq_round}|IWIDTH={iwidth_round}.pdf"
+                    title = f"PBF_fit_chisq_setg|{pbf_type.upper()}|{self.intrinsic_shape.upper()}|MEDIUM={self.screen}|MJD={self.mjd_round}|FREQ={self.freq_round}|IWIDTH={iwidth_round}.pdf"
 
             plt.savefig(title, bbox_inches='tight')
             print(title)
@@ -213,10 +189,10 @@ class Profile_Fitting:
             plt.colorbar()
 
             if pbf_type == 'beta' or 'zeta':
-                    title = f"PBF_fit_chisq|{pbf_type.upper()}={bzeta}|{self.intrinsic_shape.upper()}|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
+                    title = f"PBF_fit_chisq|{pbf_type.upper()}={bzeta}|{self.intrinsic_shape.upper()}|MEDIUM={self.screen}|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
 
             elif pbf_type == 'exp':
-                    title = f"PBF_fit_chisq|{pbf_type.upper()}|{self.intrinsic_shape.upper()}|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
+                    title = f"PBF_fit_chisq|{pbf_type.upper()}|{self.intrinsic_shape.upper()}|MEDIUM={self.screen}|MJD={self.mjd_round}|FREQ={self.freq_round}.pdf"
 
             plt.savefig(title, bbox_inches='tight')
             print(title)
@@ -418,20 +394,20 @@ class Profile_Fitting:
 
 
             if pbf_type == 'beta':
-                title = f'PBF_fit_plot|BETA={self.betas[bzeta_ind]}|{self.intrinsic_shape.upper()}|MJD={self.mjd_round}|FREQ={self.freq_round}||TAU={tau_round}|IW={iwidth_round}.pdf'
+                title = f'PBF_fit_plot|BETA={self.betas[bzeta_ind]}|{self.intrinsic_shape.upper()}|MEDIUM={self.screen}|MJD={self.mjd_round}|FREQ={self.freq_round}||TAU={tau_round}|IW={iwidth_round}.pdf'
             elif pbf_type == 'exp':
-                title = f'PBF_fit_plot|EXP|{self.intrinsic_shape.upper()}|MJD={self.mjd_round}|FREQ={self.freq_round}|TAU={tau_round}|IW={iwidth_round}.pdf'
+                title = f'PBF_fit_plot|EXP|{self.intrinsic_shape.upper()}|MEDIUM={self.screen}|MJD={self.mjd_round}|FREQ={self.freq_round}|TAU={tau_round}|IW={iwidth_round}.pdf'
             elif pbf_type == 'zeta':
-                title = f'PBF_fit_plot|ZETA={zetaselect[bzeta_ind]}|{self.intrinsic_shape.upper()}|MJD={self.mjd_round}|FREQ={self.freq_round}|TAU={tau_round}|IW={iwidth_round}.pdf'
+                title = f'PBF_fit_plot|ZETA={zetaselect[bzeta_ind]}|{self.intrinsic_shape.upper()}|MEDIUM={self.screen}|MJD={self.mjd_round}|FREQ={self.freq_round}|TAU={tau_round}|IW={iwidth_round}.pdf'
 
         else:
 
             if pbf_type == 'beta':
-                title = f'PBF_fit_plot|BETA={self.betas[bzeta_ind]}|{self.intrinsic_shape.upper()}|MJD={self.mjd_round}|FREQ={self.freq_round}||TAU={tau_round}.pdf'
+                title = f'PBF_fit_plot|BETA={self.betas[bzeta_ind]}|{self.intrinsic_shape.upper()}|MEDIUM={self.screen}|MJD={self.mjd_round}|FREQ={self.freq_round}||TAU={tau_round}.pdf'
             elif pbf_type == 'exp':
-                title = f'PBF_fit_plot|EXP|{self.intrinsic_shape.upper()}|MJD={self.mjd_round}|FREQ={self.freq_round}|TAU={tau_round}.pdf'
+                title = f'PBF_fit_plot|EXP|{self.intrinsic_shape.upper()}|MEDIUM={self.screen}|MJD={self.mjd_round}|FREQ={self.freq_round}|TAU={tau_round}.pdf'
             elif pbf_type == 'zeta':
-                title = f'PBF_fit_plot|ZETA={self.zetas[bzeta_ind]}|{self.intrinsic_shape.upper()}|MJD={self.mjd_round}|FREQ={self.freq_round}|TAU={tau_round}.pdf'
+                title = f'PBF_fit_plot|ZETA={self.zetas[bzeta_ind]}|{self.intrinsic_shape.upper()}|MEDIUM={self.screen}|MJD={self.mjd_round}|FREQ={self.freq_round}|TAU={tau_round}.pdf'
 
         plt.savefig(title, bbox_inches='tight')
         print(title)
@@ -454,7 +430,7 @@ class Profile_Fitting:
         return(error)
 
 
-    def init_freq_subint(self, freq_subint_index):
+    def init_freq_subint(self, freq_subint_index, pbf_type, bzeta_ind):
         '''Initializes variables dependent upon the index of frequency subintegration.
         For use by fitting functions.'''
 
@@ -503,20 +479,44 @@ class Profile_Fitting:
 
         if self.intrinsic_shape == 'modeled':
 
-            comp1_amp = self.comp1_amp_sband * np.power(self.freq_suba/self.sband_freq, self.comp1_amp_pwrlaw)
-            comp1_mean = 0.406 # fraction of phase
-            comp1_width = 0.020 # fraction of phase
-            comp1 = [comp1_amp, comp1_mean, comp1_width]
+            # thick beta = 3.667 zeta = 0.0 as of 10/18/23
+            # (all powerlaws with error +- 0.1, except amp1 which is +-0.05)
+            # self.sband_freq = 2132.0
+            # self.comp1_amp_sband = 0.054
+            # self.comp1_amp_pwrlaw = 1.08
+            # self.comp3_amp_sband = 0.332
+            # self.comp3_amp_pwrlaw = 0.0
+            # self.comp3_width_sband = 0.020
+            # self.comp3_width_pwrlaw = -0.9
+            # self.comp3_mean_sband = 0.540
+            # self.comp3_mean_pwrlaw = 0.0
 
-            comp2_amp = 1.00
-            comp2_mean = 0.493 # fraction of phase
-            comp2_width = 0.015 # fraction of phase
-            comp2 = [comp2_amp, comp2_mean, comp2_width]
+            if bzeta_ind == -1:
+                 params = np.load(f'j1903_modeled_params|FREQ=lband|BETA=3.667|ZETA=0.01|SCREEN={str(self.screen).upper()}|MJD=MJD_AVERAGE.npz')
+            elif pbf_type == 'beta' and self.screen == 'thin':
+                 params = np.load(f'j1903_modeled_params|FREQ=lband|BETA={self.betas[bzeta_ind]}|ZETA=0.01|SCREEN={str(self.screen).upper()}|MJD=MJD_AVERAGE.npz')
+            elif pbf_type == 'beta' and self.screen == 'thick':
+                 params = np.load(f'j1903_modeled_params|FREQ=lband|BETA={self.betas[bzeta_ind]}|ZETA=0.0|SCREEN={str(self.screen).upper()}|MJD=MJD_AVERAGE.npz')
+            elif pbf_type == 'zeta':
+                 params = np.load(f'j1903_modeled_params|FREQ=lband|BETA=3.667|ZETA={self.zetas[bzeta_ind]}|SCREEN={str(self.screen).upper()}|MJD=MJD_AVERAGE.npz')
 
-            comp3_amp = self.comp3_amp_sband * np.power(self.freq_suba/self.sband_freq, self.comp3_amp_pwrlaw)
-            comp3_mean = (self.comp3_mean_sband-comp2_mean) * np.power(self.freq_suba/self.sband_freq, self.comp3_mean_pwrlaw) + comp2_mean # fraction of phase
-            comp3_width = self.comp3_width_sband * np.power(self.freq_suba/self.sband_freq, self.comp3_width_pwrlaw)
-            comp3 = [comp3_amp, comp3_mean, comp3_width]
+            comp1 = params['sband_params'][0]
+            comp2 = params['sband_params'][1]
+            comp3 = params['sband_params'][2]
+            sband_freq = params['sband_freq']
+            # amp1_pwrlaw = params['amp1_pwrlaw']
+            # amp3_pwrlaw = params['amp3_pwrlaw']
+            # phase3_pwrlaw = params['phase3_pwrlaw']
+            # width3_pwrlaw = params['width3_pwrlaw']
+            amp1_pwrlaw = 0.0
+            amp3_pwrlaw = 0.0
+            phase3_pwrlaw = 0.0
+            width3_pwrlaw = 0.0
+
+            comp1[0] = comp1[0] * np.power(self.freq_suba/sband_freq, amp1_pwrlaw)
+            comp3[0] = comp3[0] * np.power(self.freq_suba/sband_freq, amp3_pwrlaw)
+            comp3[1] = (comp3[1]-comp2[1]) * np.power(self.freq_suba/sband_freq, phase3_pwrlaw) + comp2[1]
+            comp3[2] = comp3[2] * np.power(self.freq_suba/sband_freq, width3_pwrlaw)
 
             self.intrinsic_model = triple_gauss(comp1,comp2,comp3,t)[0]
 
@@ -540,12 +540,16 @@ class Profile_Fitting:
             if type(bzeta_ind) != int:
                 raise Exception('bzeta_ind must be an integer.')
 
-        self.init_freq_subint(freq_subint_index)
+
+        self.init_freq_subint(freq_subint_index, pbf_type, bzeta_ind)
 
         #number of each parameter in the parameter grid
         num_beta = np.size(self.betas)
         num_zeta = np.size(self.zetas)
-        num_taus = np.size(self.tau_values['beta'][0])
+        if pbf_type == 'beta' or pbf_type == 'zeta':
+            num_taus = np.size(self.tau_values[pbf_type][0])
+        else:
+            num_taus = np.size(self.tau_values[pbf_type])
 
         beta_inds = np.arange(num_beta)
         zeta_inds = np.arange(num_zeta)
@@ -695,6 +699,7 @@ class Profile_Fitting:
 
                     #ERROR TEST - one reduced chi-squared unit above and below and these
                     #chi-squared bins are for varying pbf width
+
                     below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
                     above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
 

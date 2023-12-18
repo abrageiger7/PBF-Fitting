@@ -1,11 +1,15 @@
 from mcmc_profile_fitting_class import *
-from scattering_time_delay import *
 from fit_functions import *
 from intrinsic_component_powerlaw_fit import *
+import sys
 
-beta = str(sys.argv[1]) # set spectral index of wavenumber spectrum
-zeta = str(sys.argv[2]) # set inner scale of waveumber spectrum
 screen = str(sys.argv[3]) # 'thin' or 'thick' medium pbf
+if screen == 'thick':
+    beta = str(sys.argv[1]) # set spectral index of wavenumber spectrum
+    zeta = str(sys.argv[2]) # set inner scale of waveumber spectrum
+else:
+    beta = float(sys.argv[1]) # set spectral index of wavenumber spectrum
+    zeta = float(sys.argv[2]) # set inner scale of waveumber spectrum
 rerun = str(sys.argv[4]) # if 'rerun', recalulate the intrinsic components.
 # otherwise, just plot the already calculated data for the above inputs. Throws
 # exception is has not already been calcualted
@@ -55,12 +59,20 @@ if __name__ == "__main__":
         mcmc_fitting_object.frequency, screen, lband_data_array, lband_freqs, \
         sband)
 
-        amp1_tests = np.linspace(-1.5,1.5,41)
-        amp3_tests = np.linspace(-1.3,1.2,8)
-        width_tests = np.linspace(-1.3,1.2,8)
-        phase_tests = np.linspace(-1.3,1.2,8)
+        # 3.667 0.0 thick
+        if (beta == '3.667' and (zeta == '0.0' or zeta == '0')):
+            amp1_tests=np.linspace(0.5,1.5,21)
+            amp3_tests=np.linspace(-0.4,0.3,8)
+            cent3_tests=np.linspace(-0.4,0.3,8)
+            width3_tests=np.linspace(-1.3,-0.6,8)
 
-        powerlaw_fitting_object.fit_comp3(amp3_tests, phase_tests, width_tests)
+        # standard test
+        # amp1_tests=np.linspace(-1.5,1.5,21)
+        # amp3_tests=np.linspace(-0.8,0.7,8)
+        # cent3_tests=np.linspace(-0.8,0.7,8)
+        # width3_tests=np.linspace(-0.8,0.7,8)
+
+        powerlaw_fitting_object.fit_comp3(amp3_tests, cent3_tests, width3_tests)
         powerlaw_fitting_object.fit_amp1(amp1_tests)
         powerlaw_fitting_object.plot_modeled()
         powerlaw_fitting_object.plot_modeled_fitted()

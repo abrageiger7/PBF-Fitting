@@ -8,8 +8,6 @@ from astropy.time import Time
 from scipy.stats import pearsonr
 import os
 
-'''Need to add screen type to plots so can distinguish!'''
-
 # arguments when running the script:
 # 1 - intrinsic shape (str) either 'modeled', 'gaussian', or 'sband_avg'
 intrinsic_shape = str(sys.argv[1])
@@ -137,7 +135,7 @@ def tau_vs_freq_pwrlaw(mjd_start_ind, mjd_end_ind, intrinsic_shape, pbf_type, bz
         freqs = data_dict[mjd_strings[i]]['freqs']
         dur = data_dict[mjd_strings[i]]['dur']
 
-        prof = Profile_Fitting(mjd, data, freqs, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms)
+        prof = Profile_Fitting(mjd, data, freqs, dur, screen, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms)
 
         freq_list = np.zeros(prof.num_sub)
 
@@ -269,19 +267,19 @@ def tau_vs_freq_pwrlaw(mjd_start_ind, mjd_end_ind, intrinsic_shape, pbf_type, bz
 
     if intrinsic_shape != 'modeled':
         if pbf_type == 'beta':
-            title = f'power_laws|{intrinsic_shape.upper()}|{pbf_type.upper()}={betas[bzeta_ind]}|IWIDTH={intrinsic_fwhms[iwidth_ind]}|MJD={int(mjd_start)}-{int(mjd_end)}|TIME_AVG_EVERY={time_avg_factor}.pdf'
+            title = f'power_laws|{intrinsic_shape.upper()}|{pbf_type.upper()}={betas[bzeta_ind]}|MEDIUM={screen}|IWIDTH={intrinsic_fwhms[iwidth_ind]}|MJD={int(mjd_start)}-{int(mjd_end)}|TIME_AVG_EVERY={time_avg_factor}.pdf'
         elif pbf_type == 'zeta':
-            title = f'power_laws|{intrinsic_shape.upper()}|{pbf_type.upper()}={zetas[bzeta_ind]}|IWIDTH={intrinsic_fwhms[iwidth_ind]}|MJD={int(mjd_start)}-{int(mjd_end)}|TIME_AVG_EVERY={time_avg_factor}.pdf'
+            title = f'power_laws|{intrinsic_shape.upper()}|{pbf_type.upper()}={zetas[bzeta_ind]}|MEDIUM={screen}|IWIDTH={intrinsic_fwhms[iwidth_ind]}|MJD={int(mjd_start)}-{int(mjd_end)}|TIME_AVG_EVERY={time_avg_factor}.pdf'
         elif pbf_type == 'exp':
-            title = f'power_laws|{intrinsic_shape.upper()}|{pbf_type.upper()}|IWIDTH={intrinsic_fwhms[iwidth_ind]}|MJD={int(mjd_start)}-{int(mjd_end)}|TIME_AVG_EVERY={time_avg_factor}.pdf'
+            title = f'power_laws|{intrinsic_shape.upper()}|{pbf_type.upper()}|MEDIUM={screen}|IWIDTH={intrinsic_fwhms[iwidth_ind]}|MJD={int(mjd_start)}-{int(mjd_end)}|TIME_AVG_EVERY={time_avg_factor}.pdf'
 
     elif intrinsic_shape == 'modeled':
         if pbf_type == 'beta':
-            title = f'power_laws|{intrinsic_shape.upper()}|{pbf_type.upper()}={betas[bzeta_ind]}|MJD={int(mjd_start)}-{int(mjd_end)}|TIME_AVG_EVERY={time_avg_factor}.pdf'
+            title = f'power_laws|{intrinsic_shape.upper()}|{pbf_type.upper()}={betas[bzeta_ind]}|MEDIUM={screen}|MJD={int(mjd_start)}-{int(mjd_end)}|TIME_AVG_EVERY={time_avg_factor}.pdf'
         elif pbf_type == 'zeta':
-            title = f'power_laws|{intrinsic_shape.upper()}|{pbf_type.upper()}={zetas[bzeta_ind]}|MJD={int(mjd_start)}-{int(mjd_end)}|TIME_AVG_EVERY={time_avg_factor}.pdf'
+            title = f'power_laws|{intrinsic_shape.upper()}|{pbf_type.upper()}={zetas[bzeta_ind]}|MEDIUM={screen}|MJD={int(mjd_start)}-{int(mjd_end)}|TIME_AVG_EVERY={time_avg_factor}.pdf'
         elif pbf_type == 'exp':
-            title = f'power_laws|{intrinsic_shape.upper()}|{pbf_type.upper()}|MJD={int(mjd_start)}-{int(mjd_end)}|TIME_AVG_EVERY={time_avg_factor}.pdf'
+            title = f'power_laws|{intrinsic_shape.upper()}|{pbf_type.upper()}|MEDIUM={screen}|MJD={int(mjd_start)}-{int(mjd_end)}|TIME_AVG_EVERY={time_avg_factor}.pdf'
 
     figb.savefig(title)
     figb.show()
@@ -295,15 +293,15 @@ def plot_title(plot_title, pbf_type):
 
     if intrinsic_shape != 'modeled':
         if pbf_type == 'beta':
-            title = f'{plot_title}|{intrinsic_shape.upper()}|{pbf_type.upper()}={betas[bzeta_ind]}&EXP|IWIDTH_DIS={intrinsic_fwhms[iwidth_ind_bzeta]}|IWIDTH_EXP={intrinsic_fwhms[iwidth_ind_exp]}|TIME_AVG_EVERY={time_avg_factor}.pdf'
+            title = f'{plot_title}|{intrinsic_shape.upper()}|{pbf_type.upper()}={betas[bzeta_ind]}&EXP|MEDIUM={screen}|IWIDTH_DIS={intrinsic_fwhms[iwidth_ind_bzeta]}|IWIDTH_EXP={intrinsic_fwhms[iwidth_ind_exp]}|TIME_AVG_EVERY={time_avg_factor}.pdf'
         elif pbf_type == 'zeta':
-            title = f'{plot_title}|{intrinsic_shape.upper()}|{pbf_type.upper()}={zetas[bzeta_ind]}&EXP|IWIDTH_DIS={intrinsic_fwhms[iwidth_ind_bzeta]}||IWIDTH_EXP={intrinsic_fwhms[iwidth_ind_exp]}|TIME_AVG_EVERY={time_avg_factor}.pdf'
+            title = f'{plot_title}|{intrinsic_shape.upper()}|{pbf_type.upper()}={zetas[bzeta_ind]}&EXP|MEDIUM={screen}|IWIDTH_DIS={intrinsic_fwhms[iwidth_ind_bzeta]}||IWIDTH_EXP={intrinsic_fwhms[iwidth_ind_exp]}|TIME_AVG_EVERY={time_avg_factor}.pdf'
 
     elif intrinsic_shape == 'modeled':
         if pbf_type == 'beta':
-            title = f'{plot_title}|{intrinsic_shape.upper()}|{pbf_type.upper()}={betas[bzeta_ind]}&EXP|TIME_AVG_EVERY={time_avg_factor}.pdf'
+            title = f'{plot_title}|{intrinsic_shape.upper()}|{pbf_type.upper()}={betas[bzeta_ind]}&EXP|MEDIUM={screen}|TIME_AVG_EVERY={time_avg_factor}.pdf'
         elif pbf_type == 'zeta':
-            title = f'{plot_title}|{intrinsic_shape.upper()}|{pbf_type.upper()}={zetas[bzeta_ind]}&EXP|TIME_AVG_EVERY={time_avg_factor}.pdf'
+            title = f'{plot_title}|{intrinsic_shape.upper()}|{pbf_type.upper()}={zetas[bzeta_ind]}&EXP|MEDIUM={screen}|TIME_AVG_EVERY={time_avg_factor}.pdf'
 
     return(title)
 
@@ -614,15 +612,15 @@ def plot_all_powerlaws(intrinsic_shape, pbf_type, bzeta_ind, iwidth_ind_bzeta = 
     #saves the powerlaw data
     if intrinsic_shape != 'modeled':
         if pbf_type == 'beta':
-            title = f'powerlaw_data|{intrinsic_shape.upper()}|{pbf_type.upper()}={betas[bzeta_ind]}&EXP|IWIDTH_DIS={intrinsic_fwhms[iwidth_ind_bzeta]}|IWIDTH_EXP={intrinsic_fwhms[iwidth_ind_exp]}|TIME_AVG_EVERY{time_avg_factor}'
+            title = f'powerlaw_data|{intrinsic_shape.upper()}|{pbf_type.upper()}={betas[bzeta_ind]}&EXP|MEDIUM={screen}|IWIDTH_DIS={intrinsic_fwhms[iwidth_ind_bzeta]}|IWIDTH_EXP={intrinsic_fwhms[iwidth_ind_exp]}|TIME_AVG_EVERY{time_avg_factor}'
         elif pbf_type == 'zeta':
-            title = f'powerlaw_data|{intrinsic_shape.upper()}|{pbf_type.upper()}={zetas[bzeta_ind]}&EXP|IWIDTH_DIS={intrinsic_fwhms[iwidth_ind_bzeta]}||IWIDTH_EXP={intrinsic_fwhms[iwidth_ind_exp]}|TIME_AVG_EVERY{time_avg_factor}'
+            title = f'powerlaw_data|{intrinsic_shape.upper()}|{pbf_type.upper()}={zetas[bzeta_ind]}&EXP|MEDIUM={screen}|IWIDTH_DIS={intrinsic_fwhms[iwidth_ind_bzeta]}||IWIDTH_EXP={intrinsic_fwhms[iwidth_ind_exp]}|TIME_AVG_EVERY{time_avg_factor}'
 
     elif intrinsic_shape == 'modeled':
         if pbf_type == 'beta':
-            title = f'powerlaw_data|{intrinsic_shape.upper()}|{pbf_type.upper()}={betas[bzeta_ind]}&EXP|TIME_AVG_EVERY{time_avg_factor}'
+            title = f'powerlaw_data|{intrinsic_shape.upper()}|{pbf_type.upper()}={betas[bzeta_ind]}&EXP|MEDIUM={screen}|TIME_AVG_EVERY{time_avg_factor}'
         elif pbf_type == 'zeta':
-            title = f'powerlaw_data|{intrinsic_shape.upper()}|{pbf_type.upper()}={zetas[bzeta_ind]}&EXP|TIME_AVG_EVERY{time_avg_factor}'
+            title = f'powerlaw_data|{intrinsic_shape.upper()}|{pbf_type.upper()}={zetas[bzeta_ind]}&EXP|MEDIUM={screen}|TIME_AVG_EVERY{time_avg_factor}'
 
 
     if (intrinsic_shape == 'modeled' and sys.argv[5] == 'rerun') or (intrinsic_shape != 'modeled' and sys.argv[7] == 'rerun'):
@@ -800,30 +798,34 @@ if __name__ == '__main__':
     else:
 
         # thin screen intrinsic modeled case
+        unith_pbfs = np.load(f'thin_screen_pbfs|PHASEBINS={phase_bins}.npz')['pbfs_unitheight']
+        for i in unith_pbfs:
+            for ii in i:
+                for iii in ii:
+                    iii = iii/trapz(iii)
+        tau_values_start = np.load(f'thin_screen_pbfs|PHASEBINS={phase_bins}.npz')['tau_mus']
 
-        ua_pbfs = np.load('thin_screen_pbfs.npz')['pbfs_unitarea']
-        tau_values = np.load('thin_screen_pbfs.npz')['tau_mus']
-        betas = np.load('thin_screen_pbfs.npz')['betas']
-        zetas = np.load('thin_screen_pbfs.npz')['zetas']
+        betas = np.load(f'thin_screen_pbfs|PHASEBINS={phase_bins}.npz')['betas']
+        zetas = np.load(f'thin_screen_pbfs|PHASEBINS={phase_bins}.npz')['zetas']
+
+        beta_range_ind = np.where((zetas == 0.01))[0][0]
+        zeta_range_ind = np.where((betas == 3.667))[0][0]
+
+        ua_pbfs = {}
+        tau_values = {}
+        ua_pbfs['beta'] = unith_pbfs[:, beta_range_ind, :, :]
+        ua_pbfs['zeta'] = unith_pbfs[:, zeta_range_ind, :, :]
+        ua_pbfs['exp'] = np.load(f'exp_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['pbfs_unitarea']
+
+        tau_values['beta'] = tau_values_start[:, beta_range_ind, :]
+        tau_values['zeta'] = tau_values_start[:, zeta_range_ind, :]
+        tau_values['exp'] = np.load(f'exp_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['taus_mus']
 
         fitting_profiles = ua_pbfs
         intrinsic_fwhms = -1
 
-        #collect beta, zeta, and relevant related information
-        if zeta != 0:
-            type_test = 'zeta'
-            bzeta_ind = find_nearest(zetas, zeta)[1][0][0]
-            fitting_profiles = fitting_profiles[:,bzeta_ind,:,:]
-            tau_values = tau_values[:,bzeta_ind,:]
 
-        else:
-            type_test = 'beta'
-            bzeta_ind = find_nearest(betas,beta)[1][0][0]
-            fitting_profiles = fitting_profiles[bzeta_ind,:,:,:]
-            tau_values = tau_values[bzeta_ind,:,:]
-
-
-    if zeta != 0:
+    if (zeta != 0 and screen == 'thick') or (zeta != 0.01 and screen == 'thin'):
         type_test = 'zeta'
         bzeta_ind = find_nearest(zetas, zeta)[1][0][0]
 
@@ -864,7 +866,7 @@ if __name__ == '__main__':
     #run the data collection and plotting
     plot_all_powerlaws(intrinsic_shape, type_test, int(bzeta_ind), iwidth_ind_bzeta, iwidth_ind_exp)
 
-    if intrinsic_shape != 'modeled':
+    if intrinsic_shape != 'modeled' and screen == 'thick':
         os.remove('beta_convolved_profiles|SCRIPT=fin_fit')
         os.remove('zeta_convolved_profiles|SCRIPT=fin_fit')
         os.remove('exp_convolved_profiles|SCRIPT=fin_fit')

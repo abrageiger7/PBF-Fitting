@@ -1,81 +1,49 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-from fit_functions import calculate_tau, stretch_or_squeeze, phase_bins, find_nearest
+from fit_functions import calculate_tau, stretch_or_squeeze, init_data_phase_bins, find_nearest, single_pbf_thin_screen
 from scipy.interpolate import CubicSpline
 from scipy.integrate import trapz
+import os
+
+phase_bins = init_data_phase_bins
 
 # Cordes thin screen pbfs
 # CAREFUL: time steps spaced logarithmically
 pbf_data = np.load('generate_pbf_sets_Nbeta_12_Nli_10.npz', allow_pickle=True)
+zetas = pbf_data['livec']
+betas = pbf_data['betavec']
 
-inner_scale = pbf_data['livec']
-beta_values = pbf_data['betavec']
-time_values = pbf_data['tvecarray']
-pbf_array = pbf_data['pbfarray']
-one_over_e_values = pbf_data['tevec']
-pdf_tau_values = pbf_data['tavevec']
+print(zetas)
+print(betas)
 
-# because the time steps are spaced logarithmically, start with lots of points
-large_phase_bins = 1000000
 num_pbfwidth = 400
 
-# for each pbf, calculate number of tau values
+# for each pbf, calculate a number of tau values (microseconds)
 tau_values_set = np.linspace(0.1,500,num_pbfwidth)
 
 # parameters to collect for each pbf
-betas = beta_values
-zetas = inner_scale
-tau_values_collect = np.zeros((np.shape(pbf_array)[0], np.shape(pbf_array)[1], num_pbfwidth))
-thin_screen_pbfs = np.zeros((np.shape(pbf_array)[0], np.shape(pbf_array)[1], num_pbfwidth, phase_bins))
+tau_values_collect = np.zeros((np.size(betas), np.size(zetas), num_pbfwidth))
+thin_screen_pbfs = np.zeros((np.size(betas), np.size(zetas), num_pbfwidth, phase_bins))
 
-# keep in memory from first loop for speed
-rescaled_pbfs = np.zeros((np.shape(pbf_array)[0], np.shape(pbf_array)[1], phase_bins))
-original_tau_values = np.zeros(np.shape(pbf_array))
+for i in range(np.size(betas)): #beta
+     for ii in range(np.size(zetas)): #zeta
 
-reference_tau_scale = 50000.0
+        beta = betas[i]
+        zeta = zetas[ii]
 
-for i in range(np.shape(pbf_array)[0]): #beta
-     for ii in range(np.shape(pbf_array)[1]): #zeta
+        if (zeta == 0.01 and (beta == 3.667 or beta == 3.1 or beta == 3.5 or beta == 3.975)) or (zeta == 5.0 and beta == 3.667):
 
-        time = time_values[i][ii]
-        pbf = pbf_array[i][ii]
+            print(f'Beta = {beta} at index {i}')
+            print(f'Zeta = {zeta} at index {ii}')
 
-        spline = CubicSpline(time, pbf)
+            for iii in range(np.size(tau_values_set)):
 
-        # large number of phase bins to accomodate log time spacing
-        time_linear = np.linspace(time[0], time[-1], large_phase_bins)
-        pbf_linear = spline(time_linear)
-        del(time_linear)
+                print(iii)
 
-        tau = one_over_e_values[i][ii]
-        print(f"Scale factor = {reference_tau_scale/tau}")
+                results = single_pbf_thin_screen(betas[i], zetas[ii], tau_values_set[iii], pbf_data)
 
-        rescaled_pbf = stretch_or_squeeze(pbf_linear, reference_tau_scale/tau)
+                thin_screen_pbfs[i][ii][iii] = results[0]
+                tau_values_collect[i][ii][iii] = results[1]
 
-        del(pbf_linear)
-        del(tau)
-        spline = CubicSpline(np.linspace(0,np.size(rescaled_pbf)-1,np.size(rescaled_pbf)), rescaled_pbf)
-        new_pbf = spline(np.linspace(0,np.size(rescaled_pbf)-1,phase_bins))
-        rescaled_pbfs[i][ii] = new_pbf
-        original_tau_values[i][ii] = calculate_tau(new_pbf)[0]
-        print(f"Final tau = {original_tau_values[i][ii]}")
-
-        del(rescaled_pbf)
-        del(new_pbf)
-
-for i in range(np.shape(pbf_array)[0]): #beta
-     for ii in range(np.shape(pbf_array)[1]): #zeta
-
-         pbf = rescaled_pbfs[i][ii]
-
-         for iii in range(num_pbfwidth):
-
-             str_sqz_pbf = stretch_or_squeeze(pbf, ...)
-             thin_screen_pbfs[i][ii][iii] = str_sqz_pbf/trapz(str_sqz_pbf)
-             tau_values_collect[i][ii][iii] = calculate_tau(str_sqz_pbf)
-             del(str_sqz_pbf)
-
-         del(pbf)
-
-np.savez('thin_screen_pbfs', pbfs_unitarea = thin_screen_pbfs, betas = betas, zetas = zetas, tau_mus = tau_values_collect)
+np.savez(f'thin_screen_pbfs|PHASEBINS={phase_bins}', pbfs_unitheight = thin_screen_pbfs, betas = betas, zetas = zetas, tau_mus = tau_values_collect)
