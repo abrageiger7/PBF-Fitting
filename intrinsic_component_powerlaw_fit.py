@@ -22,8 +22,8 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
             zetas = np.load(Path(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/thin_screen_pbfs|PHASEBINS=256.npz'))['zetas']
             self.pbf_options = np.load(Path(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/thin_screen_pbfs|PHASEBINS=256.npz'))['pbfs_unitheight'][np.where((betas==self.beta))[0][0]][np.where((zetas==self.zeta))[0][0]]
             self.tau_options = np.load(Path(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/thin_screen_pbfs|PHASEBINS=256.npz'))['tau_mus'][np.where((betas==self.beta))[0][0]][np.where((zetas==self.zeta))[0][0]]
-        else:
-            valid_thick = '\'thick\' or \'thin\''
+        elif thin_or_thick_medium != 'exp':
+            valid_thick = '\'thick\' or \'thin\' or \'exp\''
             raise Exception(f'Choose a valid medium thickness: {valid_thick}')
 
         sband_params = np.load(sband_param_path)['parameters']
@@ -79,6 +79,9 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
         self.plot_tag = f"FREQ=lband|BETA={beta}" +\
         f"|ZETA={zeta}|SCREEN={thin_or_thick_medium.upper()}|MJD={int(np.round(mjd))}"
 
+        if self.screen == 'exp':
+            self.plot_tag = f"FREQ=lband|SCREEN={thin_or_thick_medium.upper()}|MJD={int(np.round(mjd))}"
+
 
     def fit_comp3(self, amp_test_arr, phase_test_arr, width_test_arr):
         '''Fits for the best fit powerlaws for variation of the component
@@ -130,6 +133,10 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
                             elif self.screen == 'thin':
                                 closest_tau_ind = find_nearest(self.tau_options, test_tau[ix])[1][0][0]
                                 pulse_broadening =  time_average(self.pbf_options[closest_tau_ind], np.shape(self.data)[1])
+
+                            elif self.screen == 'exp':
+                                t = np.linspace(0, j1903_period, np.shape(self.data)[1], endpoint=False)
+                                pulse_broadening = (1.0/test_tau[ix])*np.power(math.e,-1.0*t/test_tau[ix])
 
                             intrinsic_shape = triple_gauss([amp, phase, width], self.comp2, self.comp1, timer)[0]
 
@@ -237,6 +244,10 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
                         closest_tau_ind = find_nearest(self.tau_options, test_tau[ix])[1][0][0]
                         pulse_broadening =  time_average(self.pbf_options[closest_tau_ind], np.shape(self.data)[1])
 
+                    elif self.screen == 'exp':
+                        t = np.linspace(0, j1903_period, np.shape(self.data)[1], endpoint=False)
+                        pulse_broadening = (1.0/test_tau[ix])*np.power(math.e,-1.0*t/test_tau[ix])
+
                     intrinsic_shape = triple_gauss([gamp3, gcent3, gwidth3], self.comp2, [gamp1,self.comp1[1],self.comp1[2]], timer)[0]
 
                     profile = convolve(intrinsic_shape, pulse_broadening)
@@ -303,7 +314,11 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
         np.savez(f'j1903_modeled_params|{self.plot_tag}', sband_params = [self.comp1, self.comp2, self.comp3], sband_freq = self.sband_freq, amp1_pwrlaw = self.amp1_pwrlaw, amp3_pwrlaw = self.amp3_pwrlaw, width3_pwrlaw = self.width3_pwrlaw, phase3_pwrlaw = self.phase3_pwrlaw)
 
-        axs.flat[0].set_yticks(np.linspace(0.002,(np.size(self.frequencies)-1)*0.005+0.002,np.size(self.frequencies)), np.round(self.frequencies,1), minor = False)
+        frequency_ints = []
+        for i in self.frequencies:
+            frequency_ints.append(int(np.round(i)))
+
+        axs.flat[0].set_yticks(np.linspace(0.002,(np.size(self.frequencies)-1)*0.005+0.002,np.size(self.frequencies)), frequency_ints, minor = False)
         fig.text(0.517, 0.003, r'Pulse Phase', ha='center', va='center', fontsize = 10)
         axs.flat[0].set_ylabel('Frequency [MHz]', fontsize = 10)
 
@@ -311,6 +326,7 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
             axs.flat[1].plot(np.linspace(0,1,np.shape(self.data)[1]), (intrinsic_shapes[ind] -  intrinsic_shapes[3]) * 10 + (0.005*(ind)) + 0.002, color = 'grey')
 
+        plt.savefig(f'j1903_modeled|{self.plot_tag}.png', dpi = 300, bbox_inches = 'tight')
         plt.savefig(f'j1903_modeled|{self.plot_tag}.pdf', bbox_inches = 'tight')
 
         plt.close('all')
@@ -356,6 +372,10 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
                     closest_tau_ind = find_nearest(self.tau_options, test_tau[iii])[1][0][0]
                     pulse_broadening =  time_average(self.pbf_options[closest_tau_ind], np.shape(self.data)[1])
 
+                elif self.screen == 'exp':
+                    t = np.linspace(0, j1903_period, np.shape(self.data)[1], endpoint=False)
+                    pulse_broadening = (1.0/test_tau[iii])*np.power(math.e,-1.0*t/test_tau[iii])
+
                 intrinsic = triple_gauss([gamp3, gcent3, gwidth3], self.comp2, [gamp1,self.comp1[1],self.comp1[2]], timer)[0]
 
                 profile = convolve(intrinsic, pulse_broadening)
@@ -388,6 +408,10 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
                 closest_tau_ind = find_nearest(self.tau_options, tauer)[1][0][0]
                 final_profiler =  time_average(self.pbf_options[closest_tau_ind], np.shape(self.data)[1])
 
+            elif self.screen == 'exp':
+                t = np.linspace(0, j1903_period, np.shape(self.data)[1], endpoint=False)
+                final_profiler = (1.0/tauer)*np.power(math.e,-1.0*t/tauer)
+
             tau = calculate_tau(final_profiler)[0]
             tau_values_collect[ind] = tau
 
@@ -406,7 +430,7 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
             index = ind
 
             textstr = r'$\tau$'+f' ={int(np.round(tau))}' +r' $\mu$s'
-            axs.flat[index].text(0.65, 0.95, textstr, fontsize=10, verticalalignment='top', transform=axs.flat[index].transAxes)
+            axs.flat[index].text(0.65, 0.95, textstr, fontsize=14, verticalalignment='top', transform=axs.flat[index].transAxes)
 
             axs.flat[index].plot(t, self.data[ind], color = 'darkgrey', lw = 2.0)
 
@@ -414,7 +438,7 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
             axs.flat[index].set_yticks([], minor = False)
 
-            axs.flat[index].set_title(f'{int(np.round(self.frequencies[ind],2))} [MHz]')
+            axs.flat[index].set_title(f'{int(np.round(self.frequencies[ind],2))} [MHz]', fontsize = 15)
 
         # now add sband profile
         ind = np.size(self.frequencies)
@@ -431,6 +455,10 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
             closest_tau_ind = find_nearest(self.tau_options, self.sband_tau)[1][0][0]
             final_profiler =  time_average(self.pbf_options[closest_tau_ind], np.shape(self.data)[1])
 
+        elif self.screen == 'exp':
+            t = np.linspace(0, j1903_period, np.shape(self.data)[1], endpoint=False)
+            final_profiler = (1.0/self.sband_tau)*np.power(math.e,-1.0*t/self.sband_tau)
+
         profile = convolve(intrinsic, final_profiler)
 
         sp = SinglePulse(self.sband_profile)
@@ -444,7 +472,7 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
         index = ind
 
         textstr = r'$\tau$'+f' ={int(np.round(self.sband_tau))}' +r' $\mu$s'
-        axs.flat[index].text(0.65, 0.95, textstr, fontsize=10, verticalalignment='top', transform=axs.flat[index].transAxes)
+        axs.flat[index].text(0.65, 0.95, textstr, fontsize=14, verticalalignment='top', transform=axs.flat[index].transAxes)
 
         axs.flat[index].plot(t, self.sband_profile, color = 'darkgrey', lw = 2.0)
 
@@ -452,7 +480,9 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
 
         axs.flat[index].set_yticks([], minor = False)
 
-        axs.flat[index].set_title(f'{int(np.round(self.sband_freq,2))} [MHz]')
+        axs.flat[index].tick_params(axis='x', which='major', labelsize=12)
+
+        axs.flat[index].set_title(f'{int(np.round(self.sband_freq,2))} [MHz]', fontsize = 15)
 
         # add sband chi squared to chi squared sum and divide by this total
         # number of frequency channels
@@ -464,8 +494,9 @@ class Intrinsic_Component_Powerlaw_Fit_Per_Epoch:
         print(f'CHI-SQUARED = {chi_sq_sum}')
 
         fig.delaxes(axs.flat[8])
-        fig.text(0.517, 0.083, r'Pulse Phase', ha='center', va='center', fontsize = 12)
+        fig.text(0.517, 0.083, r'Pulse Phase', ha='center', va='center', fontsize = 15)
 
+        plt.savefig(f'j1903_modeled_fitted|{self.plot_tag}.png', dpi = 300, bbox_inches = 'tight')
         plt.savefig(f'j1903_modeled_fitted|{self.plot_tag}.pdf', bbox_inches = 'tight')
         plt.close('all')
 
@@ -515,8 +546,8 @@ class Intrinsic_Component_Powerlaw_Fit(Intrinsic_Component_Powerlaw_Fit_Per_Epoc
                     plt.plot(i)
             plt.show()
             plt.close('all')
-        else:
-            valid_thick = '\'thick\' or \'thin\''
+        elif thin_or_thick_medium != 'exp':
+            valid_thick = '\'thick\' or \'thin\' or \'exp\''
             raise Exception(f'Choose a valid medium thickness: {valid_thick}')
 
         sband_params = np.load(sband_param_path)['parameters']
@@ -549,3 +580,6 @@ class Intrinsic_Component_Powerlaw_Fit(Intrinsic_Component_Powerlaw_Fit_Per_Epoc
 
         self.plot_tag = f"FREQ=lband|BETA={beta}" +\
         f"|ZETA={zeta}|SCREEN={thin_or_thick_medium.upper()}|MJD={mjd_tag.upper()}"
+
+        if self.screen == 'exp':
+            self.plot_tag = f"FREQ=lband|SCREEN={thin_or_thick_medium.upper()}|MJD={mjd_tag.upper()}"

@@ -1,12 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-from fit_functions import calculate_tau, stretch_or_squeeze, init_data_phase_bins, find_nearest, single_pbf_thin_screen
+from fit_functions import calculate_tau, stretch_or_squeeze, init_data_phase_bins, phase_bins, find_nearest, single_pbf_thin_screen
 from scipy.interpolate import CubicSpline
 from scipy.integrate import trapz
 import os
 
 phase_bins = init_data_phase_bins
+print(phase_bins)
 
 # Cordes thin screen pbfs
 # CAREFUL: time steps spaced logarithmically
@@ -32,7 +33,7 @@ for i in range(np.size(betas)): #beta
         beta = betas[i]
         zeta = zetas[ii]
 
-        if (zeta == 0.01 and (beta == 3.667 or beta == 3.1 or beta == 3.5 or beta == 3.975)) or (zeta == 5.0 and beta == 3.667):
+        if (beta!=3.667 and zeta==0.01) or (beta==3.667 and zeta!=0.01) or (beta==3.667 and zeta==0.01):
 
             print(f'Beta = {beta} at index {i}')
             print(f'Zeta = {zeta} at index {ii}')

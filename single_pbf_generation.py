@@ -133,7 +133,7 @@ def save_single_pbf_thin_screen(beta, zeta):
 
     print(f"Scale factor = {reference_tau_scale/tau}")
 
-    rescaled_pbf = stretch_or_squeeze(pbf_linear, reference_tau_scale/tau, plot=True)
+    rescaled_pbf = stretch_or_squeeze(pbf_linear, reference_tau_scale/tau)
     plt.figure(1)
     plt.plot(time_linear, rescaled_pbf, label=f'{large_phase_bins} Linearly Interpolated Time Steps', color='blue')
 

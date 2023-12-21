@@ -27,8 +27,8 @@ class MCMC_Profile_Fit_Per_Epoch:
             zetas = np.load(Path(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/thin_screen_pbfs|PHASEBINS=256.npz'))['zetas']
             self.pbf_options = np.load(Path(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/thin_screen_pbfs|PHASEBINS=256.npz'))['pbfs_unitheight'][np.where((betas==self.beta))[0][0]][np.where((zetas==self.zeta))[0][0]]
             self.tau_options = np.load(Path(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/thin_screen_pbfs|PHASEBINS=256.npz'))['tau_mus'][np.where((betas==self.beta))[0][0]][np.where((zetas==self.zeta))[0][0]]
-        else:
-            valid_thick = '\'thick\' or \'thin\''
+        elif thin_or_thick_medium != 'exp':
+            valid_thick = '\'thick\' or \'thin\' or \'exp\''
             raise Exception(f'Choose a valid medium thickness: {valid_thick}')
 
         # load in data
@@ -66,6 +66,9 @@ class MCMC_Profile_Fit_Per_Epoch:
         self.plot_tag = f"FREQ={np.round(self.frequency)}|BETA={beta}" +\
         f"|ZETA={zeta}|SCREEN={thin_or_thick_medium.upper()}|MJD={int(np.round(mjd))}"
 
+        if self.screen == 'exp':
+            self.plot_tag = f"FREQ={np.round(self.frequency)}|SCREEN={thin_or_thick_medium.upper()}|MJD={int(np.round(mjd))}"
+
     def ln_likelihood(self, theta, x, y, yerr):
         '''Returns ln(likelihood) for the parameters, theta, which in this case
         are for the threes parameters for each of three intrinsic gaussians and
@@ -89,6 +92,10 @@ class MCMC_Profile_Fit_Per_Epoch:
         elif self.screen == 'thin':
             closest_tau_ind = find_nearest(self.tau_options, tau)[1][0][0]
             pbf_test = time_average(self.pbf_options[closest_tau_ind], np.size(self.profile))
+
+        elif self.screen == 'exp':
+            t = np.linspace(0, j1903_period, np.size(self.profile), endpoint=False)
+            pbf_test = (1.0/tau)*np.power(math.e,-1.0*t/tau)
 
         profile = convolve_same_height_arr1(triple_gauss(np.abs(comp1), np.abs(comp2), \
         np.abs(comp3), x, unit_area=False), pbf_test)
@@ -152,6 +159,10 @@ class MCMC_Profile_Fit_Per_Epoch:
             closest_tau_ind = find_nearest(self.tau_options, tau)[1][0][0]
             pbf_test = time_average(self.pbf_options[closest_tau_ind], np.size(self.profile))
 
+        elif self.screen == 'exp':
+            t = np.linspace(0, j1903_period, np.size(self.profile), endpoint=False)
+            pbf_test = (1.0/tau)*np.power(math.e,-1.0*t/tau)
+
         intrinsic = triple_gauss(comp1, comp2, comp3, np.arange(np.size(self.profile)))[0]
 
         fitted_template = convolve(intrinsic, pbf_test)
@@ -191,6 +202,10 @@ class MCMC_Profile_Fit_Per_Epoch:
         elif self.screen == 'thin':
             closest_tau_ind = find_nearest(self.tau_options, tau)[1][0][0]
             pbf_test = time_average(self.pbf_options[closest_tau_ind], np.size(self.profile))
+
+        elif self.screen == 'exp':
+            t = np.linspace(0, j1903_period, np.size(self.profile), endpoint=False)
+            pbf_test = (1.0/tau)*np.power(math.e,-1.0*t/tau)
 
         fitted_template = convolve_same_height_arr1(triple_gauss(comp1, comp2, \
         comp3, np.arange(np.size(self.profile)), unit_area=False), pbf_test)
@@ -266,7 +281,7 @@ class MCMC_Profile_Fit_Per_Epoch:
 
         if self.screen == 'thin':
             #setting starting tau range
-            pos[:,9] = np.abs(starting_values[9] + 0.1*np.random.randn(72)) + 1e-4
+            pos[:,9] = np.abs(starting_values[9] + 2.0*np.random.randn(72)) + 1e-4
 
         nwalkers, ndim = pos.shape
         sampler = emcee.EnsembleSampler(nwalkers, ndim, \
@@ -373,8 +388,8 @@ class MCMC_Profile_Fit(MCMC_Profile_Fit_Per_Epoch):
                     plt.plot(i)
             plt.show()
             plt.close('all')
-        else:
-            valid_thick = '\'thick\' or \'thin\''
+        elif thin_or_thick_medium != 'exp':
+            valid_thick = '\'thick\' or \'thin\' or \'exp\''
             raise Exception(f'Choose a valid medium thickness: {valid_thick}')
 
         self.mjd = mjd_tag
@@ -396,3 +411,6 @@ class MCMC_Profile_Fit(MCMC_Profile_Fit_Per_Epoch):
 
         self.plot_tag = f"FREQ={np.round(self.frequency)}|BETA={beta}" +\
         f"|ZETA={zeta}|SCREEN={thin_or_thick_medium.upper()}|MJD={mjd_tag.upper()}"
+
+        if self.screen == 'exp':
+            self.plot_tag = f"FREQ={np.round(self.frequency)}|SCREEN={thin_or_thick_medium.upper()}|MJD={mjd_tag.upper()}"

@@ -430,7 +430,7 @@ class Profile_Fitting:
         return(error)
 
 
-    def init_freq_subint(self, freq_subint_index, pbf_type, bzeta_ind):
+    def init_freq_subint(self, freq_subint_index, pbf_type, bzeta_ind, intrinsic_shape = 'none'):
         '''Initializes variables dependent upon the index of frequency subintegration.
         For use by fitting functions.'''
 
@@ -491,27 +491,31 @@ class Profile_Fitting:
             # self.comp3_mean_sband = 0.540
             # self.comp3_mean_pwrlaw = 0.0
 
-            if bzeta_ind == -1:
-                 params = np.load(f'j1903_modeled_params|FREQ=lband|BETA=3.667|ZETA=0.01|SCREEN={str(self.screen).upper()}|MJD=MJD_AVERAGE.npz')
+            if pbf_type == 'exp':
+                params = np.load('j1903_modeled_params|FREQ=lband|SCREEN=EXP|MJD=MJD_AVERAGE.npz')
+            elif bzeta_ind == -1:
+                params = np.load('j1903_modeled_params|FREQ=lband|' + intrinsic_shape + '.npz')
             elif pbf_type == 'beta' and self.screen == 'thin':
-                 params = np.load(f'j1903_modeled_params|FREQ=lband|BETA={self.betas[bzeta_ind]}|ZETA=0.01|SCREEN={str(self.screen).upper()}|MJD=MJD_AVERAGE.npz')
+                params = np.load(f'j1903_modeled_params|FREQ=lband|BETA={self.betas[bzeta_ind]}|ZETA=0.01|SCREEN={str(self.screen).upper()}|MJD=MJD_AVERAGE.npz')
             elif pbf_type == 'beta' and self.screen == 'thick':
-                 params = np.load(f'j1903_modeled_params|FREQ=lband|BETA={self.betas[bzeta_ind]}|ZETA=0.0|SCREEN={str(self.screen).upper()}|MJD=MJD_AVERAGE.npz')
+                params = np.load(f'j1903_modeled_params|FREQ=lband|BETA={self.betas[bzeta_ind]}|ZETA=0.0|SCREEN={str(self.screen).upper()}|MJD=MJD_AVERAGE.npz')
             elif pbf_type == 'zeta':
-                 params = np.load(f'j1903_modeled_params|FREQ=lband|BETA=3.667|ZETA={self.zetas[bzeta_ind]}|SCREEN={str(self.screen).upper()}|MJD=MJD_AVERAGE.npz')
+                params = np.load(f'j1903_modeled_params|FREQ=lband|BETA=3.667|ZETA={self.zetas[bzeta_ind]}|SCREEN={str(self.screen).upper()}|MJD=MJD_AVERAGE.npz')
 
             comp1 = params['sband_params'][0]
             comp2 = params['sband_params'][1]
             comp3 = params['sband_params'][2]
             sband_freq = params['sband_freq']
-            # amp1_pwrlaw = params['amp1_pwrlaw']
-            # amp3_pwrlaw = params['amp3_pwrlaw']
-            # phase3_pwrlaw = params['phase3_pwrlaw']
-            # width3_pwrlaw = params['width3_pwrlaw']
-            amp1_pwrlaw = 0.0
-            amp3_pwrlaw = 0.0
-            phase3_pwrlaw = 0.0
-            width3_pwrlaw = 0.0
+            amp1_pwrlaw = params['amp1_pwrlaw']
+            amp3_pwrlaw = params['amp3_pwrlaw']
+            phase3_pwrlaw = params['phase3_pwrlaw']
+            width3_pwrlaw = params['width3_pwrlaw']
+
+            if self.freq_suba > 1800.0:
+                amp1_pwrlaw = 0.0
+                amp3_pwrlaw = 0.0
+                phase3_pwrlaw = 0.0
+                width3_pwrlaw = 0.0
 
             comp1[0] = comp1[0] * np.power(self.freq_suba/sband_freq, amp1_pwrlaw)
             comp3[0] = comp3[0] * np.power(self.freq_suba/sband_freq, amp3_pwrlaw)
@@ -521,7 +525,7 @@ class Profile_Fitting:
             self.intrinsic_model = triple_gauss(comp1,comp2,comp3,t)[0]
 
 
-    def fit(self, freq_subint_index, pbf_type, bzeta_ind = -1, iwidth_ind = -1, pbfwidth_ind = -1):
+    def fit(self, freq_subint_index, pbf_type, bzeta_ind = -1, iwidth_ind = -1, pbfwidth_ind = -1, intrinsic_shape = 'none'):
         '''Calculates the best broadening function and corresponding parameters
         for the Profile object. (no chi-squared plots generated for now)
 
@@ -541,7 +545,7 @@ class Profile_Fitting:
                 raise Exception('bzeta_ind must be an integer.')
 
 
-        self.init_freq_subint(freq_subint_index, pbf_type, bzeta_ind)
+        self.init_freq_subint(freq_subint_index, pbf_type, bzeta_ind, intrinsic_shape)
 
         #number of each parameter in the parameter grid
         num_beta = np.size(self.betas)
@@ -688,9 +692,6 @@ class Profile_Fitting:
 
                     low_chi = find_nearest(chi_sqs_array, 0.0)[0]
 
-                    if chi_sqs_array[0] < low_chi+(1/(self.bin_num_care-num_par)) or chi_sqs_array[-1] < low_chi+(1/(self.bin_num_care-num_par)):
-                        print('WARNING: PBF WIDTH NOT CONVERGING ENOUGH')
-
                     lsqs_pbf_index = find_nearest(chi_sqs_array, 0.0)[1][0][0]
 
                     tau_fin = self.tau_values[pbf_type][bzeta_ind][lsqs_pbf_index]
@@ -699,13 +700,27 @@ class Profile_Fitting:
 
                     #ERROR TEST - one reduced chi-squared unit above and below and these
                     #chi-squared bins are for varying pbf width
-
-                    below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
-                    above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
-
                     tau_arr = self.tau_values[pbf_type][bzeta_ind]
-                    tau_low = tau_fin - tau_arr[below]
-                    tau_up = tau_arr[above] - tau_fin
+
+                    if chi_sqs_array[0] < low_chi+(1/(self.bin_num_care-num_par)):
+                        print('WARNING: PBF WIDTH NOT CONVERGING ENOUGH')
+                        above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
+                        below = 0
+                        tau_low = tau_fin - 0.0
+                        tau_up = tau_arr[above] - tau_fin
+
+                    elif chi_sqs_array[-1] < low_chi+(1/(self.bin_num_care-num_par)):
+                        print('WARNING: PBF WIDTH NOT CONVERGING ENOUGH')
+                        below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
+                        above = -1
+                        tau_low = tau_fin - tau_arr[below]
+                        tau_up = tau_arr[above] - tau_fin
+
+                    else:
+                        below = find_nearest(chi_sqs_array[:lsqs_pbf_index], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0]
+                        above = find_nearest(chi_sqs_array[lsqs_pbf_index+1:], low_chi+(1/(self.bin_num_care-num_par)))[1][0][0] + lsqs_pbf_index + 1
+                        tau_low = tau_fin - tau_arr[below]
+                        tau_up = tau_arr[above] - tau_fin
 
                     self.fit_plot(pbf_type, bzeta_ind, lsqs_pbf_index, low_chi = low_chi, low_pbf = below, high_pbf = above)
 

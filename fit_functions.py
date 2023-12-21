@@ -79,7 +79,7 @@ def find_nearest(a, a0):
     idx = np.abs(a - a0).argmin()
     return a.flat[idx], np.where((a == a.flat[idx]))
 
-#Prof Lam's code for likelihood evaluator
+#Prof's code for likelihood evaluator
 #Creates empirical cdf
 def ecdf(values, sort=True):
     if sort:

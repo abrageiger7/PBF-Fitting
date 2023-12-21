@@ -1,3 +1,5 @@
+import sys
+sys.path.append('/Users/abrageiger/Documents/research/projects/pbf_fitting')
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -10,31 +12,65 @@ import sys
 from profile_class import Profile_Fitting
 from fit_functions import *
 
-pbf_type = sys.argv[1]
-intrinsic_shape = 'modeled'
+pbf_type = str(sys.argv[1])
+screen = str(sys.argv[2])
+intrinsic_shape = str(sys.argv[3])
+
 
 if __name__ == '__main__':
 
-    ua_pbfs = {}
-    tau_values = {}
+    if screen == 'thick':
 
-    ua_pbfs['beta'] = np.load(f'beta_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['pbfs_unitarea']
-    ua_pbfs['zeta'] = np.load(f'zeta_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['pbfs_unitarea']
-    ua_pbfs['exp'] = np.load(f'exp_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['pbfs_unitarea']
+        ua_pbfs = {}
+        tau_values = {}
 
-    tau_values['beta'] = np.load(f'beta_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['taus_mus']
-    tau_values['zeta'] = np.load(f'zeta_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['taus_mus']
-    tau_values['exp'] = np.load(f'exp_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['taus_mus']
+        ua_pbfs['beta'] = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/beta_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['pbfs_unitarea']
+        ua_pbfs['zeta'] = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/zeta_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['pbfs_unitarea']
+        ua_pbfs['exp'] = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/exp_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['pbfs_unitarea']
 
-    betas = np.load(f'beta_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['betas']
-    zetas = np.load(f'zeta_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['zetas']
+        tau_values['beta'] = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/beta_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['taus_mus']
+        tau_values['zeta'] = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/zeta_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['taus_mus']
+        tau_values['exp'] = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/exp_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['taus_mus']
 
-    fitting_profiles = ua_pbfs
-    intrinsic_fwhms = -1
+        betas = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/beta_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['betas']
+        zetas = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/zeta_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['zetas']
+
+        fitting_profiles = ua_pbfs
+        intrinsic_fwhms = -1
+
+    elif screen == 'thin':
+
+        # thin screen intrinsic modeled case
+        unith_pbfs = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/thin_screen_pbfs|PHASEBINS={phase_bins}.npz')['pbfs_unitheight']
+        for i in unith_pbfs:
+            for ii in i:
+                for iii in ii:
+                    iii = iii/trapz(iii)
+        tau_values_start = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/thin_screen_pbfs|PHASEBINS={phase_bins}.npz')['tau_mus']
+
+        betas = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/thin_screen_pbfs|PHASEBINS={phase_bins}.npz')['betas']
+        zetas = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/thin_screen_pbfs|PHASEBINS={phase_bins}.npz')['zetas']
+
+        beta_range_ind = np.where((zetas == 0.01))[0][0]
+        zeta_range_ind = np.where((betas == 3.667))[0][0]
+
+        ua_pbfs = {}
+        tau_values = {}
+        ua_pbfs['beta'] = unith_pbfs[:, beta_range_ind, :, :]
+        ua_pbfs['zeta'] = unith_pbfs[:, zeta_range_ind, :, :]
+        ua_pbfs['exp'] = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/exp_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['pbfs_unitarea']
+
+        tau_values['beta'] = tau_values_start[:, beta_range_ind, :]
+        tau_values['zeta'] = tau_values_start[:, zeta_range_ind, :]
+        tau_values['exp'] = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/exp_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['taus_mus']
+
+        fitting_profiles = ua_pbfs
+        intrinsic_fwhms = -1
+
     data_collect = {}
 
-    #import data
-    with open('j1903_data.pkl', 'rb') as fp:
+    #load in the data
+    with open('/Users/abrageiger/Documents/research/projects/pbf_fitting/j1903_data.pkl', 'rb') as fp:
         data_dict = pickle.load(fp)
 
     mjd_strings = list(data_dict.keys())
@@ -49,7 +85,7 @@ if __name__ == '__main__':
         freqs = data_dict[mjd_strings[i]]['freqs']
         dur = data_dict[mjd_strings[i]]['dur']
 
-        prof = Profile_Fitting(mjd, data, freqs, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms)
+        prof = Profile_Fitting(mjd, data, freqs, dur, screen, 'modeled', betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms)
 
         freq_list = np.zeros(prof.num_sub)
 
@@ -63,7 +99,7 @@ if __name__ == '__main__':
 
         for ii in range(prof.num_sub):
 
-            datab = prof.fit(ii, pbf_type)
+            datab = prof.fit(ii, pbf_type, intrinsic_shape = intrinsic_shape)
 
             print(f'Frequency = {prof.freq_round}')
 
@@ -84,7 +120,7 @@ if __name__ == '__main__':
         data_collect[f'{mjd}']['low_chi'] = chi_sq_list
 
     #repeat for sband
-    with open('j1903_sband_data.pkl', 'rb') as fp:
+    with open('/Users/abrageiger/Documents/research/projects/pbf_fitting/j1903_sband_data.pkl', 'rb') as fp:
         data_dict = pickle.load(fp)
 
     mjd_strings = list(data_dict.keys())
@@ -99,7 +135,7 @@ if __name__ == '__main__':
         freqs = data_dict[mjd_strings[i]]['freqs']
         dur = data_dict[mjd_strings[i]]['dur']
 
-        prof = Profile_Fitting(mjd, data, freqs, dur, intrinsic_shape, betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms)
+        prof = Profile_Fitting(mjd, data, freqs, dur, screen, 'modeled', betas, zetas, fitting_profiles, tau_values, intrinsic_fwhms)
 
         freq_list = np.zeros(prof.num_sub)
 
@@ -113,7 +149,7 @@ if __name__ == '__main__':
 
         for ii in range(prof.num_sub):
 
-            datab = prof.fit(ii, pbf_type)
+            datab = prof.fit(ii, pbf_type, intrinsic_shape = intrinsic_shape)
 
             print(f'Frequency = {prof.freq_round}')
 
@@ -133,10 +169,10 @@ if __name__ == '__main__':
         data_collect[f'{mjd}']['frequencies'] = freq_list
         data_collect[f'{mjd}']['low_chi'] = chi_sq_list
 
-    with open(f'best_fit_{pbf_type}|{intrinsic_shape.upper()}|L&SBAND.pkl', 'wb') as fp:
+    with open(f'best_fit_{pbf_type}|INTRINSIC_SHAPE={intrinsic_shape}|L&SBAND.pkl', 'wb') as fp:
         pickle.dump(data_collect, fp)
 
-    with open(f'best_fit_{pbf_type}|{intrinsic_shape.upper()}|L&SBAND.pkl', 'rb') as fp:
+    with open(f'best_fit_{pbf_type}|INTRINSIC_SHAPE={intrinsic_shape}|L&SBAND.pkl', 'rb') as fp:
         data_collect = pickle.load(fp)
 
     #===============================================================================
@@ -233,5 +269,5 @@ if __name__ == '__main__':
     axs.flat[2].set_xlabel('Frequency [MHz]')
     axs.flat[0].set_ylabel(f'{pbf_type[0].upper()+pbf_type[1:]}')
     axs.flat[0].set_title(f'Best Fit {pbf_type[0].upper()+pbf_type[1:]}')
-    plt.savefig(f'best_fit_{pbf_type}|{intrinsic_shape.upper()}|L&SBAND.pdf')
+    plt.savefig(f'best_fit_{pbf_type}|INTRINSIC_SHAPE={intrinsic_shape}|L&SBAND.pdf')
     plt.close('all')

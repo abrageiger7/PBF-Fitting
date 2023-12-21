@@ -69,6 +69,9 @@ class MCMC_Profile_Fit_Per_Epoch:
         self.plot_tag = f"FREQ={np.round(self.frequency)}|BETA={beta}" +\
         f"|ZETA={zeta}|SCREEN={thin_or_thick_medium.upper()}|MJD={int(np.round(mjd))}"
 
+        if self.screen == 'exp':
+            self.plot_tag = f"FREQ={np.round(self.frequency)}|SCREEN={thin_or_thick_medium.upper()}|MJD={int(np.round(mjd))}"
+
     def ln_likelihood(self, theta, x, y, yerr):
         '''Returns ln(likelihood) for the parameters, theta, which in this case
         are for the threes parameters for each of three intrinsic gaussians and
@@ -92,7 +95,6 @@ class MCMC_Profile_Fit_Per_Epoch:
         elif self.screen == 'thin':
             closest_tau_ind = find_nearest(self.tau_options, tau)[1][0][0]
             pbf_test = time_average(self.pbf_options[closest_tau_ind], np.size(self.profile))
-
 
         profile = convolve(triple_gauss(np.abs(comp1), np.abs(comp2), \
         np.abs(comp3), x)[0], pbf_test)
@@ -357,7 +359,7 @@ class MCMC_Profile_Fit(MCMC_Profile_Fit_Per_Epoch):
             plt.show()
             plt.close('all')
         else:
-            valid_thick = '\'thick\' or \'thin\''
+            valid_thick = '\'thick\' or \'thin\' or \'exp\''
             raise Exception(f'Choose a valid medium thickness: {valid_thick}')
 
         self.mjd = mjd_tag
@@ -379,3 +381,6 @@ class MCMC_Profile_Fit(MCMC_Profile_Fit_Per_Epoch):
 
         self.plot_tag = f"FREQ={np.round(self.frequency)}|BETA={beta}" +\
         f"|ZETA={zeta}|SCREEN={thin_or_thick_medium.upper()}|MJD={mjd_tag.upper()}"
+
+        if self.screen == 'exp':
+            self.plot_tag = f"FREQ={np.round(self.frequency)}|SCREEN={thin_or_thick_medium.upper()}|MJD={mjd_tag.upper()}"
