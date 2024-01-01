@@ -57,11 +57,11 @@ if __name__ == '__main__':
         ua_pbfs = {}
         tau_values = {}
         ua_pbfs['beta'] = unith_pbfs[:, beta_range_ind, :, :]
-        ua_pbfs['zeta'] = unith_pbfs[:, zeta_range_ind, :, :]
+        ua_pbfs['zeta'] = unith_pbfs[zeta_range_ind, :, :, :]
         ua_pbfs['exp'] = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/exp_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['pbfs_unitarea']
 
         tau_values['beta'] = tau_values_start[:, beta_range_ind, :]
-        tau_values['zeta'] = tau_values_start[:, zeta_range_ind, :]
+        tau_values['zeta'] = tau_values_start[zeta_range_ind, :, :]
         tau_values['exp'] = np.load(f'/Users/abrageiger/Documents/research/projects/pbf_fitting/exp_pbf_data_unitarea|PHASEBINS={phase_bins}.npz')['taus_mus']
 
         fitting_profiles = ua_pbfs

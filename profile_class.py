@@ -791,7 +791,7 @@ class Profile_Fitting:
                     for i in itertools.product(zeta_inds, tau_inds):
 
                         pbf = self.pbfs[pbf_type][i[0]][i[1]]
-
+                        
                         template = convolve(self.intrinsic_model, pbf)
 
                         chi_sq = self.fit_sing(template, num_par)
